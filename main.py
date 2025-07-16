@@ -17,11 +17,15 @@ app = Client("tiktok_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN
 downloading_users = set()
 
 
-async def send_log(text: str):
-    try:
-        await app.send_message(chat_id=OWNER_ID, text=f"🛠️ {text}")
-    except Exception as e:
-        print(f"❌ Не смог отправить лог: {e}")
+async def safe_send_log(text: str):
+    if app.is_connected:
+        try:
+            await app.send_message(chat_id=OWNER_ID, text=f"🛠️ {text}")
+        except Exception as e:
+            print(f"❌ Не смог отправить лог: {e}")
+    else:
+        print(f"🛠️ (лог): {text}")
+
 
 
 @app.on_message(filters.regex(r'(https?://)?(www\.)?tiktok\.com/[^\s]+') & (filters.group | filters.private))
@@ -29,7 +33,6 @@ async def download_tiktok(client, message):
     print("Получено сообщение:", message.text)
     user_id = message.from_user.id
     text = message.text or message.caption or ""
-    await send_log(f"📥 Ссылка от {user_id}: {text[:50]}")
 
     if user_id in downloading_users:
         await message.reply("⏳ Подожди, пока закончится предыдущая загрузка.")
@@ -38,7 +41,7 @@ async def download_tiktok(client, message):
     downloading_users.add(user_id)
     msg = await message.reply("⏳")
     filename = None
-
+    await safe_send_log(f"📥 Ссылка от {user_id}: {text[:50]}")
     try:
         match = re.search(r'https?://\S+', text)
         if not match:
