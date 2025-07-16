@@ -1,0 +1,13 @@
+[Unit]
+Description=TikTok Telegram Bot
+After=network.target
+
+[Service]
+User=darling
+WorkingDirectory=/home/darling/PycharmProjects/TT
+ExecStart=/home/darling/PycharmProjects/TT/venv/bin/python main.py
+Restart=always
+Environment="PYTHONUNBUFFERED=1"
+
+[Install]
+WantedBy=multi-user.target
