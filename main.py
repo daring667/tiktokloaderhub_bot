@@ -26,6 +26,7 @@ async def send_log(text: str):
 
 @app.on_message(filters.regex(r'(https?://)?(www\.)?tiktok\.com/[^\s]+') & (filters.group | filters.private))
 async def download_tiktok(client, message):
+    print("Получено сообщение:", message.text)
     user_id = message.from_user.id
     text = message.text or message.caption or ""
     await send_log(f"📥 Ссылка от {user_id}: {text[:50]}")
