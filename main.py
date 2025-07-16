@@ -20,19 +20,12 @@ LOG_CHAT_ID = int(os.getenv("LOG_CHAT_ID", "-1001234567890"))
 downloading_users = set()
 app = Client("tiktok_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-@app.on_message(filters.text)
-async def catch_chat_id(client, message):
-    print(f"chat_id: {message.chat.id}")
+
 async def send_log(text: str):
     try:
         await app.send_message(LOG_CHAT_ID, f"📘 {text}")
     except Exception as e:
-        print(f"❌ Не смог отправить лог: {e}")
-        try:
-            chat = await app.get_chat(LOG_CHAT_ID)
-            print(f"ℹ️ Бот в чате '{chat.title}' (type: {chat.type})")
-        except Exception as err:
-            print(f"‼️ Доп. ошибка: {err}")
+        print(f"Не смог отправить лог: {e}")
 
 
 @app.on_message(filters.regex(r'(https?://)?([a-z]+\.)?tiktok\.com/[^\s]+') & (filters.group | filters.private))
@@ -99,22 +92,17 @@ async def debug_chat_id(client, message):
     print(message.chat.id)
 
 
-async def main():
+@app.on_start()
+async def on_start(client):
     print("🚀 Запускаем Telegram бот...")
-    await app.start()
     await send_log("🚀 Бот был запущен!")
 
-    try:
-        # Поддерживаем процесс "живым"
-        while await app.running():
-            await asyncio.sleep(1)
-    finally:
-        await send_log("🛑 Бот остановлен!")
-        await app.stop()
 
+@app.on_stop()
+async def on_stop(client):
+    await send_log("🛑 Бот остановлен!")
 
 
 if __name__ == "__main__":
-    print("🚀 Запускаем Telegram бот...")
+    print("✅ Bot has started.")
     app.run()
-
