@@ -28,6 +28,7 @@ async def send_log(text: str):
         print(f"Не смог отправить лог: {e}")
 
 
+print("🚀 Запускаем Telegram бот...")
 @app.on_message(filters.regex(r'(https?://)?([a-z]+\.)?tiktok\.com/[^\s]+') & (filters.group | filters.private))
 async def download_tiktok(client, message):
     await send_log(f"📥 Получена ссылка от {message.from_user.id}")
