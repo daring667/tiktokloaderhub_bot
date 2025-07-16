@@ -28,9 +28,6 @@ async def send_log(text: str):
         print(f"Не смог отправить лог: {e}")
 
 
-print("🚀 Запускаем Telegram бот...")
-
-
 @app.on_message(filters.regex(r'(https?://)?([a-z]+\.)?tiktok\.com/[^\s]+') & (filters.group | filters.private))
 async def download_tiktok(client, message):
     await send_log(f"📥 Получена ссылка от {message.from_user.id}")
@@ -90,9 +87,19 @@ async def download_tiktok(client, message):
             os.remove(filename)
 
 
-@app.on_message(filters.chat(4889753301) & filters.text)
+@app.on_message(filters.chat(LOG_CHAT_ID) & filters.text)
 async def debug_chat_id(client, message):
     print(message.chat.id)
+
+
+@app.on_start()
+async def on_start(client):
+    await send_log("🚀 Бот был запущен!")
+
+
+@app.on_stop()
+async def on_stop(client):
+    await send_log("🛑 Бот остановлен!")
 
 
 if __name__ == "__main__":
