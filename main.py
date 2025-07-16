@@ -20,7 +20,9 @@ LOG_CHAT_ID = int(os.getenv("LOG_CHAT_ID", "-1001234567890"))
 downloading_users = set()
 app = Client("tiktok_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-
+@app.on_message(filters.text)
+async def catch_chat_id(client, message):
+    print(f"chat_id: {message.chat.id}")
 async def send_log(text: str):
     try:
         await app.send_message(LOG_CHAT_ID, f"📘 {text}")
