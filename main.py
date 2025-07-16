@@ -24,10 +24,11 @@ async def send_log(text: str):
         print(f"❌ Не смог отправить лог: {e}")
 
 
-@app.on_message(filters.regex(r'https?://') & (filters.group | filters.private))
+@app.on_message(filters.regex(r'(https?://)?(www\.)?tiktok\.com/[^\s]+') & (filters.group | filters.private))
 async def download_tiktok(client, message):
     user_id = message.from_user.id
-    await send_log(f"📥 Ссылка от {user_id}: {message.text[:50]}")
+    text = message.text or message.caption or ""
+    await send_log(f"📥 Ссылка от {user_id}: {text[:50]}")
 
     if user_id in downloading_users:
         await message.reply("⏳ Подожди, пока закончится предыдущая загрузка.")
@@ -38,7 +39,7 @@ async def download_tiktok(client, message):
     filename = None
 
     try:
-        match = re.search(r'https?://\S+', message.text or "")
+        match = re.search(r'https?://\S+', text)
         if not match:
             await msg.edit("❌ Не могу найти ссылку.")
             return
@@ -82,6 +83,8 @@ async def download_tiktok(client, message):
         downloading_users.discard(user_id)
         if filename and os.path.exists(filename):
             os.remove(filename)
+
+
 
 
 async def main():
