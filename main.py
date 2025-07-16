@@ -17,9 +17,10 @@ CHANNEL_URL = os.getenv("CHANNEL_URL", "")
 downloading_users = set()
 app = Client("tiktok_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-
-@app.on_message(filters.regex(r'https?://') & (filters.group | filters.private))
+print("🚀 Запускаем Telegram бот...")
+@app.on_message(filters.regex(r'(https?://)?([a-z]+\.)?tiktok\.com/[^\s]+') & (filters.group | filters.private))
 async def download_tiktok(client, message):
+    print("📥 Получен /start")
     user_id = message.from_user.id
     if user_id in downloading_users:
         await message.reply("⏳ Подожди, пока закончится предыдущая загрузка.")
