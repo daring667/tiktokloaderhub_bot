@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.pyc
+*.session*
+*.mp4
+.idea/
+venv/
+tiktok_bot.session*
