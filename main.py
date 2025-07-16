@@ -5,7 +5,6 @@ import requests
 from dotenv import load_dotenv
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import asyncio
 
 load_dotenv()
@@ -15,7 +14,7 @@ API_HASH = os.getenv("API_HASH")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 BOT_URL = os.getenv("BOT_URL", "tiktokbot")
 CHANNEL_URL = os.getenv("CHANNEL_URL", "")
-LOG_CHAT_ID = int(os.getenv("LOG_CHAT_ID", "-1001234567890"))
+LOG_CHAT_ID = -1002768563905
 
 downloading_users = set()
 app = Client("tiktok_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
@@ -25,7 +24,7 @@ async def send_log(text: str):
     try:
         await app.send_message(LOG_CHAT_ID, f"📘 {text}")
     except Exception as e:
-        print(f"Не смог отправить лог: {e}")
+        print(f"❌ Не смог отправить лог: {e}")
 
 
 @app.on_message(filters.regex(r'(https?://)?([a-z]+\.)?tiktok\.com/[^\s]+') & (filters.group | filters.private))
@@ -92,17 +91,18 @@ async def debug_chat_id(client, message):
     print(message.chat.id)
 
 
-@app.on_start()
-async def on_start(client):
+async def main():
     print("🚀 Запускаем Telegram бот...")
+    await app.start()
     await send_log("🚀 Бот был запущен!")
 
-
-@app.on_stop()
-async def on_stop(client):
-    await send_log("🛑 Бот остановлен!")
+    try:
+        await asyncio.Event().wait()
+    finally:
+        await send_log("🛑 Бот остановлен!")
+        await app.stop()
 
 
 if __name__ == "__main__":
-    print("✅ Bot has started.")
-    app.run()
+    import asyncio
+    asyncio.run(main())
