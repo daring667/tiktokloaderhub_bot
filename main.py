@@ -4,7 +4,6 @@ import re
 import requests
 from dotenv import load_dotenv
 from pyrogram import Client, filters
-from pyrogram.enums import ParseMode
 import asyncio
 
 load_dotenv()
@@ -12,25 +11,24 @@ load_dotenv()
 API_ID = int(os.getenv("API_KEY"))
 API_HASH = os.getenv("API_HASH")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-BOT_URL = os.getenv("BOT_URL", "tiktokbot")
-CHANNEL_URL = os.getenv("CHANNEL_URL", "")
-LOG_CHAT_ID = -1002768563905
+OWNER_ID = int(os.getenv("OWNER_ID"))  # твой Telegram user ID
 
-downloading_users = set()
 app = Client("tiktok_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+downloading_users = set()
 
 
 async def send_log(text: str):
     try:
-        await app.send_message(LOG_CHAT_ID, f"📘 {text}")
+        await app.send_message(chat_id=OWNER_ID, text=f"🛠️ {text}")
     except Exception as e:
         print(f"❌ Не смог отправить лог: {e}")
 
 
-@app.on_message(filters.regex(r'(https?://)?([a-z]+\.)?tiktok\.com/[^\s]+') & (filters.group | filters.private))
+@app.on_message(filters.regex(r'https?://') & (filters.group | filters.private))
 async def download_tiktok(client, message):
-    await send_log(f"📥 Получена ссылка от {message.from_user.id}")
     user_id = message.from_user.id
+    await send_log(f"📥 Ссылка от {user_id}: {message.text[:50]}")
+
     if user_id in downloading_users:
         await message.reply("⏳ Подожди, пока закончится предыдущая загрузка.")
         return
@@ -54,14 +52,14 @@ async def download_tiktok(client, message):
             data = res.json()
         except Exception:
             await msg.edit("❌ TikWM API вернул неверный ответ.")
-            await send_log("❌ Ошибка парсинга JSON из API")
+            await send_log("❌ Ошибка: TikWM вернул невалидный JSON")
             return
 
         video_url = data.get("data", {}).get("play")
         if not video_url:
             error_message = data.get("msg", "Видео недоступно.")
             await msg.edit(f"❌ Ошибка: {error_message}")
-            await send_log(f"⚠️ Ошибка TikWM: {error_message}")
+            await send_log(f"⚠️ Видео не найдено. TikWM сказал: {error_message}")
             return
 
         filename = f"{int(time.time())}.mp4"
@@ -74,11 +72,11 @@ async def download_tiktok(client, message):
         await message.delete()
         await client.send_video(message.chat.id, video=filename)
         await msg.delete()
-        await send_log(f"✅ Успешно отправлено видео для {user_id}")
+        await send_log(f"✅ Видео отправлено юзеру: {user_id}")
 
     except Exception as e:
         await msg.edit(f"❌ Не получилось: {e}")
-        await send_log(f"❌ Ошибка загрузки: {e}")
+        await send_log(f"💥 Ошибка при загрузке: {e}")
 
     finally:
         downloading_users.discard(user_id)
@@ -86,23 +84,17 @@ async def download_tiktok(client, message):
             os.remove(filename)
 
 
-@app.on_message(filters.chat(LOG_CHAT_ID) & filters.text)
-async def debug_chat_id(client, message):
-    print(message.chat.id)
-
-
 async def main():
     print("🚀 Запускаем Telegram бот...")
     await app.start()
-    await send_log("🚀 Бот был запущен!")
+    await send_log("🚀 Бот запущен и готов к работе!")
 
     try:
-        await asyncio.Event().wait()
+        await asyncio.Event().wait()  # бот работает бесконечно
     finally:
-        await send_log("🛑 Бот остановлен!")
+        await send_log("🛑 Бот остановлен.")
         await app.stop()
 
 
 if __name__ == "__main__":
-    import asyncio
     asyncio.run(main())
