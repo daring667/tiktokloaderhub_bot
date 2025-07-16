@@ -7,6 +7,7 @@ from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import asyncio
+
 load_dotenv()
 
 API_ID = int(os.getenv("API_KEY"))
@@ -14,20 +15,31 @@ API_HASH = os.getenv("API_HASH")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 BOT_URL = os.getenv("BOT_URL", "tiktokbot")
 CHANNEL_URL = os.getenv("CHANNEL_URL", "")
+LOG_CHAT_ID = int(os.getenv("LOG_CHAT_ID", "-1001234567890"))
+
 downloading_users = set()
 app = Client("tiktok_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
+
+async def send_log(text: str):
+    try:
+        await app.send_message(LOG_CHAT_ID, f"📘 {text}")
+    except Exception as e:
+        print(f"Не смог отправить лог: {e}")
+
+
 print("🚀 Запускаем Telegram бот...")
+
+
 @app.on_message(filters.regex(r'(https?://)?([a-z]+\.)?tiktok\.com/[^\s]+') & (filters.group | filters.private))
 async def download_tiktok(client, message):
-    print("📥 Получен /start")
+    await send_log(f"📥 Получена ссылка от {message.from_user.id}")
     user_id = message.from_user.id
     if user_id in downloading_users:
         await message.reply("⏳ Подожди, пока закончится предыдущая загрузка.")
         return
 
-    downloading_users.add(user_id)  # 🛑 Блокируем повторный запрос
-
+    downloading_users.add(user_id)
     msg = await message.reply("⏳")
     filename = None
 
@@ -39,19 +51,21 @@ async def download_tiktok(client, message):
 
         url = match.group(0)
         api = "https://tikwm.com/api/"
-        await asyncio.sleep(1.1)  # ⏱ анти-лимит
+        await asyncio.sleep(1.1)
         res = requests.get(api, params={"url": url}, timeout=10)
 
         try:
             data = res.json()
         except Exception:
             await msg.edit("❌ TikWM API вернул неверный ответ.")
+            await send_log("❌ Ошибка парсинга JSON из API")
             return
 
         video_url = data.get("data", {}).get("play")
         if not video_url:
             error_message = data.get("msg", "Видео недоступно.")
             await msg.edit(f"❌ Ошибка: {error_message}")
+            await send_log(f"⚠️ Ошибка TikWM: {error_message}")
             return
 
         filename = f"{int(time.time())}.mp4"
@@ -64,14 +78,21 @@ async def download_tiktok(client, message):
         await message.delete()
         await client.send_video(message.chat.id, video=filename)
         await msg.delete()
+        await send_log(f"✅ Успешно отправлено видео для {user_id}")
 
     except Exception as e:
         await msg.edit(f"❌ Не получилось: {e}")
+        await send_log(f"❌ Ошибка загрузки: {e}")
 
     finally:
-        downloading_users.discard(user_id)  # ✅ Разблокировка
+        downloading_users.discard(user_id)
         if filename and os.path.exists(filename):
             os.remove(filename)
+
+
+@app.on_message(filters.chat(4889753301) & filters.text)
+async def debug_chat_id(client, message):
+    print(message.chat.id)
 
 
 if __name__ == "__main__":
