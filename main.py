@@ -86,6 +86,7 @@ async def download_tiktok(client, message):
 
 
 
+
 async def main():
     print("🚀 Запускаем Telegram бот...")
     await app.start()
