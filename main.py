@@ -92,17 +92,21 @@ async def debug_chat_id(client, message):
     print(message.chat.id)
 
 
-@app.on_start()
-async def on_start(client):
+async def main():
     print("🚀 Запускаем Telegram бот...")
+    await app.start()
     await send_log("🚀 Бот был запущен!")
 
-
-@app.on_stop()
-async def on_stop(client):
-    await send_log("🛑 Бот остановлен!")
+    try:
+        await idle()  # ждёт, пока бот работает (аналог app.run())
+    finally:
+        await send_log("🛑 Бот остановлен!")
+        await app.stop()
 
 
 if __name__ == "__main__":
-    print("✅ Bot has started.")
-    app.run()
+    import asyncio
+    from pyrogram.idle import idle
+
+    asyncio.run(main())
+
