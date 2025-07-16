@@ -4,68 +4,53 @@ import re
 import requests
 from dotenv import load_dotenv
 from pyrogram import Client, filters
+from pyrogram.enums import ParseMode
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import asyncio
-
 load_dotenv()
 
 API_ID = int(os.getenv("API_KEY"))
 API_HASH = os.getenv("API_HASH")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-OWNER_ID = int(os.getenv("OWNER_ID"))
-
-app = Client("tiktok_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+BOT_URL = os.getenv("BOT_URL", "tiktokbot")
+CHANNEL_URL = os.getenv("CHANNEL_URL", "")
 downloading_users = set()
+app = Client("tiktok_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
 
-async def safe_send_log(text: str):
-    if app.is_connected:
-        try:
-            await app.send_message(chat_id=OWNER_ID, text=f"🛠️ {text}")
-        except Exception as e:
-            print(f"❌ Не смог отправить лог: {e}")
-    else:
-        print(f"🛠️ (лог): {text}")
-
-
-@app.on_message(filters.regex(r'(https?://)?(www\.)?tiktok\.com/[^\s]+') & (filters.group | filters.private))
+@app.on_message(filters.regex(r'https?://') & (filters.group | filters.private))
 async def download_tiktok(client, message):
-    print("✅ Получено сообщение:", message.text)
     user_id = message.from_user.id
-    text = message.text or message.caption or ""
-
     if user_id in downloading_users:
         await message.reply("⏳ Подожди, пока закончится предыдущая загрузка.")
         return
 
-    downloading_users.add(user_id)
+    downloading_users.add(user_id)  # 🛑 Блокируем повторный запрос
+
     msg = await message.reply("⏳")
     filename = None
 
-    await safe_send_log(f"📥 Ссылка от {user_id}: {text[:50]}")
-
     try:
-        match = re.search(r'https?://\S+', text)
+        match = re.search(r'https?://\S+', message.text or "")
         if not match:
             await msg.edit("❌ Не могу найти ссылку.")
             return
 
         url = match.group(0)
         api = "https://tikwm.com/api/"
-        await asyncio.sleep(1.1)
+        await asyncio.sleep(1.1)  # ⏱ анти-лимит
         res = requests.get(api, params={"url": url}, timeout=10)
 
         try:
             data = res.json()
         except Exception:
             await msg.edit("❌ TikWM API вернул неверный ответ.")
-            await safe_send_log("❌ Ошибка: TikWM вернул невалидный JSON")
             return
 
         video_url = data.get("data", {}).get("play")
         if not video_url:
             error_message = data.get("msg", "Видео недоступно.")
             await msg.edit(f"❌ Ошибка: {error_message}")
-            await safe_send_log(f"⚠️ Видео не найдено. TikWM сказал: {error_message}")
             return
 
         filename = f"{int(time.time())}.mp4"
@@ -78,29 +63,15 @@ async def download_tiktok(client, message):
         await message.delete()
         await client.send_video(message.chat.id, video=filename)
         await msg.delete()
-        await safe_send_log(f"✅ Видео отправлено юзеру: {user_id}")
 
     except Exception as e:
         await msg.edit(f"❌ Не получилось: {e}")
-        await safe_send_log(f"💥 Ошибка при загрузке: {e}")
 
     finally:
-        downloading_users.discard(user_id)
+        downloading_users.discard(user_id)  # ✅ Разблокировка
         if filename and os.path.exists(filename):
             os.remove(filename)
 
 
-async def main():
-    print("🚀 Запускаем Telegram бот...")
-    await app.start()
-    await safe_send_log("🚀 Бот запущен и готов к работе!")
-
-    try:
-        await asyncio.Event().wait()  # бот работает бесконечно
-    finally:
-        await safe_send_log("🛑 Бот остановлен.")
-        await app.stop()
-
-
 if __name__ == "__main__":
-    asyncio.run(main())
+    app.run()
