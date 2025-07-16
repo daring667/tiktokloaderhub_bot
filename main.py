@@ -98,15 +98,16 @@ async def main():
     await send_log("🚀 Бот был запущен!")
 
     try:
-        await idle()  # ждёт, пока бот работает (аналог app.run())
+        # Поддерживаем процесс "живым"
+        while await app.running():
+            await asyncio.sleep(1)
     finally:
         await send_log("🛑 Бот остановлен!")
         await app.stop()
 
 
-if __name__ == "__main__":
-    import asyncio
-    from pyrogram.idle import idle
 
-    asyncio.run(main())
+if __name__ == "__main__":
+    print("🚀 Запускаем Telegram бот...")
+    app.run()
 
