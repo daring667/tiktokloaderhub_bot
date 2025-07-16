@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
+import asyncio
 load_dotenv()
 
 API_ID = int(os.getenv("API_KEY"))
@@ -14,27 +14,19 @@ API_HASH = os.getenv("API_HASH")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 BOT_URL = os.getenv("BOT_URL", "tiktokbot")
 CHANNEL_URL = os.getenv("CHANNEL_URL", "")
-
+downloading_users = set()
 app = Client("tiktok_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
-
-
-@app.on_message(filters.command("start") & (filters.private | filters.group))
-async def start_cmd(client, message):
-    keyboard = []
-    if CHANNEL_URL:
-        keyboard.append([InlineKeyboardButton("📢 Канал", url=CHANNEL_URL)])
-    keyboard.append([InlineKeyboardButton("🔗 Автор", url="https://t.me/ID_Darling")])
-
-    await message.reply(
-        "👋 Привет! Я бот для скачивания видео из TikTok без водяного знака.\n"
-        "Просто отправь ссылку на видео TikTok в этот чат.",
-        reply_markup=InlineKeyboardMarkup(keyboard),
-        parse_mode=ParseMode.MARKDOWN
-    )
 
 
 @app.on_message(filters.regex(r'https?://') & (filters.group | filters.private))
 async def download_tiktok(client, message):
+    user_id = message.from_user.id
+    if user_id in downloading_users:
+        await message.reply("⏳ Подожди, пока закончится предыдущая загрузка.")
+        return
+
+    downloading_users.add(user_id)  # 🛑 Блокируем повторный запрос
+
     msg = await message.reply("⏳")
     filename = None
 
@@ -46,6 +38,7 @@ async def download_tiktok(client, message):
 
         url = match.group(0)
         api = "https://tikwm.com/api/"
+        await asyncio.sleep(1.1)  # ⏱ анти-лимит
         res = requests.get(api, params={"url": url}, timeout=10)
 
         try:
@@ -67,7 +60,7 @@ async def download_tiktok(client, message):
                     if chunk:
                         f.write(chunk)
 
-        await message.delete()  # 🧹 Удаляем сообщение с ссылкой
+        await message.delete()
         await client.send_video(message.chat.id, video=filename)
         await msg.delete()
 
@@ -75,6 +68,7 @@ async def download_tiktok(client, message):
         await msg.edit(f"❌ Не получилось: {e}")
 
     finally:
+        downloading_users.discard(user_id)  # ✅ Разблокировка
         if filename and os.path.exists(filename):
             os.remove(filename)
 
