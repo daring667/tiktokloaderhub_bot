@@ -20,12 +20,19 @@ LOG_CHAT_ID = int(os.getenv("LOG_CHAT_ID", "-1001234567890"))
 downloading_users = set()
 app = Client("tiktok_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-
+@app.on_message(filters.text)
+async def catch_chat_id(client, message):
+    print(f"chat_id: {message.chat.id}")
 async def send_log(text: str):
     try:
         await app.send_message(LOG_CHAT_ID, f"📘 {text}")
     except Exception as e:
-        print(f"Не смог отправить лог: {e}")
+        print(f"❌ Не смог отправить лог: {e}")
+        try:
+            chat = await app.get_chat(LOG_CHAT_ID)
+            print(f"ℹ️ Бот в чате '{chat.title}' (type: {chat.type})")
+        except Exception as err:
+            print(f"‼️ Доп. ошибка: {err}")
 
 
 @app.on_message(filters.regex(r'(https?://)?([a-z]+\.)?tiktok\.com/[^\s]+') & (filters.group | filters.private))
