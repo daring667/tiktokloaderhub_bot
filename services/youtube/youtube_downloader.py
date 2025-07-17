@@ -28,64 +28,43 @@ def _get_ydl_opts(self, itag: str, out_path: str):
         'no_warnings': True
     }
 
+
 class YouTubeDownloader:
     def __init__(self, url: str):
-        self.url = self.normalize_youtube_url(url)
-        print(f"[log] Normalized URL: {self.url}")
-        self.title = None
-        self.length = None
-        self.thumbnail = None
-        self.streams = []
-
-        opts = {
-            "quiet": True,
-            "no_warnings": True,
-            "skip_download": True,
-            "http_headers": {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-                "Referer": "https://www.youtube.com/",
-            }
+        self.url = self.normalize_url(url)
+        self.ydl_opts = {
+            'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+            'http_headers': {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Referer': 'https://www.youtube.com/',
+            },
+            'cookiefile': 'cookies.txt' if os.path.exists('cookies.txt') else None,
+            'extractor_args': {'youtube': {'player_client': ['android']}},
+            'retries': 5,
+            'quiet': True
         }
 
+    async def download(self, itag: str, output_path: str):
+        loop = asyncio.get_event_loop()
+        opts = {**self.ydl_opts, 'format': itag, 'outtmpl': output_path}
+
         try:
-            with yt_dlp.YoutubeDL(opts) as ydl:
-                info = ydl.extract_info(self.url, download=False)
+            def sync_download():
+                with yt_dlp.YoutubeDL(opts) as ydl:
+                    ydl.download([self.url])
 
-            if not info:
-                raise ValueError("Не удалось получить информацию о видео.")
-
-            self.title = info.get("title", "Без названия")
-            self.length = info.get("duration", 0)
-            self.thumbnail = info.get("thumbnail")
-
-            # Получаем все доступные форматы
-            for f in info.get("formats", []):
-                if f.get("vcodec") != "none" and f.get("acodec") != "none":
-                    self.streams.append({
-                        "itag": f["format_id"],
-                        "res": f.get("format_note") or f.get("resolution") or "unknown",
-                        "filesize": f.get("filesize") or f.get("filesize_approx")
-                    })
-
-            if not self.streams:
-                raise ValueError("Нет подходящих форматов для загрузки.")
-
-            self.streams.sort(key=lambda x: x.get("filesize", 0), reverse=True)
-
-        except DownloadError as e:
-            raise ValueError(f"Ошибка загрузки: {e}") from e
+            await loop.run_in_executor(None, sync_download)
+            return True
+        except Exception as e:
+            print(f"Download failed: {e}")
+            return False
 
     @staticmethod
-    def normalize_youtube_url(url: str) -> str:
+    def normalize_url(url: str) -> str:
         if "youtube.com/shorts/" in url:
-            video_id = url.split("/shorts/")[1].split("?")[0]
-            return f"https://youtube.com/watch?v={video_id}"
+            return url.replace("shorts/", "watch?v=").split("?")[0]
         if "youtu.be/" in url:
-            video_id = url.split("youtu.be/")[1].split("?")[0]
-            return f"https://youtube.com/watch?v={video_id}"
-        if "watch?v=" in url:
-            video_id = url.split("watch?v=")[1].split("&")[0]
-            return f"https://youtube.com/watch?v={video_id}"
+            return f"https://youtube.com/watch?v={url.split('youtu.be/')[1].split('?')[0]}"
         return url
 
     async def download(self, itag: str, out_path: str, message=None):

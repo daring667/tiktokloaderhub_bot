@@ -14,7 +14,6 @@ def register(app: Client):
     @app.on_message(filters.regex(r'https?://(www\.)?youtu(be\.com|\.be)/') & (filters.group | filters.private))
     async def yt_handler(client: Client, message: Message):
         user_id = message.from_user.id
-
         if user_id in active_downloads:
             return await message.reply("⏳ Подожди, идёт другая загрузка.")
 
@@ -22,17 +21,27 @@ def register(app: Client):
         filename = None
 
         try:
-            url_match = re.search(r'https?://\S+', message.text)
-            if not url_match:
-                return await message.reply("❌ Не смог найти ссылку.")
+            url = extract_url(message.text)
+            if not url:
+                return await message.reply("❌ Неверная ссылка")
 
-            url = url_match.group(0).strip()
-            progress_msg = await message.reply("⏳ Обрабатываю ссылку...")
+            progress_msg = await message.reply("⏳ Начинаем загрузку...")
+            downloader = YouTubeDownloader(url)
 
-            try:
-                meta = YouTubeDownloader(url)
-            except ValueError as e:
-                await progress_msg.edit_text(f"❌ Ошибка: {str(e)}")
+            # Для коротких видео сразу качаем
+            if should_download_immediately(url):
+                filename = f"downloads/video_{int(time.time())}.mp4"
+                success = await downloader.download('best', filename)
+
+                if success:
+                    await client.send_video(
+                        message.chat.id,
+                        filename,
+                        supports_streaming=True
+                    )
+                else:
+                    await progress_msg.edit_text("❌ Ошибка загрузки")
+
                 return
 
             safe_title = sanitize_filename(meta.title)
@@ -76,6 +85,7 @@ def register(app: Client):
         except Exception as e:
             logging.exception("YouTube handler error")
             await message.reply("❌ Произошла ошибка при обработке видео.")
+
         finally:
             if filename and os.path.exists(filename):
                 os.remove(filename)
