@@ -18,7 +18,7 @@ downloading_users = set()
 app = Client("tiktok_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
 
-@app.on_message(filters.regex(r'https?://') & (filters.group | filters.private))
+@app.on_message(filters.regex(r'https?://.*tiktok\.com/') & (filters.group | filters.private))
 async def download_tiktok(client, message):
     user_id = message.from_user.id
     if user_id in downloading_users:
