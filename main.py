@@ -1,78 +1,27 @@
 import os
-import time
-import re
-import requests
 from dotenv import load_dotenv
-from pyrogram import Client, filters
-from pyrogram.enums import ParseMode
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-import asyncio
+from pyrogram import Client
+from handlers import youtube
+from handlers.youtube import register
+from services.youtube.youtube_downloader import fix_url
+from services.tiktok.tiktok_downloader import TikTokDownloader
+from handlers.youtube import register as register_youtube
+from handlers.tiktok import TikTokHandler
+
 load_dotenv()
 
-API_ID = int(os.getenv("API_KEY"))
-API_HASH = os.getenv("API_HASH")
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-BOT_URL = os.getenv("BOT_URL", "tiktokbot")
-CHANNEL_URL = os.getenv("CHANNEL_URL", "")
-downloading_users = set()
-app = Client("tiktok_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+app = Client(
+    "tiktok_bot",
+    api_id=int(os.getenv("API_KEY")),
+    api_hash=os.getenv("API_HASH"),
+    bot_token=os.getenv("BOT_TOKEN")
+)
 
-
-@app.on_message(filters.regex(r'https?://') & (filters.group | filters.private))
-async def download_tiktok(client, message):
-    user_id = message.from_user.id
-    if user_id in downloading_users:
-        await message.reply("⏳ Подожди, пока закончится предыдущая загрузка.")
-        return
-
-    downloading_users.add(user_id)  # 🛑 Блокируем повторный запрос
-
-    msg = await message.reply("⏳")
-    filename = None
-
-    try:
-        match = re.search(r'https?://\S+', message.text or "")
-        if not match:
-            await msg.edit("❌ Не могу найти ссылку.")
-            return
-
-        url = match.group(0)
-        api = "https://tikwm.com/api/"
-        await asyncio.sleep(1.1)  # ⏱ анти-лимит
-        res = requests.get(api, params={"url": url}, timeout=10)
-
-        try:
-            data = res.json()
-        except Exception:
-            await msg.edit("❌ TikWM API вернул неверный ответ.")
-            return
-
-        video_url = data.get("data", {}).get("play")
-        if not video_url:
-            error_message = data.get("msg", "Видео недоступно.")
-            await msg.edit(f"❌ Ошибка: {error_message}")
-            return
-
-        filename = f"{int(time.time())}.mp4"
-        with requests.get(video_url, stream=True) as r:
-            with open(filename, "wb") as f:
-                for chunk in r.iter_content(chunk_size=1024 * 1024):
-                    if chunk:
-                        f.write(chunk)
-
-        await message.delete()
-        await client.send_video(message.chat.id, video=filename)
-        await msg.delete()
-
-    except Exception as e:
-        await msg.edit(f"❌ Не получилось: {e}")
-
-    finally:
-        downloading_users.discard(user_id)  # ✅ Разблокировка
-        if filename and os.path.exists(filename):
-            os.remove(filename)
-
+youtube.app = app  # pass client to handler
 
 if __name__ == "__main__":
-    print("Starting TikTok Downloader Bot...")
+    register_youtube(app)
+    TikTokHandler(app).register()
+    print("🚀 Bot started!")
+
     app.run()
