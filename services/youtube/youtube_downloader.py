@@ -50,7 +50,7 @@ class YouTubeDownloader:
             self.thumbnail = info.get("thumbnail")
 
             for f in info.get("formats", []):
-                if f.get("format_id") == "18":
+                if f.get("vcodec", "").startswith("avc") and f.get("acodec") != "none" and f.get("filesize"):
                     self.streams.append({
                         "itag": f["format_id"],
                         "res": f.get("format_note") or f.get("resolution") or "unknown",
@@ -97,12 +97,12 @@ class YouTubeDownloader:
             'http_headers': {
                 'User-Agent': 'Mozilla/5.0',
             },
-                "format": itag,
-                "outtmpl": out_path,
-                "quiet": True,
-                "no_warnings": True,
-                "progress_hooks": [hook]
-
+            "cookiefile": "/app/cookies.txt",
+            "format": itag,
+            "outtmpl": out_path,
+            "quiet": True,
+            "no_warnings": True,
+            "progress_hooks": [hook]
         }
 
         with yt_dlp.YoutubeDL(opts) as ydl:
