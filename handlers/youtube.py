@@ -3,8 +3,12 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from services.youtube.youtube_downloader import YouTubeDownloader
 from yt_dlp.utils import DownloadError as YTDownloadError
 import re, os, time, logging
-
+import string
 active_downloads = set()
+
+def sanitize_filename(name: str) -> str:
+    allowed_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+    return ''.join(c for c in name if c in allowed_chars)
 
 def register(app: Client):
     @app.on_message(filters.regex(r'https?://(www\.)?youtu(be\.com|\.be)/') & (filters.group | filters.private))
@@ -40,14 +44,20 @@ def register(app: Client):
             # Если короткое видео или всего один формат — качаем сразу
             if len(meta.streams) == 1 or meta.length < 30:
                 stream = meta.streams[0]
-                filename = f"yt_{stream['itag']}_{int(time.time())}.mp4"
-                progress_msg = await message.reply("⏬ Начинаем загрузку...")
-                meta.download(stream['itag'], filename, message)
-                await client.send_video(message.chat.id, filename, supports_streaming=True)
-                await progress_msg.delete()
-                await message.delete()
-                await progress_msg.delete()
-
+                safe_title = sanitize_filename(meta.title)
+                filename = f"/app/downloads/{safe_title}_{int(time.time())}.mp4"
+                try:
+                    progress_msg = await message.reply("⏬ Начинаем загрузку...")
+                    await meta.download(stream['itag'], filename, message)
+                    await client.send_video(message.chat.id, filename, supports_streaming=True)
+                    await progress_msg.delete()
+                except Exception as e:
+                    await progress_msg.edit_text("❌ Ошибка при загрузке.")
+                    logging.error("YouTube download error", exc_info=True)
+                finally:
+                    if os.path.exists(filename):
+                        os.remove(filename)
+                    active_downloads.discard(user_id)
                 return
 
             # Иначе — предлагаем выбор качества
@@ -87,19 +97,18 @@ def register(app: Client):
             _, url, itag = callback.data.split("|")
             print(f"⬇️ Callback-ссылка: {url}")
 
+            meta = YouTubeDownloader(url)
+            safe_title = sanitize_filename(meta.title)
+            filename = f"/app/downloads/{safe_title}_{int(time.time())}.mp4"
+
             progress_msg = callback.message
             await progress_msg.edit_text("⏬ Начинаем загрузку...")
 
-            meta = YouTubeDownloader(url)
-            filename = f"yt_{itag}_{int(time.time())}.mp4"
             await meta.download(itag, filename, callback.message)
-
             await client.send_video(callback.message.chat.id, filename, supports_streaming=True)
             await progress_msg.delete()
-
-
         except Exception as e:
-            logging.error("Callback download error", exc_info=e)
+            logging.error("Callback download error", exc_info=True)
             await callback.message.edit_text("❌ Ошибка при скачивании видео.")
         finally:
             if filename and os.path.exists(filename):
