@@ -88,14 +88,14 @@ class YouTubeDownloader:
         def hook(d):
             if d['status'] == 'downloading' and message:
                 current = d.get('downloaded_bytes', 0)
-                total = d.get('total_bytes', 0) or d.get('total_bytes_estimate', 0)
+                total = d.get('total_btes', 0) or d.get('total_bytes_estimate', 0)
                 filename = d.get('filename', 'video')
                 if total:
                     asyncio.create_task(progress(current, total, message, start_time, filename))
 
         opts = {
             'format': 'bestvideo+bestaudio/best',
-            'outtmpl': filename,
+            'outtmpl': out_path,
             'merge_output_format': 'mp4',
             'noplaylist': True,
             'quiet': True,
