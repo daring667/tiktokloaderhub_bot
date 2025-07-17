@@ -94,11 +94,15 @@ class YouTubeDownloader:
                     asyncio.create_task(progress(current, total, message, start_time, filename))
 
         opts = {
-            "format": itag,
-            "outtmpl": out_path,
-            "quiet": True,
-            "no_warnings": True,
-            "progress_hooks": [hook]
+            'http_headers': {
+                'User-Agent': 'Mozilla/5.0',
+            },
+                "format": itag,
+                "outtmpl": out_path,
+                "quiet": True,
+                "no_warnings": True,
+                "progress_hooks": [hook]
+
         }
 
         with yt_dlp.YoutubeDL(opts) as ydl:
