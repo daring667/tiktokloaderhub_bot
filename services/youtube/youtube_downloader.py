@@ -96,6 +96,7 @@ class YouTubeDownloader:
         opts = {
             'format': 'bestvideo+bestaudio/best',
             'outtmpl': out_path,
+            'cookiefile': '/path/to/cookies.txt',
             'merge_output_format': 'mp4',
             'noplaylist': True,
             'quiet': True,
