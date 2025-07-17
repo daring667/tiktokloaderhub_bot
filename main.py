@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from pyrogram import Client
 from handlers import youtube
 from handlers.youtube import register
-from services.youtube.youtube_downloader import fix_url
+from services.youtube.youtube_downloader import YouTubeDownloader  # Измененный импорт
 from services.tiktok.tiktok_downloader import TikTokDownloader
 from handlers.youtube import register as register_youtube
 from handlers.tiktok import TikTokHandler
