@@ -33,14 +33,21 @@ def register(app: Client):
                 await message.reply(f"❌ yt-dlp не смог распарсить ссылку: {e}")
                 logging.error(f"YT download error: {e}")
                 return
-
+            try:
+                await message.delete()
+            except Exception as e:
+                print(f"❌ Не удалось удалить сообщение: {e}")
             # Если короткое видео или всего один формат — качаем сразу
             if len(meta.streams) == 1 or meta.length < 30:
                 stream = meta.streams[0]
                 filename = f"yt_{stream['itag']}_{int(time.time())}.mp4"
-                await message.reply("⏬ Начинаем загрузку...")
+                progress_msg = await message.reply("⏬ Начинаем загрузку...")
                 meta.download(stream['itag'], filename, message)
                 await client.send_video(message.chat.id, filename, supports_streaming=True)
+                await progress_msg.delete()
+                await message.delete()
+                await progress_msg.delete()
+
                 return
 
             # Иначе — предлагаем выбор качества
@@ -80,14 +87,16 @@ def register(app: Client):
             _, url, itag = callback.data.split("|")
             print(f"⬇️ Callback-ссылка: {url}")
 
-            await callback.message.edit_text("⏬ Начинаем загрузку...")
+            progress_msg = callback.message
+            await progress_msg.edit_text("⏬ Начинаем загрузку...")
 
             meta = YouTubeDownloader(url)
             filename = f"yt_{itag}_{int(time.time())}.mp4"
             await meta.download(itag, filename, callback.message)
 
             await client.send_video(callback.message.chat.id, filename, supports_streaming=True)
-            await callback.message.delete()
+            await progress_msg.delete()
+
 
         except Exception as e:
             logging.error("Callback download error", exc_info=e)
