@@ -1,239 +1,1603 @@
-[
-{
-    "domain": ".youtube.com",
-    "expirationDate": 1784797273.01676,
-    "hostOnly": false,
-    "httpOnly": false,
-    "name": "__Secure-1PAPISID",
-    "path": "/",
-    "sameSite": "unspecified",
-    "secure": true,
-    "session": false,
-    "storeId": "0",
-    "value": "nVgN6FHJk7lF8t9V/A-0PKtZWdsFiXheG9",
-    "id": 1
-},
-{
-    "domain": ".youtube.com",
-    "expirationDate": 1784797273.016816,
-    "hostOnly": false,
-    "httpOnly": true,
-    "name": "__Secure-1PSID",
-    "path": "/",
-    "sameSite": "unspecified",
-    "secure": true,
-    "session": false,
-    "storeId": "0",
-    "value": "g.a000yQgg92MTJUTQOJbCyKg5lQ4HfVPSxGjLq_AHb3UvyFW0FZ8aU99FsBl6RvTlHw-71TQkugACgYKAewSARMSFQHGX2MiHqOoqOri_MB85md67FiqLBoVAUF8yKpq6k-we-c9bN3yg--bjwVz0076",
-    "id": 2
-},
-{
-    "domain": ".youtube.com",
-    "expirationDate": 1784273462.568599,
-    "hostOnly": false,
-    "httpOnly": true,
-    "name": "__Secure-1PSIDCC",
-    "path": "/",
-    "sameSite": "unspecified",
-    "secure": true,
-    "session": false,
-    "storeId": "0",
-    "value": "AKEyXzVHfGN-Hm79B7uzM4PhIPlKfvblfLa-wZh8W3ZP980LOU4ehzGeYBq_4oAcyJkJoueCZw",
-    "id": 3
-},
-{
-    "domain": ".youtube.com",
-    "expirationDate": 1784273461.894609,
-    "hostOnly": false,
-    "httpOnly": true,
-    "name": "__Secure-1PSIDTS",
-    "path": "/",
-    "sameSite": "unspecified",
-    "secure": true,
-    "session": false,
-    "storeId": "0",
-    "value": "sidts-CjEB5H03P609ixgebFfG-pbNQwbLqE1_MejjSZZbilPnJP71GgYC7vl8rs9zL66A7AfxEAA",
-    "id": 4
-},
-{
-    "domain": ".youtube.com",
-    "expirationDate": 1784797273.016776,
-    "hostOnly": false,
-    "httpOnly": false,
-    "name": "__Secure-3PAPISID",
-    "path": "/",
-    "sameSite": "no_restriction",
-    "secure": true,
-    "session": false,
-    "storeId": "0",
-    "value": "nVgN6FHJk7lF8t9V/A-0PKtZWdsFiXheG9",
-    "id": 5
-},
-{
-    "domain": ".youtube.com",
-    "expirationDate": 1784797273.016833,
-    "hostOnly": false,
-    "httpOnly": true,
-    "name": "__Secure-3PSID",
-    "path": "/",
-    "sameSite": "no_restriction",
-    "secure": true,
-    "session": false,
-    "storeId": "0",
-    "value": "g.a000yQgg92MTJUTQOJbCyKg5lQ4HfVPSxGjLq_AHb3UvyFW0FZ8aqyZPKGsXs6e1kpqdFkv7swACgYKAWUSARMSFQHGX2MiNn9ijw77Nc0KisBoF7bDYhoVAUF8yKpai5xqtNbyBHNTDwk0lf6p0076",
-    "id": 6
-},
-{
-    "domain": ".youtube.com",
-    "expirationDate": 1784273462.568637,
-    "hostOnly": false,
-    "httpOnly": true,
-    "name": "__Secure-3PSIDCC",
-    "path": "/",
-    "sameSite": "no_restriction",
-    "secure": true,
-    "session": false,
-    "storeId": "0",
-    "value": "AKEyXzVs--xmhbaH-BmPJHuIzPHDo2sMWtQALWH-JKESB5PHkNB2R45nox0qQw5uvJX-xYaPaA",
-    "id": 7
-},
-{
-    "domain": ".youtube.com",
-    "expirationDate": 1784273461.894716,
-    "hostOnly": false,
-    "httpOnly": true,
-    "name": "__Secure-3PSIDTS",
-    "path": "/",
-    "sameSite": "no_restriction",
-    "secure": true,
-    "session": false,
-    "storeId": "0",
-    "value": "sidts-CjEB5H03P609ixgebFfG-pbNQwbLqE1_MejjSZZbilPnJP71GgYC7vl8rs9zL66A7AfxEAA",
-    "id": 8
-},
-{
-    "domain": ".youtube.com",
-    "expirationDate": 1784797273.016719,
-    "hostOnly": false,
-    "httpOnly": false,
-    "name": "APISID",
-    "path": "/",
-    "sameSite": "unspecified",
-    "secure": false,
-    "session": false,
-    "storeId": "0",
-    "value": "Y0FGvK21m3GLBm56/AW8kHZGLXXPLD6kVb",
-    "id": 9
-},
-{
-    "domain": ".youtube.com",
-    "expirationDate": 1784797273.016681,
-    "hostOnly": false,
-    "httpOnly": true,
-    "name": "HSID",
-    "path": "/",
-    "sameSite": "unspecified",
-    "secure": false,
-    "session": false,
-    "storeId": "0",
-    "value": "Ay2dZP2V4R_T7E4wf",
-    "id": 10
-},
-{
-    "domain": ".youtube.com",
-    "expirationDate": 1784867377.162261,
-    "hostOnly": false,
-    "httpOnly": true,
-    "name": "LOGIN_INFO",
-    "path": "/",
-    "sameSite": "no_restriction",
-    "secure": true,
-    "session": false,
-    "storeId": "0",
-    "value": "AFmmF2swRAIgPtoo91rt8qwl_U85vRNWdICqEvB63_JPY_HiIVsK9pACIEdg0GeeNCrrTx3sLYtWqzlfMY7TESvzdipjPX_GbeQd:QUQ3MjNmejVmeGtaT014Q25rZmFqZWZhTl9yNnBkM1cxa2ZmbmwyWXdYVTJIbjM4R1dteVFUMmJFclZ4cXN1d1NSQ2xzbU5tRk9tM0RReGFMdF82UHFVcmc2R2FLNVA1WVdjeW5EOEl0ay1WWDItMXkyV1JncHVfSWdCeTJVQnZKTnU3V3pYMnotVF9VWnkzMmhyQUhtdFFmckhEaUdEREV3",
-    "id": 11
-},
-{
-    "domain": ".youtube.com",
-    "expirationDate": 1787297459.797046,
-    "hostOnly": false,
-    "httpOnly": false,
-    "name": "PREF",
-    "path": "/",
-    "sameSite": "unspecified",
-    "secure": true,
-    "session": false,
-    "storeId": "0",
-    "value": "f4=4000000&f6=40000000&tz=Asia.Almaty&f7=100",
-    "id": 12
-},
-{
-    "domain": ".youtube.com",
-    "expirationDate": 1784797273.016744,
-    "hostOnly": false,
-    "httpOnly": false,
-    "name": "SAPISID",
-    "path": "/",
-    "sameSite": "unspecified",
-    "secure": true,
-    "session": false,
-    "storeId": "0",
-    "value": "nVgN6FHJk7lF8t9V/A-0PKtZWdsFiXheG9",
-    "id": 13
-},
-{
-    "domain": ".youtube.com",
-    "expirationDate": 1784797273.016793,
-    "hostOnly": false,
-    "httpOnly": false,
-    "name": "SID",
-    "path": "/",
-    "sameSite": "unspecified",
-    "secure": false,
-    "session": false,
-    "storeId": "0",
-    "value": "g.a000yQgg92MTJUTQOJbCyKg5lQ4HfVPSxGjLq_AHb3UvyFW0FZ8arnVgaAewJlAGXdNs8MQ4NgACgYKAcESARMSFQHGX2MivXf2hMV6MOY7UXOmy6pz8xoVAUF8yKqFz5MkxBMUCaHsFPdxdsXk0076",
-    "id": 14
-},
-{
-    "domain": ".youtube.com",
-    "expirationDate": 1784273462.568549,
-    "hostOnly": false,
-    "httpOnly": false,
-    "name": "SIDCC",
-    "path": "/",
-    "sameSite": "unspecified",
-    "secure": false,
-    "session": false,
-    "storeId": "0",
-    "value": "AKEyXzW9ZG-owTaYdgDWY-wFu9pmIk6yXLmFXjmaF8gzZjObUoZvjKVBrThU1eod9nJhSqNeowg",
-    "id": 15
-},
-{
-    "domain": ".youtube.com",
-    "expirationDate": 1784797273.016704,
-    "hostOnly": false,
-    "httpOnly": true,
-    "name": "SSID",
-    "path": "/",
-    "sameSite": "unspecified",
-    "secure": true,
-    "session": false,
-    "storeId": "0",
-    "value": "AZOdJVPogIvO9wE9g",
-    "id": 16
-},
-{
-    "domain": ".youtube.com",
-    "hostOnly": false,
-    "httpOnly": false,
-    "name": "wide",
-    "path": "/",
-    "sameSite": "unspecified",
-    "secure": false,
-    "session": true,
-    "storeId": "0",
-    "value": "1",
-    "id": 17
-}
-]
+# Netscape HTTP Cookie File
+# http://curl.haxx.se/rfc/cookie_spec.html
+# This is a generated file!  Do not edit.
+
+tengrinews.kz	FALSE	/crime/arest-byivshih-vitse-ministrov-kvartirah-naydenyi-ogromnyie-574473/	FALSE	0	Article_lang	ru
+.apple.com	TRUE	/us/app/tiktok-videos-shop-live	FALSE	0	geo	KZ
+.apple.com	TRUE	/global-elements/2426.0.0/en_US	FALSE	0	geo	KZ
+www.figma.com	FALSE	/api/figment-proxy/monitor	TRUE	1754542968	figma.reporting	%22eyJ1aHAiOiJzdGFydGVyIn0=%22
+account.proton.me	FALSE	/api/auth/refresh	TRUE	1783157884	REFRESH-vdlsomxtfbouwtvho7ohkpgyydo7pt5r	%7B%22ResponseType%22%3A%22token%22%2C%22ClientID%22%3A%22WebAccount%22%2C%22GrantType%22%3A%22refresh_token%22%2C%22RefreshToken%22%3A%22da3mvimhri4gn6jtwijkgkbn44svkc3e%22%2C%22UID%22%3A%22vdlsomxtfbouwtvho7ohkpgyydo7pt5r%22%7D
+mail.proton.me	FALSE	/api/auth/refresh	TRUE	1783157891	REFRESH-diititfkbw6agw7gxt43dlrpiiaftn4i	%7B%22ResponseType%22%3A%22token%22%2C%22ClientID%22%3A%22WebMail%22%2C%22GrantType%22%3A%22refresh_token%22%2C%22RefreshToken%22%3A%22jb375bcimnyuzzgrlh3rjoykt3yrtquz%22%2C%22UID%22%3A%22diititfkbw6agw7gxt43dlrpiiaftn4i%22%7D
+account.proton.me	FALSE	/api/auth/refresh	TRUE	1783157924	REFRESH-ajzgduft6cyid4teurcxeerqd7vqspw4	%7B%22ResponseType%22%3A%22token%22%2C%22ClientID%22%3A%22WebAccount%22%2C%22GrantType%22%3A%22refresh_token%22%2C%22RefreshToken%22%3A%224ksuyaem5wz5kwdriifhrgorgqm5dwjt%22%2C%22UID%22%3A%22ajzgduft6cyid4teurcxeerqd7vqspw4%22%7D
+mail.proton.me	FALSE	/api/auth/refresh	TRUE	1783570946	REFRESH-2h7mynbm3fsenclrj3jjgkhyg4isom2w	%7B%22ResponseType%22%3A%22token%22%2C%22ClientID%22%3A%22WebMail%22%2C%22GrantType%22%3A%22refresh_token%22%2C%22RefreshToken%22%3A%222rr5fgjcfonipi2cjkunyr4u2rksptky%22%2C%22UID%22%3A%222h7mynbm3fsenclrj3jjgkhyg4isom2w%22%7D
+mail.google.com	FALSE	/mail/u/0	TRUE	0	GMAIL_AT	AF6bupM5--WuoCb9S-wiSWB5muYL2B48qw
+mail.google.com	FALSE	/mail/u/0	TRUE	1753080829	COMPASS	gmail_ps=CrMBAAlriVeRVeU6v4Uj4VE9G_4OFobyUdCO76_WsGqBZ0FVTr3s4pdbagwo7Xdj8FRYVGzp_50BlmcYj-OQToEE5NypoCob6Cgp4c_8ZFjQGptjBch10vDelSD0eg4i3oFeStf35Ak7V_bGt1C4o7ybxZbhXp1S8oi3jhCnG6OYHTNuUi2JeSTKs3r9Cpr1gXWFyEE401ZGhCmz--2cY7KA7-swQ5eoW6Msp9svTY0__Pm7u8MQ7pbIwwYa7AEACWuJV3ONqBQqyqHSb9aDtE2Dt9UfHBhFWsKklLpZuiR6qd7cLDqS-MPhwsqhp-8N7omRWm2D3OiM3A4iVVEcnREpDkO9lRb_LFwqTqsjd0V4xkN5Bb-B-4V8uljFEt8S99Fre265bN9JF1WRIuucxvCum3VgtHl66oHW1TB2SQUpWEzhoaDAp8bnXSYjsMjtAiKdHmJS2TQC6Jr3014asKqtABzRQCgkorX15OrDkRNUotdty8D_yCG6JJuqJ45kduLlzQCjFeesN0iulagD-34Qpnt5OLImSQdmTfTkaQ8idHPgpmcqtgWavDAB:gmail=CsQBAAlriVdqMY025kHp1KSRrn1x1jpRPJ2jrDTS0az1shuY5pHOy_wEuJP5QFDvWzkrWA1hb0Rmj5P1el8maoQSLmh_RWBJ7dv9exXQgvyUXfuvYmJ_UZHJojl1WBKZIx5qtDnQa59Gq16E18yb9I99Kpb4f2C30JS2Q5sKXGwd2KUk_xhEYQtBKH84uFljPrfqffCl7yMjPdyhFgb43tMFbnhWXJSCLYm3wZMjtmShrgQc6ZH0H_9UlhU2beglV4opYaCPXBC1icjDBhr9AQAJa4lXWg3VJvDKP_ZYyT06wmZgi5JkuGiChK4KFpaizIdtEVWHVj8lTaC5hQXgvLN5RzDISMt9kQW9jko8WH3rwXbAI0thmL3Uh5mjnOMozFw5YpI6xFPzmWj8Jv4ydXlqe703_HJ_clVSZjdwiUilGV7tcV_h-KFvAkdkMZf1o3u3lpqn-lLZOxCoHD8eB2qXncB9OjjDBjAtVIxaQxtov7pd0QhNbkHpbkxWr-YOKvJkJ8wJ4vHF8MirZ-_Xt4_VfogRQWcYuQ2teezlU6ufGLphcqvW9OCaQWiCMaAxfBcags9mlxiMbWvD3qHEy6pzP-q0p8qVaqFnFsYwAQ
+mail.google.com	FALSE	/sync/u/0	TRUE	1753080830	COMPASS	bigtop-sync=CsMBAAlriVcEIESZuHwQVS-qsizId6KRy1dVFEYICGGRTcstsJ6m0RNipfh_ne1P3ZLnXrh2V5H2TEDwkvRHHlXsiOhRWk2BiU1EqgU-pp-fH3wlxu1gyLQe2fc2rKbOMK-9ZET6TvioLbAn-DXfDjOf9p6pHliUmwOr9YzQkPT8g9fjmdNGpcaU4Eiq994Ytp30eSv2wpvX8swbuk8IyD9eIkLv4eXqLrwDxHcecQG9a-mux77Ah8OJUdOgehcShWbWX9vjEN2QyMMGGvwBAAlriVdt2HCAWMjA7EHL4sgDIlXLmlftjvuOAFyYKJmpwKu0805mqAXyQl-mdwBz5drgPj4KTG0duMOkV5O_k-VvJfPia0nyYI0MrxkO7aKcsAQLmiAMr68vgx7cs7Ji_EjyyScxvmoxGSjj-vtDzsOsCEkaIzFfiwfKaygXnSIdR0VZan92_kz9S2N1POApF1P-Wv5ZFM5QtIOvi-YJq-9yzCvV22rU530i0T40gL0K-2sIAzwXjp9Jfz_zU8AJQd7tyOizrAhMYk21dCB74mXJ5NtR0bRdBOVZrmap4e4CF09C_r2Vw0jrnYnAv2eHFSmhDhm_JGiGb5y8MAE
+.apple.com	TRUE	/US/app	FALSE	0	geo	KZ
+10.10.22.211	FALSE	/api/v2	FALSE	0	session	ywSN9KdY2nk0c1WLkx8w9AtgIWYUQUyPg47EBtGg4URyCr3rDMP9FqhITeneRNQ_qB93AQ6LYB0vK57jLuchYA==
+.google.com	TRUE	/verify	TRUE	1768546320	SNID	ABablnegwyHSGA9qP0PxFynruHdMdBHKxvJ8DyRD0ymqCgrH8kDKvjEtTyMa02XEWWtAfEPPefqYg7BbA_yDlN7mztTkOTmHKig
+kaspi.kz	FALSE	/shop	FALSE	1782219086	layout	d
+kaspi.kz	FALSE	/shop	FALSE	1782219137	dt-i	env=production|ssrVersion=v1.19.5|pageMode=product
+account.proton.me	FALSE	/api/	TRUE	1783157884	AUTH-vdlsomxtfbouwtvho7ohkpgyydo7pt5r	czjkufuxcvgfli2kd4diis6iuumrautb
+mail.proton.me	FALSE	/api/	TRUE	1783157891	AUTH-diititfkbw6agw7gxt43dlrpiiaftn4i	ckxlxcdkfkn3tf2kxg4rvl6mbdutyqm6
+account.proton.me	FALSE	/api/	TRUE	1783157924	AUTH-ajzgduft6cyid4teurcxeerqd7vqspw4	3okqcvqjr4m3qhakb5ggrru2ycvnu4d7
+mail.proton.me	FALSE	/api/	TRUE	1783570946	AUTH-2h7mynbm3fsenclrj3jjgkhyg4isom2w	wbb2yizn5kszwyssx3ld5yphxkz5bt62
+mail.google.com	FALSE	/mail	TRUE	1753080842	COMPASS	gmail_ps=CrMBAAlriVeRVeU6v4Uj4VE9G_4OFobyUdCO76_WsGqBZ0FVTr3s4pdbagwo7Xdj8FRYVGzp_50BlmcYj-OQToEE5NypoCob6Cgp4c_8ZFjQGptjBch10vDelSD0eg4i3oFeStf35Ak7V_bGt1C4o7ybxZbhXp1S8oi3jhCnG6OYHTNuUi2JeSTKs3r9Cpr1gXWFyEE401ZGhCmz--2cY7KA7-swQ5eoW6Msp9svTY0__Pm7u8MQwpDIwwYa7AEACWuJV3ONqBQqyqHSb9aDtE2Dt9UfHBhFWsKklLpZuiR6qd7cLDqS-MPhwsqhp-8N7omRWm2D3OiM3A4iVVEcnREpDkO9lRb_LFwqTqsjd0V4xkN5Bb-B-4V8uljFEt8S99Fre265bN9JF1WRIuucxvCum3VgtHl66oHW1TB2SQUpWEzhoaDAp8bnXSYjsMjtAiKdHmJS2TQC6Jr3014asKqtABzRQCgkorX15OrDkRNUotdty8D_yCG6JJuqJ45kduLlzQCjFeesN0iulagD-34Qpnt5OLImSQdmTfTkaQ8idHPgpmcqtgWavDAB:gmail=CsQBAAlriVdqMY025kHp1KSRrn1x1jpRPJ2jrDTS0az1shuY5pHOy_wEuJP5QFDvWzkrWA1hb0Rmj5P1el8maoQSLmh_RWBJ7dv9exXQgvyUXfuvYmJ_UZHJojl1WBKZIx5qtDnQa59Gq16E18yb9I99Kpb4f2C30JS2Q5sKXGwd2KUk_xhEYQtBKH84uFljPrfqffCl7yMjPdyhFgb43tMFbnhWXJSCLYm3wZMjtmShrgQc6ZH0H_9UlhU2beglV4opYaCPXBC7iMjDBhr9AQAJa4lXWg3VJvDKP_ZYyT06wmZgi5JkuGiChK4KFpaizIdtEVWHVj8lTaC5hQXgvLN5RzDISMt9kQW9jko8WH3rwXbAI0thmL3Uh5mjnOMozFw5YpI6xFPzmWj8Jv4ydXlqe703_HJ_clVSZjdwiUilGV7tcV_h-KFvAkdkMZf1o3u3lpqn-lLZOxCoHD8eB2qXncB9OjjDBjAtVIxaQxtov7pd0QhNbkHpbkxWr-YOKvJkJ8wJ4vHF8MirZ-_Xt4_VfogRQWcYuQ2teezlU6ufGLphcqvW9OCaQWiCMaAxfBcags9mlxiMbWvD3qHEy6pzP-q0p8qVaqFnFsYwAQ
+pixel.dsp.onetarget.ru	FALSE	/sape	TRUE	1787140750	USER_ID	560646b0-18c4-4061-acff-771ca943f782
+pixel.dsp.onetarget.ru	FALSE	/sape	TRUE	1783339150	SAPE_USER_ID	0100007F8C4276683D3BF7B50294A4A9
+accounts.google.com	FALSE	/	TRUE	1752829187	OTZ	8132220_36_32__32_
+.google.com	TRUE	/	FALSE	1784797273	SID	g.a000yQgg92MTJUTQOJbCyKg5lQ4HfVPSxGjLq_AHb3UvyFW0FZ8arnVgaAewJlAGXdNs8MQ4NgACgYKAcESARMSFQHGX2MivXf2hMV6MOY7UXOmy6pz8xoVAUF8yKqFz5MkxBMUCaHsFPdxdsXk0076
+.google.com	TRUE	/	TRUE	1784797273	__Secure-1PSID	g.a000yQgg92MTJUTQOJbCyKg5lQ4HfVPSxGjLq_AHb3UvyFW0FZ8aU99FsBl6RvTlHw-71TQkugACgYKAewSARMSFQHGX2MiHqOoqOri_MB85md67FiqLBoVAUF8yKpq6k-we-c9bN3yg--bjwVz0076
+.google.com	TRUE	/	TRUE	1784797273	__Secure-3PSID	g.a000yQgg92MTJUTQOJbCyKg5lQ4HfVPSxGjLq_AHb3UvyFW0FZ8aqyZPKGsXs6e1kpqdFkv7swACgYKAWUSARMSFQHGX2MiNn9ijw77Nc0KisBoF7bDYhoVAUF8yKpai5xqtNbyBHNTDwk0lf6p0076
+.google.com	TRUE	/	FALSE	1784797273	HSID	A9ozeL-5ErApgqewS
+.google.com	TRUE	/	TRUE	1784797273	SSID	ARgeH1AjqEIwmcwce
+.google.com	TRUE	/	FALSE	1784797273	APISID	Y0FGvK21m3GLBm56/AW8kHZGLXXPLD6kVb
+.google.com	TRUE	/	TRUE	1784797273	SAPISID	nVgN6FHJk7lF8t9V/A-0PKtZWdsFiXheG9
+.google.com	TRUE	/	TRUE	1784797273	__Secure-1PAPISID	nVgN6FHJk7lF8t9V/A-0PKtZWdsFiXheG9
+.google.com	TRUE	/	TRUE	1784797273	__Secure-3PAPISID	nVgN6FHJk7lF8t9V/A-0PKtZWdsFiXheG9
+accounts.google.com	FALSE	/	TRUE	1784797273	ACCOUNT_CHOOSER	AFx_qI6v86bR9qWH2UkJJsm_LwQRD1CQr8fIuH6zekkvn2K8WQTXUw24ep0zvmX7DjdrJ7vQdRaneCZiP9EbL8eUiGI8BiEEDMlaR2CaGRwYrputvVPn0TwklJgmaiI0dl7mVlVffnx5k29d445zVww4HrA7BZ0S_zOCzoeUTGI10rFB9yJ7bx8
+accounts.google.com	FALSE	/	TRUE	1784797273	SMSV	ADHTe-C0TUCJ_ZMbO4Kkz1VZ21C7F3lIzDt2c1ZNYqDRdMhCcZsVFGx27MntWls3oYwNJnZ_cRUIIq43yVuqDlTQ0d6auP1oRH13CqDj5dNmeJNGhvqDxVU
+.youtube.com	TRUE	/	FALSE	1784797273	HSID	Ay2dZP2V4R_T7E4wf
+.youtube.com	TRUE	/	TRUE	1784797273	SSID	AZOdJVPogIvO9wE9g
+.youtube.com	TRUE	/	FALSE	1784797273	APISID	Y0FGvK21m3GLBm56/AW8kHZGLXXPLD6kVb
+.youtube.com	TRUE	/	TRUE	1784797273	SAPISID	nVgN6FHJk7lF8t9V/A-0PKtZWdsFiXheG9
+.youtube.com	TRUE	/	TRUE	1784797273	__Secure-1PAPISID	nVgN6FHJk7lF8t9V/A-0PKtZWdsFiXheG9
+.youtube.com	TRUE	/	TRUE	1784797273	__Secure-3PAPISID	nVgN6FHJk7lF8t9V/A-0PKtZWdsFiXheG9
+.youtube.com	TRUE	/	FALSE	1784797273	SID	g.a000yQgg92MTJUTQOJbCyKg5lQ4HfVPSxGjLq_AHb3UvyFW0FZ8arnVgaAewJlAGXdNs8MQ4NgACgYKAcESARMSFQHGX2MivXf2hMV6MOY7UXOmy6pz8xoVAUF8yKqFz5MkxBMUCaHsFPdxdsXk0076
+.youtube.com	TRUE	/	TRUE	1784797273	__Secure-1PSID	g.a000yQgg92MTJUTQOJbCyKg5lQ4HfVPSxGjLq_AHb3UvyFW0FZ8aU99FsBl6RvTlHw-71TQkugACgYKAewSARMSFQHGX2MiHqOoqOri_MB85md67FiqLBoVAUF8yKpq6k-we-c9bN3yg--bjwVz0076
+.youtube.com	TRUE	/	TRUE	1784797273	__Secure-3PSID	g.a000yQgg92MTJUTQOJbCyKg5lQ4HfVPSxGjLq_AHb3UvyFW0FZ8aqyZPKGsXs6e1kpqdFkv7swACgYKAWUSARMSFQHGX2MiNn9ijw77Nc0KisBoF7bDYhoVAUF8yKpai5xqtNbyBHNTDwk0lf6p0076
+.google.com	TRUE	/	FALSE	1765789273	SEARCH_SAMESITE	CgQIoZ4B
+ogs.google.com	FALSE	/	TRUE	1752829278	OTZ	8132221_36_32__32_
+lens.google.com	FALSE	/	TRUE	1784797357	OSID	g.a000yQgg9ytv3NbQUwEXokMdroFz80FxPhz2kBbw8PCVZe68-wgleTBLdSltQYPb1T92aD5R7QACgYKARwSARMSFQHGX2Minn2hR_WQiSsE3501cALOkhoVAUF8yKpFFhHdlbLIuj99CZiWtkx50076
+lens.google.com	FALSE	/	TRUE	1784797357	__Secure-OSID	g.a000yQgg9ytv3NbQUwEXokMdroFz80FxPhz2kBbw8PCVZe68-wglRBp2qooFwKRxQxgozg-cEwACgYKATUSARMSFQHGX2MihqkLhAsGZeNG1bPl3Un3kxoVAUF8yKrLbO5nfmMjUr8_O7r_KRgt0076
+jira.adata.kz	FALSE	/	FALSE	1781773896	com.porzelt.jira.darktheme.active	true
+edo.adtdev.kz	FALSE	/	FALSE	1781774068	i18n_redirected	ru
+id.adtdev.kz	FALSE	/	FALSE	1781774070	i18n_redirected	ru
+.adtdev.kz	TRUE	/	FALSE	1787221428	_ga	GA1.1.827091292.1750238071
+.adtdev.kz	TRUE	/	TRUE	1781774071	_ym_uid	1750152989682398277
+.adtdev.kz	TRUE	/	TRUE	1781774071	_ym_d	1750238071
+edo.adtdev.kz	FALSE	/	FALSE	0	message	false
+.smallpdf.com	TRUE	/	TRUE	1784798397	_s.lt	9683392b094b237b96d5c0ef9d51d828
+.wondershare.com.ru	TRUE	/	TRUE	1781774424	_ym_uid	1750238425574789815
+.wondershare.com.ru	TRUE	/	TRUE	1781774424	_ym_d	1750238425
+.wondershare.com.ru	TRUE	/	FALSE	1758014425	_gcl_au	1.1.529140833.1750238426
+.pdf.wondershare.com.ru	TRUE	/	TRUE	1752830433	usi_id	3ygkb1_1750238426
+.linkconnector.com	TRUE	/	TRUE	1784798434	LCID	LC1750238425.7778966
+.bing.com	TRUE	/	TRUE	1784957488	MUID	01040ABF1E4A69153F0F1CB01FC168BA
+pdf.wondershare.com.ru	FALSE	/	FALSE	1784798435	sensorsdata2015jssdkcross	%7B%22distinct_id%22%3A%221978257039989d-04392b796ee5f18-10462c6e-5308416-1978257039a19c5%22%2C%22first_id%22%3A%22%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22url%E7%9A%84domain%E8%A7%A3%E6%9E%90%E5%A4%B1%E8%B4%A5%22%2C%22%24latest_search_keyword%22%3A%22url%E7%9A%84domain%E8%A7%A3%E6%9E%90%E5%A4%B1%E8%B4%A5%22%2C%22%24latest_referrer%22%3A%22url%E7%9A%84domain%E8%A7%A3%E6%9E%90%E5%A4%B1%E8%B4%A5%22%7D%2C%22identities%22%3A%22eyIkaWRlbnRpdHlfY29va2llX2lkIjoiMTk3ODI1NzAzOTk4OWQtMDQzOTJiNzk2ZWU1ZjE4LTEwNDYyYzZlLTUzMDg0MTYtMTk3ODI1NzAzOWExOWM1In0%3D%22%2C%22history_login_id%22%3A%7B%22name%22%3A%22%22%2C%22value%22%3A%22%22%7D%2C%22%24device_id%22%3A%221978257039989d-04392b796ee5f18-10462c6e-5308416-1978257039a19c5%22%7D
+.pardot.com	TRUE	/	TRUE	1784798431	visitor_id285052	1416765065
+.pardot.com	TRUE	/	TRUE	1784798431	visitor_id285052-hash	4fd69aaa5e4f92c513734727e74fea6d99861203cf79955ff730f820bea386f8f879a3b6f9156b3197d278342ec7a13c3470be43
+pdf.wondershare.com.ru	FALSE	/	FALSE	1784798431	visitor_id285052	1416765065
+pdf.wondershare.com.ru	FALSE	/	FALSE	1784798431	visitor_id285052-hash	4fd69aaa5e4f92c513734727e74fea6d99861203cf79955ff730f820bea386f8f879a3b6f9156b3197d278342ec7a13c3470be43
+go.pardot.wondershare.com	FALSE	/	TRUE	1784798434	visitor_id285052	1416765065
+go.pardot.wondershare.com	FALSE	/	TRUE	1784798434	visitor_id285052-hash	4fd69aaa5e4f92c513734727e74fea6d99861203cf79955ff730f820bea386f8f879a3b6f9156b3197d278342ec7a13c3470be43
+.wondershare.com.ru	TRUE	/	TRUE	1784798435	_ga	GA1.1.1260874522.1750238423
+.wondershare.com.ru	TRUE	/	FALSE	1783934434	_uetvid	78993d004c2511f09bc423fd570c7362
+drive.google.com	FALSE	/	TRUE	1784798439	OSID	g.a000yQgg94VZd1mvWdKKCArPLZ5T4Y415k9G1vi4jl9b1fSaHD3dOyVHHIomCbJfe5P1ppcssAACgYKAVISARMSFQHGX2MiaMpW2qEfYuSMiUEEkZ7WLRoVAUF8yKoJgIJOtFcHJfGjmBn0yDGq0076
+drive.google.com	FALSE	/	TRUE	1784798439	__Secure-OSID	g.a000yQgg94VZd1mvWdKKCArPLZ5T4Y415k9G1vi4jl9b1fSaHD3dBLp1Xm-jfNdeAlnyCW13twACgYKAdYSARMSFQHGX2MilhZF-WOPsTXDMb48jdlN-RoVAUF8yKpzxAj0_5XOSR2ryO1ZddJR0076
+.docs.google.com	TRUE	/	TRUE	1784798446	OSID	g.a000yQgg96MwAVK8mGw0xe5OcFD5tuGLf-f2QaXoUdUiQ223VRAOc7jj0kMvg2bRWXbxhUsR6wACgYKAQESARMSFQHGX2MiyG688aCYu0ga7SXnCR6s2BoVAUF8yKpTND69cBy2o4zfp2u_9W030076
+.docs.google.com	TRUE	/	TRUE	1784798446	__Secure-OSID	g.a000yQgg96MwAVK8mGw0xe5OcFD5tuGLf-f2QaXoUdUiQ223VRAO0ShmJ4zg5vYiuUhNX7xifgACgYKATESARMSFQHGX2MiOV00bbMuIs2mvQUHVN0u_xoVAUF8yKqdWBbw500qgYM5dTufSWly0076
+contacts.google.com	FALSE	/	TRUE	1752830446	OTZ	8132241_36_32__32_
+docs.google.com	FALSE	/	TRUE	1752830454	OTZ	8132241_36_32__32_
+www.figma.com	FALSE	/	TRUE	1781780136	__Host-figma.did	MTc1MDI0NDEzNg.dV1bLlZe65zVAlYTsie3NVRvtDc6yZD9Xh%2BbmWlKIH8.wDenjXQVXMVMJSRTNf2WWz8Fk6qFlesp9Dvf79zqRsI
+.figma.com	TRUE	/	TRUE	1752836136	ajs_anonymous_id	%229cff24f9-acdb-4b3f-904c-39a9ba2b4c98%22
+.figma.com	TRUE	/	FALSE	1758020141	_gcl_au	1.1.2096742658.1750244141
+.figma.com	TRUE	/	TRUE	1758020142	_rdt_uuid	1750244142972.18c40c0e-1568-4a20-9880-eb1690ae9e8b
+.figma.com	TRUE	/	FALSE	1783940143	_uetvid	c82998004c3211f093ad255b49a3ab53
+.marketing.figma.com	TRUE	/	FALSE	1784804144	_fwb	70VtA5qZ81f0rr1RxgaIYN.1750244143938
+marketing.figma.com	FALSE	/	FALSE	1784804144	wcs_bt	s_3e00a0800832:1750244143
+.figma.com	TRUE	/	FALSE	1758020144	_fbp	fb.1.1750244144024.670797055297411301
+.wcs.naver.com	TRUE	/	TRUE	1784804146	NWB	84fb0db3329167fdaf1b3297b12c4941.1750244145481
+.figma.com	TRUE	/	FALSE	1781780148	_clck	1ds2pri%7C2%7Cfwv%7C0%7C1995
+.naver.com	TRUE	/	TRUE	1784804151	NAC	5njABoAwcx1e
+.c.bing.com	TRUE	/	TRUE	1784957488	SRM_B	01040ABF1E4A69153F0F1CB01FC168BA
+.clarity.ms	TRUE	/	TRUE	1784957488	MUID	01040ABF1E4A69153F0F1CB01FC168BA
+www.figma.com	FALSE	/	TRUE	1755406968	__Host-figma.authn-state	1
+.www.figma.com	TRUE	/	TRUE	1753700206	figma.mst	1
+.www.figma.com	TRUE	/	TRUE	1755407106	figma.session	BAh7CEkiD3Nlc3Npb25faWQGOgZFVG86HVJhY2s6OlNlc3Npb246OlNlc3Npb25JZAY6D0BwdWJsaWNfaWRJIkUyODEwMDgxZTc4NWI4MjEwNjdlYzVlYzExOTkyNTVjMjE1NDZmOGJmMWZlNjczMTEwZjg5NDA4NDc0ZDQyNWNlBjsARkkiCmZsYXNoBjsARnsASSINdXNlcm5hbWUGOwBGSSITMjI3NzNAYWRhdGEua3oGOwBU--fed8095e9de6a7af34ba2c0e26244bbe560ce694
+www.figma.com	FALSE	/	TRUE	1752836208	recent_user_data	%22eyJjb21tdW5pdHlVc2VySWQiOm51bGwsImNvbW11bml0eVByb2ZpbGVJZCI6IjE1MDg4MDQ3ODQxNjkzNzMxMzEiLCJmaWxlQnJvd3NlclVzZXJJZCI6bnVsbCwidXNlcklkVG9PcmdJZCI6e319%22
+avto.adata.kz	FALSE	/	FALSE	1781781103	i18n_redirected	ru
+.yandex.com	TRUE	/	TRUE	1784805103	i	fHqUWGx5S2RV22Erg/2gDeXRC7ogLyHxNbXDg6oVJ2UJDv3pjVJ6v2OjNsAwj7UccaAFoP5cfcCpAqRBp9q70M//M/s=
+.yandex.com	TRUE	/	TRUE	1784805103	yandexuid	2618430941750245103
+.yandex.com	TRUE	/	TRUE	1781781103	yashr	6610767311750245103
+.yandex.com	TRUE	/	TRUE	1784805103	bh	EkEiR29vZ2xlIENocm9tZSI7dj0iMTM3IiwgIkNocm9taXVtIjt2PSIxMzciLCAiTm90L0EpQnJhbmQiO3Y9IjI0IioCPzA6ByJMaW51eCJg773KwgZqGdzK6YgO8qy3pQv7+vDnDev//fYPwvPMhwg=
+.wondershare.com.ru	TRUE	/	TRUE	1784806474	_ga_24WTSJBD5B	GS2.1.s1750246474$o2$g0$t1750246474$j60$l0$h842403766
+jira.adata.kz	FALSE	/	FALSE	0	jira.editor.user.mode	wysiwyg
+id.adada.kz	FALSE	/	FALSE	1781784968	i18n_redirected	ru
+.googleadservices.com	TRUE	/	TRUE	1760501956	ar_debug	1
+.youtube.com	TRUE	/	TRUE	1784867377	LOGIN_INFO	AFmmF2swRAIgPtoo91rt8qwl_U85vRNWdICqEvB63_JPY_HiIVsK9pACIEdg0GeeNCrrTx3sLYtWqzlfMY7TESvzdipjPX_GbeQd:QUQ3MjNmejVmeGtaT014Q25rZmFqZWZhTl9yNnBkM1cxa2ZmbmwyWXdYVTJIbjM4R1dteVFUMmJFclZ4cXN1d1NSQ2xzbU5tRk9tM0RReGFMdF82UHFVcmc2R2FLNVA1WVdjeW5EOEl0ay1WWDItMXkyV1JncHVfSWdCeTJVQnZKTnU3V3pYMnotVF9VWnkzMmhyQUhtdFFmckhEaUdEREV3
+chatgpt.com	FALSE	/	TRUE	0	__Host-next-auth.csrf-token	54c27ef79a8eb1561f8198aea0ae9e11902da0cfdb1166b8a4be044cfd071632%7Ce99987de3b0bf34df27fc1662e04560f182d1e8b5232012b0a4c2ccf4acfd635
+.chatgpt.com	TRUE	/	FALSE	1781413861	oai-did	ec8eb379-3fb0-40af-80c5-f7286f5af0d6
+adtdev.kz	FALSE	/	FALSE	1781846050	i18n_redirected	ru
+pk.adtdev.kz	FALSE	/	TRUE	0	cookie	1750310088.822.37.470217|b9f48c5f036f6d4672a81a76d006936e
+edo.adata.kz	FALSE	/	FALSE	1781848968	i18n_redirected	ru
+oauth.yandex.ru	FALSE	/	TRUE	1784884029	uniqueuid	904853721750324029
+passport.yandex.ru	FALSE	/	TRUE	1784884029	uniqueuid	332016661750324030
+.mail.ru	TRUE	/	FALSE	1787045561	oid	yJE77irhkEfEHr2qvnJb
+.mail.ru	TRUE	/	FALSE	1784884094	mrcu	52606853D37E3CC1D6C51B0BDB59
+.tns-counter.ru	TRUE	/	TRUE	1784021562	guid	D7D974056853D37FX1750324095
+.mail.ru	TRUE	/	TRUE	1784884096	p	38IAAO+cy5AA
+.vk.com	TRUE	/	TRUE	1781523542	remixlang	0
+.vk.com	TRUE	/	TRUE	1781860096	remixstlid	9074960859535646240_bTTPhx9arVPDxEBZX1jyZqwLufvftkVzkX5u4WoRYcs
+.www.google-analytics.com	TRUE	/	TRUE	1760264334	ar_debug	1
+.jetbrains.com	TRUE	/	FALSE	1765948661	optimizelyEndUserId	oeu1750396371517r0.471942700853736
+.jetbrains.com	TRUE	/	FALSE	1758172372	_gcl_au	1.1.748458687.1750396372
+.jetbrains.com	TRUE	/	TRUE	1781500372	first_utm_parameters	google|organic|organic|undefined|undefined|undefined
+.jetbrains.com	TRUE	/	FALSE	1786009856	_mkto_trk	id:426-QVD-114&token:_mch-jetbrains.com-bca658619273fe8d643ad04acd5d31a5
+.jetbrains.com	TRUE	/	FALSE	1759225856	_fbp	fb.1.1750396374932.97033890890901533
+.jetbrains.com	TRUE	/	TRUE	1786009856	_dcid	dcid.1.1750396375937.746276560
+.jetbrains.com	TRUE	/	TRUE	1786009855	_ga	GA1.1.1280795145.1750396375
+.jetbrains.com	TRUE	/	TRUE	1758172372	FPAU	1.1.748458687.1750396372
+.jetbrains.com	TRUE	/	FALSE	1781932376	_clck	b5w2i1%7C2%7Cfwx%7C1%7C1997
+.tiktok.com	TRUE	/	TRUE	1784092662	_ttp	2yl5a7OEcbY5k471mv6TaPyNcPR
+.jetbrains.com	TRUE	/	FALSE	1784092662	_tt_enable_cookie	1
+.jetbrains.com	TRUE	/	FALSE	1784092662	_ttp	01JY5W28J734H5TS45C4E0AE4J_.tt.1
+.jetbrains.com	TRUE	/	FALSE	1786009856	cookiehub	eyJhbnN3ZXJlZCI6dHJ1ZSwicmV2aXNpb24iOjMsImRudCI6ZmFsc2UsImFsbG93U2FsZSI6dHJ1ZSwiaW1wbGljdCI6ZmFsc2UsInJlZ2lvbiI6IkcwIiwidG9rZW4iOiJNRVl5alR4TkZwTU9janUxU1g4V1ZraEtURHJiREtic2tLZnhTZVhXV0dZWFE0RW1GS0lPWWhjNVdBMnAyV3U3IiwidGltZXN0YW1wIjoiMjAyNS0wNi0yMFQwNToxMjo1NS4yNTdaIiwiYWxsQWxsb3dlZCI6dHJ1ZSwiY2F0ZWdvcmllcyI6W10sInZlbmRvcnMiOltdLCJzZXJ2aWNlcyI6W119
+.jetbrains.com	TRUE	/	TRUE	1758172384	_gtmeec	e30%3D
+.jetbrains.com	TRUE	/	FALSE	1765948384	optimizelySession	1750396384348
+.jetbrains.com	TRUE	/	FALSE	1784092662	ttcsid	1750396379723::ThwU6tHPg40yu7Df0z4p.1.1750396662223
+.jetbrains.com	TRUE	/	FALSE	1784092662	ttcsid_CSDQL43C77U7H0AIB4PG	1750396379723::MaMgR7JzFgGb_cXa3wzI.1.1750396662428
+adada.kz	FALSE	/	FALSE	1781946795	i18n_redirected	ru
+pk-stable.adata.kz	FALSE	/	FALSE	1781953946	i18n_redirected	ru
+edo.adada.kz	FALSE	/	FALSE	1781958271	i18n_redirected	ru
+payments.google.com	FALSE	/	TRUE	1753018626	OTZ	8135377_36_32__32_
+.google.com	TRUE	/	FALSE	0	S	billing-ui-v3=VJ2mCTCCi_arvoDoZljVtQMWDvwGX8xX:billing-ui-v3-efe=VJ2mCTCCi_arvoDoZljVtQMWDvwGX8xX
+support.mozilla.org	FALSE	/	TRUE	1753074328	session_id	ovm4s7dlve2u4bjj7zk1bib9q14encbs
+support.mozilla.org	FALSE	/	TRUE	1782104728	csrftoken	79lGeV1AbYdvzw5I8r9SwReUdViacwk6
+.mozilla.org	TRUE	/	FALSE	1785215128	_ga	GA1.1.1372203836.1750655128
+.mozilla.org	TRUE	/	FALSE	1785215179	_ga_2VC139B3XV	GS2.1.s1750655127$o1$g1$t1750655179$j8$l0$h0
+chromewebstore.google.com	FALSE	/	TRUE	1785215719	OSID	g.a000yQgg952kWlzrePPi1R0eipufFg7ocBeyMY1ULVgEXWMFYqrJIMdlRw-iZFIAMN8fSHMqTQACgYKAUUSARMSFQHGX2MiFrYLttdFNgo7541SSCNNRxoVAUF8yKq62CWPZHW1ReVthBfzMSQL0076
+chromewebstore.google.com	FALSE	/	TRUE	1785215719	__Secure-OSID	g.a000yQgg952kWlzrePPi1R0eipufFg7ocBeyMY1ULVgEXWMFYqrJnetj3rk18NGYaWrb9lnJaAACgYKAWsSARMSFQHGX2MiGpNqywH9vcC8ZBucX8uoOBoVAUF8yKqtG6Na7BSozzvRBcUJlHhN0076
+.chromewebstore.google.com	TRUE	/	FALSE	1787297915	_ga	GA1.1.505212405.1750655720
+.chromewebstore.google.com	TRUE	/	FALSE	1785215720	_ga_5FRQC0YKWF	GS2.1.s1750655720$o1$g0$t1750655720$j60$l0$h0
+chromewebstore.google.com	FALSE	/	TRUE	1753247720	OTZ	8139195_36_32__32_
+kaspi.kz	FALSE	/	FALSE	1782219086	ks.tg	70
+kaspi.kz	FALSE	/	FALSE	1782219086	k_stat	c87f38cc-5c45-44a3-9325-bed1963f22a8
+kaspi.kz	FALSE	/	FALSE	1782219090	kaspi.storefront.cookie.city	750000000
+.maibenben.kz	TRUE	/	FALSE	1758459229	_gcl_au	1.1.1175068686.1750683229
+.maibenben.kz	TRUE	/	FALSE	1785243288	_ga	GA1.1.921637419.1750683229
+.maibenben.kz	TRUE	/	TRUE	1782219229	_ym_uid	1750683229844320328
+.maibenben.kz	TRUE	/	TRUE	1782219229	_ym_d	1750683229
+.maibenben.kz	TRUE	/	FALSE	1785244466	_ga_NW25LC769R	GS2.1.s1750683229$o1$g1$t1750684465$j60$l0$h0
+pk.adtdev.kz	FALSE	/	FALSE	1782303613	i18n_redirected	ru
+chatgpt.com	FALSE	/	TRUE	0	__Secure-next-auth.callback-url	https%3A%2F%2Fchatgpt.com%2F
+.openai.com	TRUE	/	FALSE	1782474167	oai-did	b2de7100-e197-4c14-b27e-206468acdc6f
+chatgpt.com	FALSE	/	FALSE	1781928372	oai-hlib	true
+chatgpt.com	FALSE	/	FALSE	1753416373	oai-model-sticky-for-new-chats	false
+selectorshub.com	FALSE	/	TRUE	1785386782	selectorshub authentication	true
+analytics-new.adata.kz	FALSE	/	FALSE	1782365286	i18n_redirected	ru
+.pi7.org	TRUE	/	FALSE	1782384072	FCNEC	%5B%5B%22AKsRol82A8rClOd7rbF6eOuVXwymUZe9IC1t96hJjpIAt8EUfzU2GWY7E1cLXavoda5FMoj4qe8X2LqgWceUNg19RJD90lNK7Zc8jbjq3RW9k3t7tpGNkobyZgER4GouhhK3NGTxJldCcReS6CdDf5NyUmlFpQIvYA%3D%3D%22%5D%5D
+.adada.kz	TRUE	/	FALSE	1787234513	_ga	GA1.1.382581948.1750856591
+.adada.kz	TRUE	/	TRUE	1782392591	_ym_uid	1750163515318324394
+.adada.kz	TRUE	/	TRUE	1782392591	_ym_d	1750856591
+pk.adada.kz	FALSE	/	FALSE	1782392600	i18n_redirected	ru
+gitlab.adata.kz	FALSE	/	TRUE	0	preferred_language	en
+.openai.com	TRUE	/	FALSE	1774268105	intercom-id-dgkjq2bp	36daf9c2-62f9-4473-aeca-1742616198fe
+.openai.com	TRUE	/	FALSE	1774269698	intercom-device-id-dgkjq2bp	a612ceb7-de66-4bcc-8f5d-68fa0058ab17
+.kezekte.kz	TRUE	/	FALSE	1785501184	_ga	GA1.2.653960834.1750941183
+elicense.kz	FALSE	/	TRUE	1782477384	lang	ru
+elicense.kz	FALSE	/	FALSE	1782477384	cookiesession1	678B76A7FAD2F393BE2C35D3C636D366
+elicense.kz	FALSE	/	FALSE	1782477396	_zero_cc	e15aa59ce0f238
+elicense.kz	FALSE	/	FALSE	1782477396	_zero_ss	685d3ed46a363.1750941397.1750941397.1
+.elicense.kz	TRUE	/	FALSE	1785501397	__utma	226182350.1249069655.1750941397.1750941397.1750941397.1
+.elicense.kz	TRUE	/	FALSE	1766709396	__utmz	226182350.1750941397.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)
+.elicense.kz	TRUE	/	TRUE	1782477397	_ym_uid	175094139765109653
+.elicense.kz	TRUE	/	TRUE	1782477397	_ym_d	1750941397
+.kezekte.kz	TRUE	/	FALSE	1785501411	_ga_2E5VR6WWMN	GS2.1.s1750941183$o1$g1$t1750941410$j60$l0$h0
+.katalon.com	TRUE	/	FALSE	1785647560	_ga	GA1.2.1854754180.1751087560
+demo.arcade.software	FALSE	/	TRUE	1782623560	ajs_anonymous_id	3c8666d8-bab5-4a71-bd2c-7e65c5751150
+.katalon.com	TRUE	/	FALSE	1758863561	_gcl_au	1.1.618080519.1751087561
+.katalon.com	TRUE	/	FALSE	1785647561	_ga_N0SQP5NSSD	GS2.1.s1751087559$o1$g0$t1751087560$j59$l0$h0
+.a-brands.kz	TRUE	/	TRUE	1782792012	_ym_uid	1751256013981445630
+.a-brands.kz	TRUE	/	TRUE	1782792012	_ym_d	1751256013
+.a-brands.kz	TRUE	/	FALSE	1787031848	_ga	GA1.1.1160607604.1751256013
+.a-brands.kz	TRUE	/	FALSE	1760247848	_fbp	fb.1.1751256013577.948970965312497824
+.calc.ru	TRUE	/	FALSE	1785817010	_ga	GA1.2.1587781853.1751257010
+.calc.ru	TRUE	/	TRUE	1782793010	_ym_uid	1751257010401921110
+.calc.ru	TRUE	/	TRUE	1782793010	_ym_d	1751257010
+www.calc.ru	FALSE	/	FALSE	1753849010	guid	3cc5c5ae-a3c6-4260-8e04-46d23a626b06
+.calc.ru	TRUE	/	FALSE	1785817011	_ga_V00MLJYCD9	GS2.2.s1751257010$o1$g0$t1751257010$j60$l0$h0
+2gis.kz	FALSE	/	TRUE	1785817834	spid	1751257833449_3ac2e8f1a6ccb97ffa99b33c132ab49e_mij3nau3n8ockpkv
+.2gis.kz	TRUE	/	FALSE	1785817834	_2gis_webapi_user	acb3a53f-e2a1-48a7-9370-af21deec0a5b
+2gis.kz	FALSE	/	FALSE	1785817922	dg5_is_friends_clicked	
+.2gis.kz	TRUE	/	FALSE	1785817922	_ga	GA1.1.1825283481.1751257867
+.2gis.kz	TRUE	/	TRUE	1782793866	_ym_uid	1751257867429754071
+.2gis.kz	TRUE	/	TRUE	1782793866	_ym_d	1751257867
+.2gis.kz	TRUE	/	FALSE	1780029121	tmr_lvid	509cf24d233e83cc2d4afc80854c9422
+.2gis.kz	TRUE	/	FALSE	1780029121	tmr_lvidTS	1751257866963
+.apec.training	TRUE	/	TRUE	1782793867	_ym_uid	1751257867564915595
+.apec.training	TRUE	/	TRUE	1782793867	_ym_d	1751257867
+.yadro.ru	TRUE	/	TRUE	1782766801	VID	2bGVx42Vc7v31eOXCB002UPH
+2gis.kz	FALSE	/	TRUE	1785817868	spsc	1751257868178_cbd070b379342fdc9520e5f65008981d_fFvdPZMFIi8VyXV1B8Tdetq1J7cJXxfdZ7FEY0YVLMkZ
+.2gis.kz	TRUE	/	FALSE	1785817999	_ga_P27NC6GZM0	GS2.1.s1751257866$o1$g1$t1751257998$j60$l0$h0
+tnved.adata.kz	FALSE	/	FALSE	1782797438	i18n_redirected	ru
+.uchet.kz	TRUE	/	FALSE	1782365512	UCHET_SM_GUEST_ID	10132685
+.uchet.kz	TRUE	/	FALSE	1782797479	BITRIX_CONVERSION_CONTEXT_s1	%7B%22ID%22%3A63%2C%22EXPIRE%22%3A1751309940%2C%22UNIQUE%22%3A%5B%22conversion_visit_day%22%5D%7D
+.uchet.kz	TRUE	/	FALSE	1759037480	_gcl_au	1.1.515789994.1751261480
+.uchet.kz	TRUE	/	TRUE	1782797479	_ym_uid	1751261480853925593
+.uchet.kz	TRUE	/	TRUE	1782797479	_ym_d	1751261480
+.uchet.kz	TRUE	/	FALSE	1780032712	tmr_lvid	14e59da83df0fa16251674a0e682e73e
+.uchet.kz	TRUE	/	FALSE	1780032712	tmr_lvidTS	1751261480001
+.uchet.kz	TRUE	/	FALSE	1759037513	_fbp	fb.1.1751261480488.305423625709758900
+www.clarity.ms	FALSE	/	TRUE	1782797484	CLID	a01c977dd30d43549d8920b56c3a2e56.20250618.20260630
+.uchet.kz	TRUE	/	FALSE	1782797484	_clck	rnkgkb%7C2%7Cfx7%7C0%7C2007
+edo.uchet.kz	FALSE	/	FALSE	1782797494	i18n_redirected	ru
+.uchet.kz	TRUE	/	FALSE	1785821495	_ga_Z6FYXFLKPP	GS2.2.s1751261495$o1$g0$t1751261495$j60$l0$h0
+edo.uchet.kz	FALSE	/	TRUE	1782797495	_ymab_param	9L51u1q4OiW-lzz4CHhwsgq1klM1f4C_s_cGJjqmGuqVtdrhdwWtBF90vJfS2v_uRRf0kiIr-qvkSF52bm37cVNwLjE
+.uchet.kz	TRUE	/	FALSE	1785821507	_ga_28KG771N5V	GS2.1.s1751261495$o1$g1$t1751261506$j49$l0$h0
+.uchet.kz	TRUE	/	FALSE	1782365512	UCHET_SM_LAST_VISIT	30.06.2025%2010%3A31%3A52
+.uchet.kz	TRUE	/	FALSE	1785821513	_ga	GA1.1.1472491990.1751261480
+ac.adata.kz	FALSE	/	FALSE	1782798311	i18n_redirected	ru
+.uchet.kz	TRUE	/	FALSE	1785823228	_ga_3QSV8CVZHW	GS2.1.s1751261479$o1$g1$t1751263227$j60$l0$h0
+.uchet.kz	TRUE	/	FALSE	1785823228	_ga_341066832	GS2.1.s1751261479$o1$g1$t1751263227$j60$l0$h0
+drive.google.com	FALSE	/	TRUE	1753855636	OTZ	8149327_36_32__32_
+gosreestr.kazpatent.kz	FALSE	/	FALSE	1782882212	lang	ru
+.kazpatent.kz	TRUE	/	FALSE	1785935752	_ga	GA1.2.713543552.1751346214
+.dfo.kz	TRUE	/	FALSE	1785907362	_ga	GA1.1.1004057620.1751346325
+www.dfo.kz	FALSE	/	FALSE	1782882919	_zero_cc	19a07f38d43302
+www.dfo.kz	FALSE	/	FALSE	1782882919	_zero_ss	68636ee7303ad.1751346920.1751346920.1
+dfo.kz	FALSE	/	FALSE	1782883190	_zero_cc	19a07f38d43302
+dfo.kz	FALSE	/	FALSE	1782883190	_zero_ss	68636ff67880e.1751347191.1751347191.1
+.dfo.kz	TRUE	/	FALSE	1785907193	_ga_2XZ6YH9X9V	GS2.1.s1751346919$o1$g1$t1751347193$j57$l0$h0
+kgd.gov.kz	FALSE	/	FALSE	1782890283	_zero_cc	330e27f86ba402
+.kgd.gov.kz	TRUE	/	TRUE	1782890164	_ym_uid	1750155423867309962
+.kgd.gov.kz	TRUE	/	TRUE	1782890164	_ym_d	1751354165
+kgd.gov.kz	FALSE	/	FALSE	1782890283	_zero_ss	68638b3484d8e.1751354164.1751354283.8
+.mitwork.kz	TRUE	/	FALSE	1759143686	_fbp	fb.1.1751367660914.34354090511292429
+.mitwork.kz	TRUE	/	FALSE	1785927686	_ga	GA1.1.1793774382.1751367661
+grafana.adtdev.kz	FALSE	/	FALSE	1753966339	grafana_session	5cb4fcf9f105270568712c56f526143c
+grafana.adtdev.kz	FALSE	/	FALSE	1753966339	grafana_session_expiry	1751374933
+.mitwork.kz	TRUE	/	FALSE	1785934600	_ga_96NWHP3ECM	GS2.1.s1751374599$o2$g0$t1751374600$j59$l0$h0
+.dfo.kz	TRUE	/	FALSE	1785934835	_ga_E0MVK21WRM	GS2.1.s1751374795$o2$g1$t1751374834$j21$l0$h0
+.kazpatent.kz	TRUE	/	FALSE	1785935752	_ga_420H39JQP3	GS2.2.s1751374796$o2$g1$t1751375751$j59$l0$h0
+meet.google.com	FALSE	/	TRUE	1785994074	OSID	g.a000ywgg94EukCtngUtdY15iVWYmXxxwa5CCo349eBjGw6B2TO-kcfhbKzVRRYScXmJebAvhOQACgYKAZ0SARMSFQHGX2MitivTDj--xsn8MWXG1VobyRoVAUF8yKoKgRGHvLcSeRjEnrsaAQYY0076
+meet.google.com	FALSE	/	TRUE	1785994074	__Secure-OSID	g.a000ywgg94EukCtngUtdY15iVWYmXxxwa5CCo349eBjGw6B2TO-kbRMa8qz_leby2R0LnGn6TQACgYKAeYSARMSFQHGX2MiD3EaIx_Op9sjOzT1RC74ZRoVAUF8yKoQlZMYYmFx9dIvwjTpOU-M0076
+meet.google.com	FALSE	/	TRUE	1754026076	OTZ	8152168_36_32__32_
+accounts.google.com	FALSE	/	TRUE	1785999640	LSID	o.chromewebstore.google.com|o.drive.google.com|o.lens.google.com|o.mail.google.com|o.meet.google.com|s.youtube:g.a000yQgg91-98gsGDHUqMsr68lVo9SxjI9qsDvITWB2MeqtakKO6zmm_eG4kZ4z11sXzQSlBqQACgYKAQQSARMSFQHGX2Mi0eG08d0TsXyOW8XAtvSHqhoVAUF8yKpgz2oqDZIweTimo4kqmnAo0076
+accounts.google.com	FALSE	/	TRUE	1785999640	__Host-1PLSID	o.chromewebstore.google.com|o.drive.google.com|o.lens.google.com|o.mail.google.com|o.meet.google.com|s.youtube:g.a000yQgg91-98gsGDHUqMsr68lVo9SxjI9qsDvITWB2MeqtakKO6MaX9pFpW19ackTRSwYv9AgACgYKAScSARMSFQHGX2MimqKxgC0yrpH0E_mhEEuGyBoVAUF8yKoYamcGi1drlIR7J_PVGZTx0076
+accounts.google.com	FALSE	/	TRUE	1785999640	__Host-3PLSID	o.chromewebstore.google.com|o.drive.google.com|o.lens.google.com|o.mail.google.com|o.meet.google.com|s.youtube:g.a000yQgg91-98gsGDHUqMsr68lVo9SxjI9qsDvITWB2MeqtakKO6ete0Eiu2jIcbYOOr9V28ngACgYKAX0SARMSFQHGX2MirvXfIU-VtJmvF0sFYQcmlBoVAUF8yKolEV30yGd4dPB6cZ9fjX7X0076
+mail.google.com	FALSE	/	TRUE	1785999640	OSID	g.a000ywgg97NLcCZuFZiQdF9LElG0wu_XaXmpHG66VjDo4aPjbLQgUZsfF6DgNGXCnMdNQWV2xwACgYKAdoSARMSFQHGX2Miy3RG8eyT3OI6P26pFr_zeBoVAUF8yKpoP6t1C7QoWbvF2fsieVSh0076
+mail.google.com	FALSE	/	TRUE	1785999640	__Secure-OSID	g.a000ywgg97NLcCZuFZiQdF9LElG0wu_XaXmpHG66VjDo4aPjbLQgmvt0loR6JD-Vo3rF65WBiwACgYKAaYSARMSFQHGX2MiTKUIyRepUCkAdCPobsbP0RoVAUF8yKqVNKBoJZHS608nsSAxbOd50076
+mail.google.com	FALSE	/	TRUE	1754031641	__Host-GMAIL_SCH_GMN	1
+mail.google.com	FALSE	/	TRUE	1754031641	__Host-GMAIL_SCH_GMS	1
+mail.google.com	FALSE	/	TRUE	1754031641	__Host-GMAIL_SCH_GML	1
+mail.google.com	FALSE	/	TRUE	0	__Host-GMAIL_SCH	nsl
+.jetbrains.com	TRUE	/	TRUE	1782553855	last_utm_parameters	product|link|PC|undefined|2025.1|undefined
+www.jetbrains.com	FALSE	/	FALSE	1759225855	userToken	paxgosmojldoasc9chjda
+.jetbrains.com	TRUE	/	TRUE	1786009855	_ga_M8TDRLXFQH	GS2.1.s1751449855$o2$g1$t1751449855$j60$l0$h184805082
+.jetbrains.com	TRUE	/	TRUE	1786009856	_ga_9J976DJZ68	GS2.1.s1751449855$o2$g1$t1751449856$j59$l0$h0
+.jetbrains.com	TRUE	/	FALSE	1785145857	_uetvid	39033f604d9511f094b8f7592f7ef562
+.jetbrains.com	TRUE	/	TRUE	1759225857	_rdt_uuid	1750396374682.3d9061bb-cb32-4e0b-9c02-89d4ca0030c7
+developer.chrome.com	FALSE	/	FALSE	1785236365	cookies_accepted	true
+developer.chrome.com	FALSE	/	FALSE	1767002316	django_language	ru
+.chrome.com	TRUE	/	FALSE	1786100366	_ga	GA1.1.539045299.1751450318
+chat.deepseek.com	FALSE	/	FALSE	1786011674	smidV2	202507021521134d28022a7a642a560e0104806a1c7d070072e4af00eabf1a0
+chat.deepseek.com	FALSE	/	FALSE	1786011679	.thumbcache_6b2e5483f9d858d7c661c5e276b6a6ae	htQAxq5QTnbxMABNIoYgYPs6BTgAR4cpS6BqO7TDgNWuPlmcIBqjhVVgPLtvN/O+dj4+HyAfEB2eRPTUZFfC5Q%3D%3D
+.deepseek.com	TRUE	/	TRUE	1774788903	intercom-device-id-guh50jw4	10531119-aecd-470b-a2f9-13c5fde331f7
+pki.gov.kz	FALSE	/	FALSE	1782993193	cookiesession1	678B76A80B373C77085E7593C172A03B
+.culs.kz	TRUE	/	FALSE	1786018899	_ga	GA1.1.606284945.1751458340
+.culs.kz	TRUE	/	FALSE	1786020174	_ga_FFLZ3BPLVM	GS2.1.s1751458339$o1$g1$t1751460173$j60$l0$h0
+.text.ru	TRUE	/	FALSE	1780294687	tmr_lvid	f2bb3347a6798e3889d3d7ec008fdac4
+.text.ru	TRUE	/	FALSE	1780294687	tmr_lvidTS	1751460915476
+.text.ru	TRUE	/	TRUE	1782996915	_ym_uid	1751460916816576249
+.text.ru	TRUE	/	TRUE	1782996915	_ym_d	1751460916
+text.ru	FALSE	/	TRUE	1783059488	_ymab_param	zkZJ10GF40rrNMDUO-RC_wljXOmtZlsbbVo7ai9XlkRFMftm07Jg3Fi2t6XzHD-lfejK0AhJOxsRtIo5CgWR1ZZaUoE
+jira.adata.kz	FALSE	/	FALSE	0	atlassian.oidcSso.autoLogin.lastAttempt	1751515165887
+.mail.ru	TRUE	/	TRUE	0	act	12fdcc7f4e784b3188c7e181ba3673ba
+.vk.com	TRUE	/	TRUE	1782951762	remixuas	MDNjNDlhNDI0YjBmYjNlODBiZDI3YzU1
+.vk.com	TRUE	/	TRUE	1783489381	remixuacck	eef8bf13933efec14b
+.mail.ru	TRUE	/	TRUE	1754112911	ph_ShowedSnowHint	1
+.mail.ru	TRUE	/	TRUE	1784107954	tmr_lvid	becfcb0ce323f33a5146e0899f00f4d3
+.mail.ru	TRUE	/	TRUE	1784107954	tmr_lvidTS	1751520911357
+.vk.com	TRUE	/	TRUE	1782928975	remixstid	1413947595_wk0RWAmchRpTEmoQFqQ6WPDsoUQNtRub5mAzzNg93qw
+analytics-new.adtdev.kz	FALSE	/	FALSE	1783057309	i18n_redirected	ru
+.adtdev.kz	TRUE	/	FALSE	1786081324	_ga_JNPZVWBM73	GS2.1.s1751521320$o1$g0$t1751521323$j57$l0$h0
+.yandex.kz	TRUE	/	TRUE	1783057816	yashr	7758971691751521816
+.yandex.kz	TRUE	/	TRUE	1783057817	_ym_uid	1751521818103843781
+.yandex.kz	TRUE	/	TRUE	1783057817	_ym_d	1751521818
+.yandex.kz	TRUE	/	TRUE	1786788230	yandexuid	8532479311750237183
+.yandex.kz	TRUE	/	TRUE	1786788230	yuidss	8532479311750237183
+.yandex.kz	TRUE	/	TRUE	1786788230	i	5JLvaionOu66z5zzs8HrHWpycMFIqRlnLDHONdkDFeA1UDgXDW9z3PWzMNPR4fKhPpc5uH8UeypcaXhF00uDrJ5TUss=
+.yandex.kz	TRUE	/	FALSE	1754113819	spravka	dD0xNzUxNTIxODE5O2k9ODkuMjE5LjExLjI3O0Q9Mzg4NDg0QUU2Q0Y4OTk5MjQyMUFCNUY1ODcxRUFCMThGQzBCRjBFRUUyMzIyRTE2OEJENUVFNDk0MkE5MDAxREY2NjJCNzE5Q0M3OUZGRkI3MEJCMzZBRjdERTJGRUVEREZERjczQzVDQkQwMzY0MzgxMTk0OUQ5NkFBQjY5MDJFMTQ4M0RBMkUzRjJBNENCNTEwRDg2MTA7dT0xNzUxNTIxODE5OTg1MjQwOTQzO2g9NWNkNDVlZmU2N2ZjZGQ1YWMzNzNmYzc1ZTMyMzQ5MDc=
+.yandex.kz	TRUE	/	TRUE	1786081820	is_gdpr	0
+.yandex.kz	TRUE	/	TRUE	1786081820	is_gdpr_b	COOeNhDYyQIoAg==
+.yandex.kz	TRUE	/	TRUE	1786081821	_yasc	txg71+Y+f7zfiaDOCPvKLWYv1GuxseNU6E74+Zt+oDZZaa3U+su/fBRDMqxFqQRSvIIfQRXTFDJT
+text.ru	FALSE	/	FALSE	1786083487	session	UzNTP1EwUG4BIQ99VTpQPAFhUTldcFxzU2MBJlwjBD9QagtmV1wAMlUwUycOYAN0UTALOQViUDdVJ1AxWmYGbgE1VGUAOQRgUDRUYQFmAG1TN1NgUT1QbAE8Dz9VMlA%2BAWBROl1mXDRTZQE2XDYENVA8C2xXNgBqVTFTJw5gA3RRMAs7BWBQN1UnUGtaJQYFATVUZABoBCRQYFQkASYAeVNpU3ZRPlBlAWgPNFUiUDUBaFEtXWBcMVM%2FAXtcYQRnUCsLOlc0AHlVb1N2DmEDNlE6CzAFclB4VXZQZ1onBgUBNVRnAGkEOFBxVHUBbgAoU2hTMFE0UG4BeA9DVW9QdwE4UW9dPlxhUykBYFx%2BBGZQJQsgV1sAalVlUz4OewNLUWMLZAUlUHVVJVB6Wm0GbAELVDYAOAR%2FUCVUFgElACtTPlNgUVNQMQE4D0VVaVB5AX5RNl1hXDdTKAFmXGYEdFA%2BC3tXOQBqVWdTPw55A2tRawt5BSRQUlVkUGFaIQYzASJUaQB4BC9QJ1RsATwAYVNjUzJRMVBlAW8PPFUzUDkBaVE0XWlcfQ%3D%3D
+.text.ru	TRUE	/	FALSE	1760163488	v1_sessions_callibri	1133326404
+m.stripe.com	FALSE	/	TRUE	1786086827	m	526aefe4-3da3-4405-bafc-16d38609e6291e0956
+.chrome.com	TRUE	/	FALSE	1786100370	_ga_H1Y3PXZW9Q	GS2.1.s1751540365$o2$g0$t1751540369$j56$l0$h0
+.chrome.com	TRUE	/	FALSE	1786100370	_ga_64EQFFKSHW	GS2.1.s1751540365$o2$g0$t1751540369$j56$l0$h0
+.aspose.app	TRUE	/	FALSE	1786101919	_ga	GA1.1.2105996661.1751541919
+.aspose.app	TRUE	/	FALSE	1786102062	_ga_1LEXT1ZD9X	GS2.1.s1751541918$o1$g1$t1751542061$j55$l0$h0
+.github.com	TRUE	/	TRUE	1783080815	_octo	GH1.1.1914082111.1751544805
+github.com	FALSE	/	TRUE	1784034830	_device_id	3631b6c08b3f0b1997158f844bf0519f
+github.com	FALSE	/	TRUE	1759320810	saved_user_sessions	125943303%3A0XmJsMQXHH4re1TgpuEjLYTQf1Xgvbq17X-Q0uw-V9SyOUgL
+github.com	FALSE	/	TRUE	1753708430	user_session	0XmJsMQXHH4re1TgpuEjLYTQf1Xgvbq17X-Q0uw-V9SyOUgL
+github.com	FALSE	/	TRUE	1753708430	__Host-user_session_same_site	0XmJsMQXHH4re1TgpuEjLYTQf1Xgvbq17X-Q0uw-V9SyOUgL
+.github.com	TRUE	/	TRUE	1783080810	logged_in	yes
+.github.com	TRUE	/	TRUE	1783080810	dotcom_user	daring667
+.oaiusercontent.com	TRUE	/	TRUE	0	_cfuvid	qkcwRUIpLfQPZ.lamDAxrMnyZsCGAlYOxzMh6tmDrbc-1751604821144-0.0.1.1-604800000
+.ilovepdf.com	TRUE	/	FALSE	1786178083	_ga	GA1.1.1485285630.1751618074
+.dndalmaty.kz	TRUE	/	FALSE	1759394236	_fbp	fb.1.1751618236387.863794335644852402
+.dnd.su	TRUE	/	FALSE	1786179207	_ga	GA1.1.1133002141.1751618245
+.dnd.su	TRUE	/	TRUE	1783154245	_ym_uid	1751618245554609874
+.dnd.su	TRUE	/	TRUE	1783154245	_ym_d	1751618245
+.dnd.su	TRUE	/	FALSE	1786179745	_ga_P6QSMG73H5	GS2.1.s1751618245$o1$g1$t1751619744$j60$l0$h0
+.ilovepdf.com	TRUE	/	FALSE	1786179795	_ga_44KQ8HETWT	GS2.1.s1751618073$o1$g1$t1751619795$j60$l0$h0
+id.adata.kz	FALSE	/	FALSE	1752829879	password	Cntgfy555%40
+id.adata.kz	FALSE	/	FALSE	1752830006	username	22773%40adata.kz
+.proton.me	TRUE	/	TRUE	1759815217	Session-Id	aGeg3qxS0zF4objwgAeLOAAAAUs
+proton.me	FALSE	/	TRUE	1759406888	Tag	default
+proton.me	FALSE	/	TRUE	1759406887	Domain	proton.me
+account.proton.me	FALSE	/	TRUE	1759812829	Tag	default
+account.proton.me	FALSE	/	TRUE	1759406890	Domain	proton.me
+account-api.proton.me	FALSE	/	TRUE	1759406891	Tag	default
+account.proton.me	FALSE	/	TRUE	1754247599	Features	VPNDashboard:A
+mail.proton.me	FALSE	/	TRUE	1759815217	Tag	default
+mail.proton.me	FALSE	/	TRUE	1759812830	Domain	proton.me
+mail.proton.me	FALSE	/	TRUE	1754679599	Features	VPNDashboard:A
+mail-api.proton.me	FALSE	/	TRUE	1759812830	Tag	default
+.proton.me	TRUE	/	TRUE	1786181927	iaas	WzEsMF0
+id.adada.kz	FALSE	/	FALSE	1752840957	username	22773%40adata.kz
+id.adada.kz	FALSE	/	FALSE	1752840957	password	Cntgfy555%40
+.upload.wikimedia.org	TRUE	/	TRUE	1783150314	WMF-Uniq	aCOfdcDbMQFGHX3nA88o5wIiAAEBAFvdQcAvkuZ1EMvAei9yCwuP00PmFJwcUI13
+www.figma.com	FALSE	/	TRUE	1755406968	__Host-figma.authn	%7B%221247744655468500297%22%3A%22figtkn.3806884910.authn.RM9dify5VwHRQLFQix32S8%22%2C%221508804784052600454%22%3A%22figtkn.3806884762.authn.XX3zVeGOdeqfDY92PG1pWr%22%7D
+www.figma.com	FALSE	/	TRUE	1755406968	__Host-figma.authn.mac	1.eyJwbGFuIjoic3RhcnRlciIsImV4cGlyZXNfYXQiOjE3NTcxMzQ5Njh9.4c29f0513968e8deb18176a143ce739589d2e3f71772ec7b7457d4cd3d5f7836
+www.figma.com	FALSE	/	TRUE	1755406968	__Host-figma.embed	%7B%221247744655468500297%22%3A%22figtkn.3806884911.embed.pFxy7H4V00107JoLKGWs6W%22%2C%221508804784052600454%22%3A%22figtkn.3806884763.embed.beEcJDqUMyCIYcOkQawEqN%22%7D
+www.figma.com	FALSE	/	TRUE	1755406968	__Host-figma.embed.mac	1.eyJwbGFuIjoic3RhcnRlciIsImV4cGlyZXNfYXQiOjE3NTcxMzQ5Njh9.4cfadcac15c2f8eefcb199367bf79f8fa95e8ca10ae42e3d065b0411c4baede7
+.www.figma.com	TRUE	/	TRUE	1755406968	IP_ADDRESS_CONTROLS	FVxgxB3FKIQVJyHMLJzLvXZ6gdfX-epr.pJEy9iHaEuOlPgbPhC1WTvlJdBQ5j48d2QHgKZkpVV09y4X5xoflcKJIWTnBR8Oy8KydbbsONLZeFKqfKOSie2Anj_iJAX5r9Ae1efvSrQbgA5Kg_kHZWrwcsgCcutmIFoSwDWe8lQKhLLU23peAoR6e56HWtmcFw5qC-bWKGt1dkk5YFJRriKCnQLzLY9D7A29tDrO766p5mKhGh3KnykCOgQ%3D%3D
+.youtube.com	TRUE	/	TRUE	1787297842	PREF	f4=4000000&f6=40000000&tz=Asia.Almaty&f7=100
+.youtube.com	TRUE	/	FALSE	0	wide	1
+.corewin.ua	TRUE	/	FALSE	1786512789	_ga	GA1.1.62151225.1751952789
+xss-game.appspot.com	FALSE	/	FALSE	1786512869	level1	f148716ef4ed1ba0f192cde4618f8dc5
+.corewin.ua	TRUE	/	FALSE	1786515682	_ga_ZP2FB305MQ	GS2.1.s1751955681$o2$g0$t1751955681$j60$l0$h0
+api-docs.adata.kz	FALSE	/	FALSE	0	auth_token	jkV3clUNsrb6UNokOccidQza3NVh4P6
+.wallpaperflare.com	TRUE	/	FALSE	1786600768	_ga	GA1.1.123181119.1752040412
+luckyforbet.com	FALSE	/	FALSE	1757224417	trk_cpa_pixel	0e216100-5c89-11f0-930e-21122dc44a48
+.condles-temark.com	TRUE	/	TRUE	1783576433	cc-v4	TD1iy1jwdFBRR%2FexpiIBTHfImyW4ftjtmLFGCvmMm%2Be2TMsEHEQrU79XHbT5fH1T%2Bxz1AtDz3Osq5vDtSkHnN4y7B6pIvM0CDIh%2FNa9%2BLrxL9b5Dc7fdYKdysRB4lUZgCiMWZqYeyoHNqRXHLsHT5g%3D%3D
+.exness.com	TRUE	/	FALSE	1786600435	track_uid	9393b419-b32d-4481-8c20-2009b2bca6e2
+.exness.com	TRUE	/	FALSE	1759816435	agent	c_4junm3rdmy
+.exness.com	TRUE	/	FALSE	1759816435	agent_timestamp	1752040434678
+.exness.com	TRUE	/	FALSE	1759816435	agent_platform	mt4
+.exness.com	TRUE	/	FALSE	1759816435	agent_link	"/intl/en/a/c_4junm3rdmy"
+.exness.com	TRUE	/	FALSE	1759816435	agent_full_path	"/intl/en/a/c_4junm3rdmy?cid=w68440vbsa4jn55b381d8aog&ex_ol=1"
+.exness.com	TRUE	/	FALSE	1759816435	partnercode_enabled	false
+www.exness.com	FALSE	/	FALSE	1754668436	country	KZ
+www.exness.com	FALSE	/	FALSE	1754668436	language	en
+.exness.com	TRUE	/	FALSE	1783662837	_vwo_uuid_v2	D86C55B41A86AC7D2F50F69288444E3D7|3683591bad4f25d97258432e2aaf4b9a
+.exness.com	TRUE	/	FALSE	1783597390	_vwo_uuid	D86C55B41A86AC7D2F50F69288444E3D7
+.exness.com	TRUE	/	FALSE	1760680438	_vis_opt_s	1%7C
+.exness.com	TRUE	/	FALSE	1759816439	_gcl_au	1.1.677048536.1752040439
+.exness.com	TRUE	/	FALSE	1786600441	_ga	GA1.1.718507503.1752040441
+.exness.com	TRUE	/	FALSE	1759816442	_fbp	fb.1.1752040442328.35071441246799255
+.exness.com	TRUE	/	FALSE	1754632442	ip	89.219.11.27
+.exness.com	TRUE	/	FALSE	1754632442	ua	Mozilla%2F5.0%20(X11%3B%20Linux%20x86_64)%20AppleWebKit%2F537.36%20(KHTML%2C%20like%20Gecko)%20Chrome%2F138.0.0.0%20Safari%2F537.36
+.exness.com	TRUE	/	FALSE	1785736442	_uetvid	1d870d205c8911f0a98b956583e9454e
+.exness.com	TRUE	/	TRUE	1783576443	_hjSessionUser_2797246	eyJpZCI6ImJmM2MxNjAwLWFhNmYtNTMzOS1hYzVmLTc0NmE1ZTdiOTYyYyIsImNyZWF0ZWQiOjE3NTIwNDA0NDMxNTUsImV4aXN0aW5nIjpmYWxzZX0=
+.exness.com	TRUE	/	FALSE	1783576443	AMP_2b790405f1	JTdCJTIyZGV2aWNlSWQlMjIlM0ElMjJlZjYwYmMzYi1hOThiLTRhZGUtOWJhMS1mMDQ0N2E3MzUwMjUlMjIlMkMlMjJzZXNzaW9uSWQlMjIlM0ExNzUyMDQwNDQyODAxJTJDJTIyb3B0T3V0JTIyJTNBZmFsc2UlMkMlMjJsYXN0RXZlbnRUaW1lJTIyJTNBMTc1MjA0MDQ0MjgwMyUyQyUyMmxhc3RFdmVudElkJTIyJTNBMSUyQyUyMnBhZ2VDb3VudGVyJTIyJTNBMCU3RA==
+.exness.com	TRUE	/	FALSE	1759816444	_vwo_ds	3%3At_0%2Ca_0%3A0%241752040436%3A93.96519109%3A%3A%3A%3A6
+.exness.com	TRUE	/	FALSE	1786600455	_ga_M71C3QBXSG	GS2.1.s1752040441$o1$g0$t1752040454$j47$l0$h1761233958
+.xf38lo22j1y0ihymst.com	TRUE	/	FALSE	1754718859	TID	6821377903
+.yrngncmb.com	TRUE	/	TRUE	1786600462	uidz	7348590308269154304
+.yrngncmb.com	TRUE	/	TRUE	1786600464	uid	7348590308751450112
+.yrngncmb.com	TRUE	/	TRUE	1786600460	rst4-uid	7348590308751450112
+.yrngncmb.com	TRUE	/	TRUE	1786600461	rulid	01JZPVZN2989RWD5H0SDJ06PDQ
+.yrngncmb.com	TRUE	/	TRUE	1786600461	rculid	01JZPVZN2989RWD5H0SDJ06PDQ
+yrngncmb.com	FALSE	/	TRUE	1754632462	PHPSESSID	aqtn5e53e39405t41j014e5o39
+yrngncmb.com	FALSE	/	FALSE	1783576463	User_cookie_key	01JZPVZPDCDJW0P488PZFHXDDX
+yrngncmb.com	FALSE	/	FALSE	1754632464	cid	6821377903
+yrngncmb.com	FALSE	/	FALSE	1754632464	prid	most_partner.6821377903
+yrngncmb.com	FALSE	/	FALSE	1754632464	pid	113180
+yrngncmb.com	FALSE	/	FALSE	1754632464	sip	0
+yrngncmb.com	FALSE	/	FALSE	1783576463	design	old
+.wallpaperflare.com	TRUE	/	FALSE	1786600907	_ga_EZMQTMLQ1T	GS2.1.s1752040412$o1$g1$t1752040906$j60$l0$h0
+id.adata.kz	FALSE	/	FALSE	1783579670	i18n_redirected	ru
+confluence.adata.kz	FALSE	/	TRUE	1753264204	seraph.confluence	97320982%3A0426c9aea0306946db55e9383e226a1e2d32f64f
+.graylog.org	TRUE	/	FALSE	1786615184	_ga	GA1.1.958696838.1752054803
+.graylog.org	TRUE	/	FALSE	1786615184	_ga_VKTT9G7CVC	GS2.1.s1752054802$o1$g1$t1752055184$j60$l0$h0
+.graylog.org	TRUE	/	FALSE	1786615184	_ga_NCQ7VMMZNQ	GS2.1.s1752054802$o1$g1$t1752055184$j60$l0$h0
+.graylog.org	TRUE	/	FALSE	1785751184	_uetvid	8d7f13f05caa11f0b4c1b7f845bd0d9d
+.habr.com	TRUE	/	FALSE	1759841035	_gcl_au	1.1.535801335.1752065035
+.habr.com	TRUE	/	FALSE	1786625035	_ga	GA1.1.1706114615.1752065035
+habr.com	FALSE	/	FALSE	1783601035	hl	ru
+habr.com	FALSE	/	FALSE	1783601035	fl	ru
+.habr.com	TRUE	/	TRUE	1783601035	habr_uuid	1oBxbJmzHsKShUQB6iiJH%2BUgJximSvdB6FqX%2F22Y3ruq4R4Tq9XoW7QgZAgL89VzThSlA8XzG7eYg79AZRK4vg
+.habr.com	TRUE	/	FALSE	1786625038	_ga_S28W1WC23F	GS2.1.s1752065035$o1$g0$t1752065038$j57$l0$h603153999
+store.steampowered.com	FALSE	/	TRUE	1783657484	browserid	375603285825254654
+store.steampowered.com	FALSE	/	TRUE	1759897484	recentapps	%7B%22274190%22%3A1752121484%7D
+store.steampowered.com	FALSE	/	FALSE	1783657505	timezoneOffset	18000,0
+adata.kz	FALSE	/	FALSE	1783666493	i18n_redirected	ru
+.chatgpt.com	TRUE	/	TRUE	0	_cfuvid	uUYUT4pDgIVJw0iJXNYgE_icBOb72e39zFicFnxzOxQ-1752140320215-0.0.1.1-604800000
+.calibre-ebook.com	TRUE	/	FALSE	1786705956	_ga	GA1.1.1619924933.1752145926
+.calibre-ebook.com	TRUE	/	FALSE	1786706064	_ga_YMW4X5CSKP	GS2.1.s1752145925$o1$g1$t1752146063$j60$l0$h0
+gitlab.adata.kz	FALSE	/	TRUE	1753360527	known_sign_in	WStyTE1tWHYvVTFoczJEQktiS2haTGJEZ1ZiUGlGU3NXS3haamtvWlQ3clF2VG9LSHhJdUR5eFNQbkVEWXRMUGdFWVZaZmM2SlU0K3dEOHVwRUlHMVB5d2RIcFk0N3IxR2JtU09BWXhjSTVlSHp2ZVNXWkdna0tMb1RTazhNMlEtLXpPa09oOUR3MWcrak8wN2pMZGU3d3c9PQ%3D%3D--962f65f7ce076cbc0d587de6ffaab29405fa1792
+gitlab.adata.kz	FALSE	/	TRUE	0	_gitlab_session	f49902e607f8f129f324505345e6ea68
+gitlab.adata.kz	FALSE	/	TRUE	0	event_filter	all
+gitlab.adata.kz	FALSE	/	TRUE	1783687104	hide_auto_devops_implicitly_enabled_banner_1298	false
+.omiod.com	TRUE	/	FALSE	1786712556	_ga	GA1.2.386622620.1750392982
+.omiod.com	TRUE	/	FALSE	1786712559	_ga_9RDG78PVXB	GS2.1.s1752152555$o3$g0$t1752152558$j57$l0$h0
+mail.google.com	FALSE	/	TRUE	1753080830	COMPASS	appsfrontendserver=CgAQjYbDwwYafQAJa4lXXISItkl4oi6Por0C7GItI8zQF0E_BvsEJaeoXGbP990P_TYZjoAyDq9TgEbbgXzovn9w_8vBlHKa9aN4Xg5nJSNKMiX7fwk4wx1c7XnmVa4Sg2dMHnjDgoZeCNVGXQ8Glk8ACrRUv8XNq3SoGxPfetwiZVvxx4npIAEwAQ
+www.goszakup.gov.kz	FALSE	/	FALSE	0	ci_session	a%3A4%3A%7Bs%3A10%3A%5C%22session_id%5C%22%3Bs%3A32%3A%5C%22152a6fee044998236948e5ec7ab49eca%5C%22%3Bs%3A10%3A%5C%22ip_address%5C%22%3Bs%3A7%3A%5C%220.0.0.0%5C%22%3Bs%3A10%3A%5C%22user_agent%5C%22%3Bs%3A101%3A%5C%22Mozilla%2F5.0+%28X11%3B+Linux+x86_64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F138.0.0.0+Safari%2F537.36%5C%22%3Bs%3A13%3A%5C%22last_activity%5C%22%3Bi%3A1752225935%3B%7Ddb8cc47d85c32756b3c4352e2f3b0de5
+.adada.kz	TRUE	/	FALSE	1786786887	_ga_6R82GR1EQB	GS2.1.s1752226881$o8$g1$t1752226886$j55$l0$h0
+.banker.kz	TRUE	/	TRUE	0	PHPSESSID	tXMspWrpt2eGE4Ha0xrJouy7veICpRcx
+.banker.kz	TRUE	/	TRUE	1783764227	_ym_uid	1752228228278798687
+.banker.kz	TRUE	/	TRUE	1783764227	_ym_d	1752228228
+.www.banker.kz	TRUE	/	FALSE	1786788228	_ga	GA1.3.906272891.1752228228
+.zakon.kz	TRUE	/	FALSE	1786790643	_ga	GA1.1.2062102970.1752228228
+www.banker.kz	FALSE	/	FALSE	1783764227	_zero_cc	306190eb32a411
+www.banker.kz	FALSE	/	FALSE	1783764227	_zero_ss	6870e18372465.1752228228.1752228228.1
+.webvisor.org	TRUE	/	TRUE	1786788228	bh	EkAiTm90KUE7QnJhbmQiO3Y9IjgiLCAiQ2hyb21pdW0iO3Y9IjEzOCIsICJHb29nbGUgQ2hyb21lIjt2PSIxMzgiKgI/MDoHIkxpbnV4ImCEw8PDBmoZ3MrpiA7yrLelC/v68OcN6//99g+K1M2HCA==
+.www.banker.kz	TRUE	/	FALSE	1786788228	_ga_V5ZJ5FJ022	GS2.3.s1752228228$o1$g0$t1752228228$j60$l0$h0
+.instagram.com	TRUE	/	TRUE	1786788228	mid	aHDhhAAEAAEg-b_EB4RTqGOeX3zd
+.zakon.kz	TRUE	/	TRUE	1783764228	_ym_uid	175222822971769734
+.zakon.kz	TRUE	/	TRUE	1783764228	_ym_d	1752228229
+www.zakon.kz	FALSE	/	TRUE	1783766643	_ymab_param	wgAIwR08JD-kfUNEkVeXKLKavZTLUJlO0fNGT9BT0nGfREr_isw9e3gpfRcy0u-JPFYoyrMCeMM0TmKtd5OOtdC0qiY
+.zakon.kz	TRUE	/	FALSE	1760006643	_fbp	fb.1.1752228229211.265071921398608293
+.webvisor.org	TRUE	/	TRUE	1786788229	yandexuid	8532479311750237183
+.webvisor.org	TRUE	/	TRUE	1786788229	yuidss	8532479311750237183
+.webvisor.org	TRUE	/	TRUE	1786788229	i	5JLvaionOu66z5zzs8HrHWpycMFIqRlnLDHONdkDFeA1UDgXDW9z3PWzMNPR4fKhPpc5uH8UeypcaXhF00uDrJ5TUss=
+.yandex.kz	TRUE	/	TRUE	1786788229	bh	EkAiTm90KUE7QnJhbmQiO3Y9IjgiLCAiQ2hyb21pdW0iO3Y9IjEzOCIsICJHb29nbGUgQ2hyb21lIjt2PSIxMzgiGgUieDg2IiIPIjEzOC4wLjcyMDQuOTIiKgI/MDICIiI6ByJMaW51eCJCByI2LjEuMCJKBCI2NCJSWiJOb3QpQTtCcmFuZCI7dj0iOC4wLjAuMCIsICJDaHJvbWl1bSI7dj0iMTM4LjAuNzIwNC45MiIsICJHb29nbGUgQ2hyb21lIjt2PSIxMzguMC43MjA0LjkyIloCPzBghcPDwwZqGdzK6YgO8qy3pQv7+vDnDev//fYPitTNhwg=
+.yandex.kz	TRUE	/	TRUE	1786788230	yp	1752385821.dlp.3#2066881821.pcs.1#1783057821.swntab.0#1752126621.szm.1_25:3072x1728:3057x1575:15#1752314629.yu.8532479311750237183
+.yandex.kz	TRUE	/	TRUE	1783764229	ymex	1754820229.oyu.8532479311750237183#2066881821.yrts.1751521821
+.tengrinews.kz	TRUE	/	TRUE	1783764231	_ym_uid	1752228232937219681
+.tengrinews.kz	TRUE	/	TRUE	1783764231	_ym_d	1752228232
+.tengrinews.kz	TRUE	/	FALSE	1786788238	_ga	GA1.1.47449127.1752228238
+tengrinews.kz	FALSE	/	FALSE	0	Authorized	False
+.zakon.kz	TRUE	/	FALSE	1786791236	_ga_K87DQB6Z8F	GS2.1.s1752228227$o1$g1$t1752231235$j60$l0$h0
+.zakon.kz	TRUE	/	FALSE	1786791236	_ga_QQ21TQ3QJX	GS2.1.s1752228228$o1$g1$t1752231235$j60$l0$h935396367
+.zakon.kz	TRUE	/	FALSE	1786791236	_ga_EXZE6NRRYG	GS2.1.s1752228228$o1$g1$t1752231235$j60$l0$h0
+.zakon.kz	TRUE	/	FALSE	1786791236	_ga_7ZQXGKGQJG	GS2.1.s1752228228$o1$g1$t1752231236$j60$l0$h2101937422
+.tengrinews.kz	TRUE	/	FALSE	1786792572	_ga_EKJ8741MGP	GS2.1.s1752232572$o2$g0$t1752232572$j60$l0$h0
+.sputnik.kz	TRUE	/	FALSE	1786793797	sputnik_kaz	6870f7435fff176ee53cf337
+.sputnik.kz	TRUE	/	FALSE	1783769797	ab_subscriber	a
+ru.sputnik.kz	FALSE	/	FALSE	1754825797	fb_check3	1
+ru.sputnik.kz	FALSE	/	FALSE	1754825797	ab_emoji_test	a
+a.sputniknews.com	FALSE	/	TRUE	1786793798	spid	1752233797563_ca8362ababee72acdb15206dca5b3394_ka9e9xrggjkotuum
+ru.sputnik.kz	FALSE	/	FALSE	1786188998	_pk_id.sputnik_kaz.b988	876545c6f63c467d.1752233798.1.1752233798.1752233798.
+ru.sputnik.kz	FALSE	/	FALSE	1783769798	_zero_cc	8d71604fdb6156
+ru.sputnik.kz	FALSE	/	FALSE	1783769798	_zero_ss	6870f746f7d8f.1752233798.1752233798.1
+.sputnik.kz	TRUE	/	FALSE	1781004998	tmr_lvid	efafaacdff62be93a7252f062c6286b6
+.sputnik.kz	TRUE	/	FALSE	1781004998	tmr_lvidTS	1752233798298
+.sputnik.kz	TRUE	/	FALSE	1786793798	_ga	GA1.2.745547119.1752233798
+.sputnik.kz	TRUE	/	TRUE	1783769798	_ym_uid	1752233798979381356
+.sputnik.kz	TRUE	/	TRUE	1783769798	_ym_d	1752233798
+ru.sputnik.kz	FALSE	/	FALSE	1752838601	domain_sid	gCRAHjBi9K1tAmd7ivC_g%3A1752233800712
+.sputnik.kz	TRUE	/	FALSE	1786795966	_ga_C1BZFKVEW1	GS2.1.s1752235965$o2$g0$t1752235965$j60$l0$h0
+.adtdev.kz	TRUE	/	FALSE	1783776384	colorMode	dark
+export.adtdev.kz	FALSE	/	FALSE	1784007679	i18n_redirected	en
+a-brands.kz	FALSE	/	FALSE	0	PHPSESSID	KfveZ7KnvB8oxxChpgHwY0qugukhjtJ6
+a-brands.kz	FALSE	/	FALSE	0	ASPRO_MAX_USE_MODIFIER	Y
+a-brands.kz	FALSE	/	FALSE	1783575847	BITRIX_SM_GUEST_ID	336299
+a-brands.kz	FALSE	/	FALSE	0	prefers-color-scheme	dark
+a-brands.kz	FALSE	/	FALSE	0	_ym_debug	null
+a-brands.kz	FALSE	/	FALSE	1784007843	BITRIX_CONVERSION_CONTEXT_s1	%7B%22ID%22%3A5%2C%22EXPIRE%22%3A1752519540%2C%22UNIQUE%22%3A%5B%22conversion_visit_day%22%5D%7D
+.a-brands.kz	TRUE	/	FALSE	0	current_region	492
+.a-brands.kz	TRUE	/	FALSE	0	current_location	17
+a-brands.kz	FALSE	/	FALSE	1783575847	BITRIX_SM_LAST_VISIT	14.07.2025%2010%3A44%3A07
+a-brands.kz	FALSE	/	FALSE	0	was_called_in_current_session_104054	1
+a-brands.kz	FALSE	/	FALSE	0	was_called_in_current_session_104055	1
+a-brands.kz	FALSE	/	FALSE	0	was_called_in_current_session_104056	1
+.a-brands.kz	TRUE	/	FALSE	1760248023	_gcl_au	1.1.2054109095.1752472024
+.a-brands.kz	TRUE	/	FALSE	1787032024	_ga_B3D3PC94X9	GS2.1.s1752471843$o2$g1$t1752472023$j60$l0$h1473798760
+a-brands.kz	FALSE	/	FALSE	0	was_called_in_current_session_104057	1
+a-brands.kz	FALSE	/	FALSE	0	seconds_on_page_104054	766
+a-brands.kz	FALSE	/	FALSE	0	seconds_on_page_104055	766
+a-brands.kz	FALSE	/	FALSE	0	seconds_on_page_104056	766
+a-brands.kz	FALSE	/	FALSE	0	seconds_on_page_104057	766
+ezsigner.kz	FALSE	/	FALSE	0	JSESSIONID	EB6E456AC7FFA6BB2C995289535BB589
+ezsigner.kz	FALSE	/	FALSE	1753090034	check_fileDir	
+.ezsigner.kz	TRUE	/	FALSE	1787045237	_ga	GA1.1.1145713169.1752485023
+.passport.yandex.ru	TRUE	/	TRUE	1787045363	sessguard	1.1752485363.1750324058443:GwvbWQ:e3ce..3.500:54905.UAUzRFuw.9Si2lROQsvnRoVWgD-puj3d5RsQ
+.passport.yandex.ru	TRUE	/	TRUE	1787045363	mda2_beacon	1752485363283
+.passport.yandex.ru	TRUE	/	TRUE	1787045363	lah	2:1815557363.10043029.wHWxqqfJOKyE83DQ.jfQkb7nSBZ2v3tUiI9DfCUJwZ1jjeEbHvkH1DyWjww0I5LH0g-g6Wp-IpvHdBWEzGslaUZcSBgeOGg9OYl1FzYfuJwQ.k3c1xU7c1_yqkR7WwQeV1A
+accounts.google.com	FALSE	/	TRUE	1787045506	__Host-GAPS	1:uGoB74APRwnv7D-GJZtP7xwenzUasXT3x73z0Zi95X9hxS2DZ5Tju73xp0vs0xjP1HsISl00kLd-NRDbzdm4S6KalZz72Q:LMxrgmL6X6Dnbia1
+.mail.ru	TRUE	/	TRUE	1784021515	o	:11025:CA==.s:4930:QAA=.m
+.vk.com	TRUE	/	FALSE	1781256720	tmr_lvid	09b9f4dd72fdc0971c58efa240681ee6
+.vk.com	TRUE	/	FALSE	1781256720	tmr_lvidTS	1752485520734
+id.vk.com	FALSE	/	FALSE	1753090322	domain_sid	bjxQGCJDe9ZqFe9pwrGcU%3A1752485522167
+.login.vk.com	TRUE	/	TRUE	1784021539	p	vk1.a.p8vK1jOtXdRMwVolBzlSn3EI7YniqP5i_yv4BUT5HvPByWprmLnxWptiIomX0_2pHqurinQRKEizbyyXfjs-gFP8VnBUNs5gE0EE4jRjQnTBhRReuIiDIPzIxV2dyww6MGhD3UF_bKfvZQdjPtVvVgYKsrW1w-5fZlLRTW9squo
+.login.vk.com	TRUE	/	TRUE	1783558502	sua	cOoAddt9xGZvYbQREw6yDc-XBtNk3OiOomGWV2IVXig%23443251404%5Evk1.a.GgdcO0V0JMoILhQF3DNgGur1Pbz-KeSsR6JOkefgvIB_jbV3wTOUcn7qf-9F1OpaMq6H8xpjJoAfP5SjCP06AF-pp6hrZCdJBZYUw56uw8tUWmHr9rB5jwcWwyNgJwFz36rZM6KMQx3tgDxibyiC9KdexnDlnJ8EaL6xNACxc868slBr8Ewx1Zmg7up35YDO%5E1752485539
+.login.vk.com	TRUE	/	TRUE	1783558502	sui	443251404%2CLKhPWrje_QvYyS20nPU6zLIItDiz_EOf6OczdziQnhU
+.vk.com	TRUE	/	TRUE	1783558502	remixsuc	1%3A
+vk.com	FALSE	/	TRUE	1784144255	remixnsid	vk1.a.gyDd0T6_Keo9nYqUOrRvKTlEWeT0-jsRbNrv39054DXaA7C_YpoVB3ltr-Y9QY3iP4l9-vy3dxc-fNF_mkjpyCxzHdlEh01i6DvsYPnxSXBlf-lcU7VZxKXaKzRV1ijJFOGMCIn5Oeo9_8j7i0VRQl0En6_b-5rRmYGVI-pMl8hCOrMPd0mmyJmuIXpJVL7Y
+.vk.com	TRUE	/	TRUE	1784290621	remixsid	1_v3JmnWV3mwq1Cu9NLOHzDPZL4Rv03wfTMb5qEIZ2cLdqdd84HmD3ZlHfrViUPuJBqMwlqmFqjMO3Rp6kwJy84w
+.vk.ru	TRUE	/	TRUE	1784502908	remixlang	0
+.login.vk.ru	TRUE	/	TRUE	1784021541	p	vk1.a.p8vK1jOtXdRMwVolBzlSn3EI7YniqP5i_yv4BUT5HvPByWprmLnxWptiIomX0_2pHqurinQRKEizbyyXfjs-gFP8VnBUNs5gE0EE4jRjQnTBhRReuIiDIPzIxV2dyww6MGhD3UF_bKfvZQdjPtVvVgYKsrW1w-5fZlLRTW9squo
+.vk.ru	TRUE	/	TRUE	1784165118	remixsid	1_DfUwYXA_45pmeSY8eRVQN6JnaeTcbpMUKKOCyl_YpmAqrR7KdUGVpuOyqSwTZL96B26ziD9aiy54bZPkDZzUbA
+.vk.ru	TRUE	/	TRUE	1783748827	remixuas	MDNjNDlhNDI0YjBmYjNlODBiZDI3YzU1
+.vk.ru	TRUE	/	TRUE	1784021541	remixstlid	9074960859535646240_bTTPhx9arVPDxEBZX1jyZqwLufvftkVzkX5u4WoRYcs
+.login.vk.ru	TRUE	/	TRUE	1783523833	sua	cOoAddt9xGZvYbQREw6yDc-XBtNk3OiOomGWV2IVXig%23443251404%5Evk1.a.GgdcO0V0JMoILhQF3DNgGur1Pbz-KeSsR6JOkefgvIB_jbV3wTOUcn7qf-9F1OpaMq6H8xpjJoAfP5SjCP06AF-pp6hrZCdJBZYUw56uw8tUWmHr9rB5jwcWwyNgJwFz36rZM6KMQx3tgDxibyiC9KdexnDlnJ8EaL6xNACxc868slBr8Ewx1Zmg7up35YDO%5E1752485539
+.login.vk.ru	TRUE	/	TRUE	1783523833	sui	443251404%2CLKhPWrje_QvYyS20nPU6zLIItDiz_EOf6OczdziQnhU
+.vk.ru	TRUE	/	TRUE	1783523833	remixsuc	1%3A
+.vk.ru	TRUE	/	TRUE	1784302604	remixdmgr	a6b979e0bb590a619e9f4d3091a157cc1d9322b4fc4a1d576bbea3b718d4db9c
+.mail.ru	TRUE	/	TRUE	0	ukey	ndjx8HHR49Fe3gExoGRJJ00
+.vk.com	TRUE	/	TRUE	1784463402	remixdmgr	826a99d788860501dc4d72fad49ff33542a3e6daaad9508c4f43c162061cc113
+help.mail.ru	FALSE	/	TRUE	0	loginValue	stepan555bal@mail.ru
+.mail.ru	TRUE	/	TRUE	1753090351	mtrc	%7B%22mytrackerid%22%3A0%2C%22tmr_lvid%22%3A%22becfcb0ce323f33a5146e0899f00f4d3%22%7D
+.mail.ru	TRUE	/	TRUE	1784021551	_ym_uid	1752485552304728143
+.mail.ru	TRUE	/	TRUE	1784021551	_ym_d	1752485552
+.mail.ru	TRUE	/	FALSE	1787045552	_ga	GA1.1.1794341541.1752485552
+.help.mail.ru	TRUE	/	FALSE	1787045552	hsid	0ni30u7ezycs
+help.mail.ru	FALSE	/	FALSE	1753090353	domain_sid	LErd6mBc908kGQS0O_Ss9%3A1752485553389
+.mail.ru	TRUE	/	FALSE	1787045554	_ga_N8Z19TG6GN	GS2.1.s1752485551$o1$g0$t1752485554$j57$l0$h0
+.auth.mail.ru	TRUE	/	TRUE	1784021577	GarageID	73a6edc71c8d4765a1da6995fab09c2e
+.auth.mail.ru	TRUE	/	TRUE	1760261577	ssdc	c14983012bb846b0a18ad2ebd31dd08f
+.auth.mail.ru	TRUE	/	TRUE	1760261577	ssdc_info	c149:0:1752485565
+.mail.ru	TRUE	/	FALSE	1768037566	t	obLD1AAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAACAAAsF0AcA
+.mail.ru	TRUE	/	FALSE	1755077566	s	dpr=1.25|rt=1
+.mail.ru	TRUE	/	TRUE	1760261577	Mpop	1752485576:465e710041437d631b7f760560637074605c7c1058585e591b4441:spas.stepan@mail.ru:
+.o2.mail.ru	TRUE	/	TRUE	1760175177	sdcs	sl1:1752485577:0n9ggznhh_yftA7fzVnc7SEr9pIu_frsitdURhFiK7I
+.o2.mail.ru	TRUE	/	TRUE	0	o2csrf	447957d506764b84a2c5980312b7b14d
+.ezsigner.kz	TRUE	/	FALSE	1787045845	_ga_1PYZ5L9NNS	GS2.1.s1752485023$o1$g1$t1752485845$j60$l0$h0
+.smi24.kz	TRUE	/	TRUE	1784024327	_ym_uid	1752488327501363219
+.smi24.kz	TRUE	/	TRUE	1784024327	_ym_d	1752488327
+kapital.kz	FALSE	/	FALSE	1784024333	_zero_cc	c13aa1f1662a8c
+kapital.kz	FALSE	/	FALSE	1784024333	_zero_ss	6874d98dca00e.1752488333.1752488333.1
+.kapital.kz	TRUE	/	FALSE	1760264333	_gcl_au	1.1.418830427.1752488334
+.kapital.kz	TRUE	/	FALSE	1787048334	_ga_795LXVBMCJ	GS2.1.s1752488333$o1$g0$t1752488333$j60$l0$h507480946
+.kapital.kz	TRUE	/	FALSE	1787048334	_ga_F6SXS658JD	GS2.1.s1752488333$o1$g0$t1752488333$j60$l0$h0
+.kapital.kz	TRUE	/	TRUE	1784024333	_ym_uid	1752488334175474304
+.kapital.kz	TRUE	/	TRUE	1784024333	_ym_d	1752488334
+.kapital.kz	TRUE	/	FALSE	1781259533	tmr_lvid	c0e843a65b5a0649eb52bcd0608f79d0
+.kapital.kz	TRUE	/	FALSE	1781259533	tmr_lvidTS	1752488333731
+.kapital.kz	TRUE	/	FALSE	1787048334	_ga	GA1.2.1148420476.1752488334
+.kapital.kz	TRUE	/	FALSE	1760264333	_fbp	fb.1.1752488333892.887369040815363067
+.tiktok.com	TRUE	/	TRUE	0	tt_csrf_token	pX96zc2e-cBBJnndRKJorC1Y1Er8Gn5z3BcE
+.tiktok.com	TRUE	/	TRUE	1768199715	tt_chain_token	hwkQFrHNMkWG1wHs2acGOg==
+.www.tiktok.com	TRUE	/	TRUE	1778408503	delay_guest_mode_vid	5
+.tiktok.com	TRUE	/	FALSE	1784024504	odin_tt	09b9306a171105f3e7da5713c3bf09a3790fd883cf5d0f65c7bdbaf70f2045aea3693c065eff5f80744ef928cd4f8df5448a77dc82b5cd804232a39bcdc7e49eb76a6d0306ada844e7fc914d2c077424
+.www.tiktok.com	TRUE	/	FALSE	1753104301	_tea_utm_cache_1988	{%22utm_source%22:%22copy%22%2C%22utm_medium%22:%22android%22%2C%22utm_campaign%22:%22client_share%22}
+.www.tiktok.com	TRUE	/	FALSE	1753104079	_tea_utm_cache_345918	{%22utm_source%22:%22copy%22%2C%22utm_medium%22:%22android%22%2C%22utm_campaign%22:%22client_share%22}
+docs.google.com	FALSE	/	TRUE	1753357770	COMPASS	blobstore-http-onepick-kix=CgAQ2vnTwwYafQAJa4lXzvP48rtCg1KMqTZB4ymRTQ2a5-WQ8g1wsJgWSGBtht49o6CGGgF6HcnucU4nlCBeuVAosYC3Ji9nSO-FPaVpC-PQLv7gHzES5oe52wfOWg-aEpwlOF-oftqM6zY4U0XyJ9LsuZAmXZfn3Vas-6OtBxoO8DDqGNTnMAE
+.oaistatic.com	TRUE	/	TRUE	0	_cfuvid	elNCghYfXSHEyXlkUVKW.nYZ5dRGgdamReNvtMdvLUI-1752498380666-0.0.1.1-604800000
+.github.com	TRUE	/	TRUE	0	color_mode	%7B%22color_mode%22%3A%22auto%22%2C%22light_theme%22%3A%7B%22name%22%3A%22light%22%2C%22color_mode%22%3A%22light%22%7D%2C%22dark_theme%22%3A%7B%22name%22%3A%22dark%22%2C%22color_mode%22%3A%22dark%22%7D%7D
+.github.com	TRUE	/	TRUE	0	cpu_bucket	xlg
+.github.com	TRUE	/	TRUE	0	preferred_color_mode	dark
+.github.com	TRUE	/	TRUE	0	tz	Asia%2FAlmaty
+.tiktok.com	TRUE	/	TRUE	0	s_v_web_id	verify_md34rq77_KkwjrUg6_U0ZG_4YRW_95NK_fwkqLAsaJKYN
+.tiktok.com	TRUE	/	TRUE	1757683259	passport_csrf_token	9851936f0ae0c44aec71a93a99cb9e01
+.tiktok.com	TRUE	/	TRUE	1757683259	passport_csrf_token_default	9851936f0ae0c44aec71a93a99cb9e01
+.www.tiktok.com	TRUE	/	FALSE	1753104301	_tea_utm_cache_594856	{%22utm_source%22:%22copy%22%2C%22utm_medium%22:%22android%22%2C%22utm_campaign%22:%22client_share%22}
+tikwm.com	FALSE	/	FALSE	1755091486	current_language	en
+.tikwm.com	TRUE	/	FALSE	1787206251	_ga	GA1.1.906692076.1752499487
+.tikwm.com	TRUE	/	FALSE	1760275487	_gcl_au	1.1.1101418511.1752499487
+gitlab.adata.kz	FALSE	/	TRUE	1787131061	sidebar_pinned_section_expanded	false
+github.com	FALSE	/	TRUE	0	_gh_sess	dsNqmf9qwRrsFuEzfZGYD2PP%2BfDPmHiGXnTGk11DRxju8HGdv2DiyBWzEsU%2F8iFBozDrBnbP2FN2vEzRKPloy0q%2FzxLXkiWuNgflh6XITn00SyA2%2BZaeizA%2BAC3PIYfV%2BXozPZgqIX63sPNwisLfE%2BNShmVKzIDeFor4rWq47b70%2BplBeXdN1u7SwvHUMCpyiig7i3E5UU2Eqyx8pdyDSfwDqaVqkHJYOAxyusywfFfqDB2Mg8Nkobj28v%2BUsqKeysPUhfauEylvl3CcJ53kklIhqJZdAom%2BDM1dAoxwFOMvrQA5hWJKr47Sjg%2BkcBuzX%2BndhPcZXJtej6B%2F8%2BUF%2FJdBSd3%2BAgm8tKW%2Bbg%3D%3D--%2BWxN6jm1YDowa56z--2N%2FyfiSASoarXaRX4d06VQ%3D%3D
+.adtdev.kz	TRUE	/	FALSE	1787139991	_ga_6R82GR1EQB	GS2.1.s1752578390$o24$g1$t1752579990$j58$l0$h0
+pk.adtdev.kz	FALSE	/	FALSE	0	openedCompanies	%5B%22941240000193%22%2C%22200140023023%22%2C%22231041001332%22%2C%22220540010525%22%2C%22181040037076%22%2C%22040940002421%22%2C%22971240001315%22%5D
+sknews.kz	FALSE	/	FALSE	0	_csrf	2515833bbe48f91600e7ed05851f29251ee8ab1b700fb7ca634ad2ce95ed1722a%3A2%3A%7Bi%3A0%3Bs%3A5%3A%22_csrf%22%3Bi%3A1%3Bs%3A32%3A%22qvh3yTHwoXENXV1ONCJ-SUpGJNhzCMoa%22%3B%7D
+sknews.kz	FALSE	/	FALSE	1784116735	_zero_cc	a63ab50d844f4a
+sknews.kz	FALSE	/	FALSE	1784116735	_zero_ss	6876427fdbeb2.1752580736.1752580736.1
+.sknews.kz	TRUE	/	TRUE	1784116736	_ym_uid	1752580736892233326
+.sknews.kz	TRUE	/	TRUE	1784116736	_ym_d	1752580736
+.sknews.kz	TRUE	/	FALSE	0	PHPMYSESSIONNEWS	54ihkv7upsducgcr77a1hcfk17
+sknews.kz	FALSE	/	FALSE	1783684736	hash	7985348e2ba53df48334cea3d4388331hd9s17t72eg6ibzhhohgdyrzlv9naz
+.sknews.kz	TRUE	/	FALSE	1787140737	_ga	GA1.2.735023732.1752580736
+.newskz.press	TRUE	/	TRUE	1784116748	_ym_uid	1752580748247614799
+.newskz.press	TRUE	/	TRUE	1784116748	_ym_d	1752580748
+newskz.press	FALSE	/	FALSE	1787140748	fid	572feb47-794b-4644-bfc9-64c6e3bb4b98
+newskz.press	FALSE	/	FALSE	1787140749	_ac_oid	7774fd78d43cc76b841fe506a24e8ab2%3A1752584348580
+.acint.net	TRUE	/	TRUE	1787140749	aid	fwAAAWh2Qoy19zs9qaSUAox+Bjv4+UQe2/gFdmvp6lTHAT4s
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp14v6	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp17v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp53v5	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp62v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp67v5	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp68v3	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp71v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp85v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp95v4	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp98v3	1752580748
+.acint.net	TRUE	/	TRUE	1753790349	cSyncDp104v3	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp107v2	1752580748
+.acint.net	TRUE	/	TRUE	1753876749	cSyncDp125v4	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp126v3	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp129v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp136v3	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp148v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp149v3	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp151v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp251v3	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp186v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp217v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp226v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp239v3	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp243v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp260v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp244v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp248v3	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp261v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp264	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp274	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp289v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp296v3	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp312v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp313v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp368v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp331v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp337v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp351v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp361v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp353v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp362v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp366v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp390v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp399v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp394v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp420v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp424	1752580748
+sync.opendsp.ru	FALSE	/	TRUE	0	chk	1
+.opendsp.ru	TRUE	/	TRUE	1787140749	pid	MThiYzZkNmFhZTIxZGRmNQ
+.ohmy.bid	TRUE	/	TRUE	1755172749	uid	eb4aa806-8ac0-47b1-9e94-31d621d3adb7.6876428d.6c5c349f7a4be3b8
+.hybrid.ai	TRUE	/	TRUE	1784116770	vid	3b2585e613451349234f
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp7v3	1752580749
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp14v4	1752580749
+.bumlam.com	TRUE	/	TRUE	1787140749	suuid3	IiQxZDcyM2YyNC02MTczLTExZjAtYjYwYy0wMDI1OTBjODI0MzY*
+sync.gonet-ads.com	FALSE	/	TRUE	0	chk	1
+sync.dsp.solta.io	FALSE	/	TRUE	0	chk	1
+.dsp.solta.io	TRUE	/	TRUE	1787140750	pid	NjI2NTMzYmU1OGFmZGZmMg
+.gonet-ads.com	TRUE	/	TRUE	1784116750	pid	Nzg1NjkxMzA3MDYwNWJiNQ
+sync.adspend.space	FALSE	/	TRUE	1784116750	as-user	fdfc37b2-b89c-4ccc-9b99-687f383d4def
+.pxltag.com	TRUE	/	TRUE	1784116750	smi_uid	hW_IlwOjN
+.weborama-tech.ru	TRUE	/	TRUE	1786535950	AFFICHE_W	vragwelRRIW@71
+sync.techdsp.ru	FALSE	/	TRUE	1784116750	uid	Vsk1tNg0Q4W8A_4DuaN51A
+.linkssp.ru	TRUE	/	TRUE	1755172750	uid	95d8137a-91b7-47ee-b113-3d7bc17f318c.6876428e.6be8cbe045c2606a
+.acint.net	TRUE	/	TRUE	1755172751	cSyncDp241v2	1752580750
+.sknews.kz	TRUE	/	FALSE	1787145126	_ga_RE7PS0W9LV	GS2.1.s1752585125$o2$g0$t1752585125$j60$l0$h0
+.doubleclick.net	TRUE	/	TRUE	1787206251	IDE	AHWqTUmLVPuP3cTUPaKBzBH8TUw22QdD5R4BbgIfeuit3izjE1fkz_It8XcIzI5q
+.tikwm.com	TRUE	/	FALSE	1787206319	_ga_5370HT04Z3	GS2.1.s1752646250$o3$g1$t1752646318$j60$l0$h0
+savefrom.net	FALSE	/	FALSE	1753251164	country	KZ
+ru.savefrom.net	FALSE	/	FALSE	1753251165	country	KZ
+ru.savefrom.net	FALSE	/	FALSE	1787206390	x-requested-with	
+.savefrom.net	TRUE	/	FALSE	1787206417	uid	85955077dc5c68df
+.savefrom.net	TRUE	/	FALSE	1755238364	sfHelperDist	70
+.savefrom.net	TRUE	/	FALSE	1755238364	apkHelperDist	95
+.savefrom.net	TRUE	/	FALSE	1755238365	reference	58
+.savefrom.net	TRUE	/	FALSE	1755238365	clickAds	92
+.savefrom.net	TRUE	/	FALSE	1755238365	clickAdsOnError	75
+.savefrom.net	TRUE	/	FALSE	1755238365	poropellerAdsPush-e	32
+.savefrom.net	TRUE	/	FALSE	1755238365	rsya-e	13
+.savefrom.net	TRUE	/	FALSE	1755238365	rsyaRuBanners-new	54
+.savefrom.net	TRUE	/	FALSE	1755238365	promoBlock	53
+.savefrom.net	TRUE	/	FALSE	1755238365	helperWidget	12
+.savefrom.net	TRUE	/	FALSE	1755238365	helperBanner	93
+.savefrom.net	TRUE	/	FALSE	1755238365	helperOffer	21
+.savefrom.net	TRUE	/	FALSE	1755238365	tzTopQuality	91
+.lifehacker.ru	TRUE	/	FALSE	1784182366	__ddg1_	RYIubkWT32fOBIe8pNJe
+.lifehacker.ru	TRUE	/	FALSE	1781417568	tmr_lvid	0553739903381e8043104e314de2b163
+.lifehacker.ru	TRUE	/	FALSE	1781417568	tmr_lvidTS	1752646368489
+.mail.ru	TRUE	/	TRUE	1784268769	VID	0xvYaX10fyoX00002h1NLKIX:::0-0-0-d7c6bcb-0-d919ba0:CAASED07qN1ODBPSPrr2BUKPSEUaYLUDgsKtGHYTbVl4PtSg2vyl9NrKG6BGbEtcUnxy1lDb9WYHokJuFiQtQYmT2opaXiDIF09Yf3pZIgVQfqqBFS_YQ2CeQlTDVjaOk4ZCR9yzA9oTzphafKJN1rlgJxBNJg
+lifehacker.ru	FALSE	/	TRUE	1787206369	_sp_id.0d18	77329fa8-13c1-4e3c-be7f-312a650b11bc.1752646369.1.1752646369..d7dbba3a-058b-428e-a6bb-b9364ffc5d81..8eb046bc-4bdd-4849-823a-cbe5637ec5ec.1752646368799.1
+.lifehacker.ru	TRUE	/	TRUE	1784182368	_ym_uid	1752646369980085513
+.lifehacker.ru	TRUE	/	TRUE	1784182368	_ym_d	1752646369
+ssyoutube.com	FALSE	/	FALSE	1761718389	_yt_r8r	eyJpdiI6IjFvUXhjWGNGODRwTmdUTjRWd0c2dmc9PSIsInZhbHVlIjoiOWxaQnZRQnZYTURlbW9wUFdVNVBVTUdFd2lMQW5CNXlpbjBiYnlLYzZISTlXWW5jVkVlOXFuMDlESmNYenlyMCIsIm1hYyI6ImEwNzE3MGEyMDZmNTE1YWY4YWQ3NmJhNWU2NjRjNTcyOTA0NTk3YzgwYzFjYjQzYWE0MDRkZDEyZWY5ZTgzNTgiLCJ0YWciOiIifQ%3D%3D
+savefrom.net	FALSE	/	FALSE	1787206390	x-requested-with	
+.savefrom.net	TRUE	/	FALSE	1787206390	_ga_Z6SY4HF8P8	GS2.2.s1752646366$o1$g0$t1752646390$j36$l0$h0
+.savefrom.net	TRUE	/	FALSE	1787206417	_ga	GA1.2.474984983.1752646366
+.savefrom.net	TRUE	/	FALSE	1787206394	_ga_90KLEJZPNC	GS2.2.s1752646366$o1$g1$t1752646393$j33$l0$h0
+.savefrom.net	TRUE	/	FALSE	1787206394	_ga_9ZMEKK0DW7	GS2.1.s1752646369$o1$g1$t1752646393$j36$l0$h0
+.savefrom.net	TRUE	/	FALSE	1787206417	lang	en
+en1.savefrom.net	FALSE	/	FALSE	1753251217	country	KZ
+.savefrom.net	TRUE	/	FALSE	1787206417	_ga_R1P8SYKKYC	GS2.2.s1752646367$o1$g1$t1752646417$j10$l0$h0
+.www.tiktok.com	TRUE	/	TRUE	1753079633	perf_feed_cache	{%22expireTimestamp%22:1752818400000%2C%22itemIds%22:[%227518510833064840504%22%2C%227500183031991274757%22%2C%227506189660381777198%22]}
+.www.tiktok.com	TRUE	/	TRUE	1778567715	tiktok_webapp_theme_source	light
+.www.tiktok.com	TRUE	/	TRUE	1778567715	tiktok_webapp_theme	light
+.apple.com	TRUE	/	FALSE	0	geo	KZ
+.tiktok.com	TRUE	/	TRUE	1784183716	ttwid	1%7C-zR8QP121QJqeKrfDL1AVkDkWihd42nA8gcP7Z9EraE%7C1752647715%7Cf9bc2c90f7189c0a43c79dcaa48239a51907c9d74bcca3dd604398881d88c251
+.tiktok.com	TRUE	/	TRUE	1753511723	msToken	xdOEc4AZ7-HSHT-2j7atj_QZWhkHxCGEzHTB9IYEw_rHyFw2RUYjn7x_at1Rsayi2GFC0fQy85p4P8Xdrqu7V0RkRClIH6CuDNs5zvWwp4DXyKtE_4CNZ8W0U7VKJxZeJz1LMG5hdkYp2DZHnelN6vaLiKM=
+www.tiktok.com	FALSE	/	FALSE	1760423722	msToken	xdOEc4AZ7-HSHT-2j7atj_QZWhkHxCGEzHTB9IYEw_rHyFw2RUYjn7x_at1Rsayi2GFC0fQy85p4P8Xdrqu7V0RkRClIH6CuDNs5zvWwp4DXyKtE_4CNZ8W0U7VKJxZeJz1LMG5hdkYp2DZHnelN6vaLiKM=
+.gitbook.com	TRUE	/	TRUE	1787208148	__session	8d0ca91f-0015-417d-b612-cea26d307286R
+id.adtdev.kz	FALSE	/	FALSE	0	redirect_url	https%3A%2F%2Fpk.adtdev.kz%2Fcompany%2F040940002421
+.adtdev.kz	TRUE	/	FALSE	1787221430	_ga_MPNBF8EYCE	GS2.1.s1752661428$o27$g0$t1752661429$j59$l0$h0
+.adtdev.kz	TRUE	/	TRUE	1752747830	token_create_time	2025-07-16+15%3A24%3A18
+.adtdev.kz	TRUE	/	TRUE	1752747830	access_token	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiNTUwZGIxYmM4NjEzMWQ3YmE0NGFmY2UxOTUwZTZjZTk4ZjdhNTc2ZjIwY2JjMWNiMWI3YWE4OGY1N2E5OWJhMmVjNzk2MTRkMzRlYzViYjAiLCJpYXQiOjE3NTI2NjE0NTgsIm5iZiI6MTc1MjY2MTQ1OCwiZXhwIjoxNzUyNzQ3ODU4LCJzdWIiOiIxOTU1MjIiLCJzY29wZXMiOltdfQ.gga4Cnxbdeup04DD-2QZVnSWEMYyKtTkl5AmDkcNNVzD6sVz9zXCT94XLNsZMEG4hheBN3Gz01RJROQnQPo8sxD4dUFVBA0cCviQzfBzxqPQIDrxz2a60H_34nUm25Y3JaYIORASedC7dH_vnsvNNyv8wGP2pyv6Mq-0et7RnNLeFng_Ds7hJsQslN-OhpBcUDyEJrBFWK4m-tXr1GjO8Y42GvlRk9QtFefLZ7OvpfnB9laoNFAf-TqbX0L3MNvokpn5d5lThQqSlPT0DwboRGGkiU2eBM3Wa1cvsb5QLz63dOyzyPEI6Rz5ebBzBpiY0sPtQsOgDLT0L-czssCX49Jn1ZStvcKQbh-BJTAePXHm1UuGpIxpWHMqd_5Q2nfUEkreMw-kXr6KDQi2R_jCUl6oK6lXqLcsX-IBKy4rJySTbMgbYUf_pl2WlXUhyqO6vWZj552w4moexM84JX8ab8uFvmLhUNppUN67TsXiaZFBGNdwtFsliIMPitU8v-krWldA5eAZKD5Ns8zH0Jg_zBf9YXN1VQPITFYLSjnQHQJ83mDTODO0rgMDpc0fotKx_43nxxqSOTOc2c8kOV5txlz9_jOks0gZ_V_TQtsIH5ePeuMYetznRvR259adI2xjL5sOsWXiKAOe7J1usl-Cc8h4XxGws4kILbXtMAreLCk
+.adtdev.kz	TRUE	/	TRUE	1752747830	refresh_token	def5020064cf3602a97455b2603bfc050f3261443e8146ea8b0105bd27e213dda512a885d595c39dd14142338bf5c1588a98bdb0c05805a71296d507bde56c9e3449840e2c364d8872205dbfc39f095ebff901531dc9e82adaa1a5f2a710e1c3b2c43f9371301a56e8c9afd5f3b0e63b72348a015631557ab647f17ccf3a3ab925f28e403013765d0df3730e5a5b811796edcbac84fc9f9860e40538ef777f51d13e93894b083e19a2fe06a4142b32df36fb32dc8321f5cc95ea2908cfbf3922f2e7c7275116e4393f265f7e2879cfd83a92d860acc68b02ee74c90d90c3d8446ab1cd9488a7a017d67c456ecf594e3962ac8361d9c5e27fd1af0393b9ff222fdcf9e77169e2a5aacf5b221c357650be013c3530565283280eea00f270fae6720ea0ac8489126d62b1b3dc0e571108c348eef6b6fc420e2db32f221133c9501a235806eabb376528b136226d8cc772f96da331d01279ea584eebb2a95e6f7a595b825f8ec705
+id.adtdev.kz	FALSE	/	FALSE	0	access_token	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiNTUwZGIxYmM4NjEzMWQ3YmE0NGFmY2UxOTUwZTZjZTk4ZjdhNTc2ZjIwY2JjMWNiMWI3YWE4OGY1N2E5OWJhMmVjNzk2MTRkMzRlYzViYjAiLCJpYXQiOjE3NTI2NjE0NTgsIm5iZiI6MTc1MjY2MTQ1OCwiZXhwIjoxNzUyNzQ3ODU4LCJzdWIiOiIxOTU1MjIiLCJzY29wZXMiOltdfQ.gga4Cnxbdeup04DD-2QZVnSWEMYyKtTkl5AmDkcNNVzD6sVz9zXCT94XLNsZMEG4hheBN3Gz01RJROQnQPo8sxD4dUFVBA0cCviQzfBzxqPQIDrxz2a60H_34nUm25Y3JaYIORASedC7dH_vnsvNNyv8wGP2pyv6Mq-0et7RnNLeFng_Ds7hJsQslN-OhpBcUDyEJrBFWK4m-tXr1GjO8Y42GvlRk9QtFefLZ7OvpfnB9laoNFAf-TqbX0L3MNvokpn5d5lThQqSlPT0DwboRGGkiU2eBM3Wa1cvsb5QLz63dOyzyPEI6Rz5ebBzBpiY0sPtQsOgDLT0L-czssCX49Jn1ZStvcKQbh-BJTAePXHm1UuGpIxpWHMqd_5Q2nfUEkreMw-kXr6KDQi2R_jCUl6oK6lXqLcsX-IBKy4rJySTbMgbYUf_pl2WlXUhyqO6vWZj552w4moexM84JX8ab8uFvmLhUNppUN67TsXiaZFBGNdwtFsliIMPitU8v-krWldA5eAZKD5Ns8zH0Jg_zBf9YXN1VQPITFYLSjnQHQJ83mDTODO0rgMDpc0fotKx_43nxxqSOTOc2c8kOV5txlz9_jOks0gZ_V_TQtsIH5ePeuMYetznRvR259adI2xjL5sOsWXiKAOe7J1usl-Cc8h4XxGws4kILbXtMAreLCk
+.adtdev.kz	TRUE	/	FALSE	1752747829	accessToken	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiNTUwZGIxYmM4NjEzMWQ3YmE0NGFmY2UxOTUwZTZjZTk4ZjdhNTc2ZjIwY2JjMWNiMWI3YWE4OGY1N2E5OWJhMmVjNzk2MTRkMzRlYzViYjAiLCJpYXQiOjE3NTI2NjE0NTgsIm5iZiI6MTc1MjY2MTQ1OCwiZXhwIjoxNzUyNzQ3ODU4LCJzdWIiOiIxOTU1MjIiLCJzY29wZXMiOltdfQ.gga4Cnxbdeup04DD-2QZVnSWEMYyKtTkl5AmDkcNNVzD6sVz9zXCT94XLNsZMEG4hheBN3Gz01RJROQnQPo8sxD4dUFVBA0cCviQzfBzxqPQIDrxz2a60H_34nUm25Y3JaYIORASedC7dH_vnsvNNyv8wGP2pyv6Mq-0et7RnNLeFng_Ds7hJsQslN-OhpBcUDyEJrBFWK4m-tXr1GjO8Y42GvlRk9QtFefLZ7OvpfnB9laoNFAf-TqbX0L3MNvokpn5d5lThQqSlPT0DwboRGGkiU2eBM3Wa1cvsb5QLz63dOyzyPEI6Rz5ebBzBpiY0sPtQsOgDLT0L-czssCX49Jn1ZStvcKQbh-BJTAePXHm1UuGpIxpWHMqd_5Q2nfUEkreMw-kXr6KDQi2R_jCUl6oK6lXqLcsX-IBKy4rJySTbMgbYUf_pl2WlXUhyqO6vWZj552w4moexM84JX8ab8uFvmLhUNppUN67TsXiaZFBGNdwtFsliIMPitU8v-krWldA5eAZKD5Ns8zH0Jg_zBf9YXN1VQPITFYLSjnQHQJ83mDTODO0rgMDpc0fotKx_43nxxqSOTOc2c8kOV5txlz9_jOks0gZ_V_TQtsIH5ePeuMYetznRvR259adI2xjL5sOsWXiKAOe7J1usl-Cc8h4XxGws4kILbXtMAreLCk
+pk.adada.kz	FALSE	/	TRUE	1752834236	SESSIONID	1752661454.84.13657.988715|b9f48c5f036f6d4672a81a76d006936e
+pk.adada.kz	FALSE	/	FALSE	0	openedCompanies	%5B%22230840012633%22%2C%22230640030822%22%2C%22181040037076%22%2C%22080840010555%22%2C%22140340014944%22%2C%22941240000193%22%2C%22200740017338%22%2C%22040940002421%22%2C%22070640007922%22%5D
+pk.adtdev.kz	FALSE	/	FALSE	0	companyOpenedDate	1752662691249
+.chatgpt.com	TRUE	/	TRUE	1760438981	__Secure-next-auth.session-token	eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..x3LpqyME47F7LzX_.ljcmiGhWk1EQZDr1Sjwh4pqhLc3Gi1nF6Lwe6ZHP-dLOBsQCPBqLFi8nSPk9hkge_sDRv-rt1y6SEbubYkMOlL0omwUNaC2TKYGpAliuAtjU1lUERGzmbgJuSPZaew7mWq5iuL3jLHv1npxNKx17PxHXR0k9iR3H-_h7Mmtk_z8H-GoSxHqF3VxZAnQgYVK3ClnLLL8Zoyw8DlPE3WhTXsNzH51BIFPHeFZOhWCyhyJB3Fu19rpQWUi69RYTRUOBys_tBKz57tgQW72hrXjdC-Xomu6aMZNlMh5lRjZjftgHV-sqXJUkQEqeI6ddtlElcUhh0lE9m5Ne7FrS8M1thWfL3x3VBEmxEsfGf0AUhVDD7kk_cTiTRSvOLhN0USut3v3Eja5HemWzlACRqiUoxx9h9vFbpAYuMeaysT0MHalfpq75uL7hi-J4Z-hG9mcEiLJkd2quzPkDnkGgWgVoXLvjXx1SThJiK4U5D61CcWER0roD3W3XgkG7qQUTXqEY6OHxuLEXeXH9_RRUsA-wrMKoKvj857GF67C2HeQNc6o93V_TbXd_-f36A3tmHxqTykkp1NvKJ9FFTXi_woVMtzxEPnfzNrAZKXL8tgTVITy19g4CIOR7KAvdXydfdXSZi_v1T2mnRgtJb-kOFbhsXHSEea3NfvAbIEeCn-forPQqq9JggYdJCGM2RQUdVReBOC_GJhyl21wUGwCHOPfOigt4NiRaedCGJnUiN-h8wrk2NU8_dftLDHfvJJcgqFKtQsugtmSZXgNO_8hUUNMccCqV_9DvqfPLZkh7Gub4Kvk6ngV81ytw-_rTD-KSy85gWGcu_LeMczv6vLPa--BVLDLrGs3-12Pr8BWMVzFXPwfWpcJ9xCQDcgF7_1fbjYB_gTuwk9lnHCXI7Ub0zU1FYXFLebD3dCKp0N2RMrKKesmIJVKv8EGPRlnKKlCd1zu-fY7hM1-5b2TqNKn9SXoPSfGJGp6eU7PFc0dF4garGXdfvs5YdY2BJS5dpb-0IocHQ-XYGEOFYMZuORoc5lD3Immd9wtqxZJfsXgZwRZXsp6AMo-2CS9XXvv3fQjmmB6AUicYoPki5pX0ZZjGKKmdVGGvLIFHUpsr2eDsJY0rjqSMUdMKEzDCW6mgjRYh9UPiM-_-XgrN8yTuVu5NeqCUtlTLBQrHDUheo1NQe8k_OwTu3bHHVMFgveDIHQ6gXVAhL-b5GzeqviMNimg9HJbYlmC3a6w-bMO57VV-Tzv9CpM2rlqclCRuHXpRtbdQBl1mAVxXP9cD09fZLMSWL45FeBSiLrdCf-LfI57ntF39LQcG1VzIUIvWMYIcrGrsXj9NiCIP0E2v4jt9eALT-oWKiB24wFotJtyU4esUf1zsenr7I0qrjMQjs9F0zUzHV8F3iuku-aGxnbI7dAN2S6iZqJ0JhTJqlm-VtwmOJkkh3i4HLC4d8tsxjZVcnrPDUbyF7IOkRQJyly6-ge3Q3JkLXmAIQolYg5_Ef31UgVpwj1831uNrgx7FALfYFVZZTquqX1XniwAL8_cIpc_OGj-BN0CosxspbWOL3QgcV4abQqz0f0e-skujMpVnV3nTyoC7xkfLW_sJ6sh1balMPuVpOFwY4VOqrh53JYQCG2l_PTWuecyRcPM_vB6vgfRewwJyrHLIDGMjCRzc-gClh_IDf3zC6EzIz7beNsEN5tAT1uL9gPzSPUkPuwPTyxyO3Wi-EjAsiGX22kA_XjN340DUDaOY5QMJeYOJ2u2Zv4GaeJ-yDFA6k_KU4UEr-rY97UW-aslT8DM-1ZOKkI6ncTPNCFH6FFO_jn9B1gWKy7yNvR6ZQxv4L0O9YO9V1LcPWfx7peNXqA-InIvI6xgE6JIlLopVOx7zCpdgD3hqSL6fjgV6vl0hqnSWGSHRIlMu2plaAcGinLxI4azNkQU29L7CzPzOX65H_BrGPF3AndoMD3Maakpazl5JxLHJs_VOQ67EmqqY3Vr-GqF4fBOMh0uOUuPxIGNsg4_SXgXlk_NAk9DurXfr4sI6SeblbTqu4l2WBheYkXajJcOPB32FSN7pLbF86SzBHNR-sdSi_-rK5NEHn_KwGPE1hYSvn2egaOa-2PqYPwxAknR6F_bV07KOzJfkBhI_ADsBB95HqCl5fVxlkU66_sHcFX1kyc5elJEsXzyjSXdTvq1xnNWYBHk3BpFG-kpcfBd2t6NocVT-P22bD_WqOHDbkfLetm-xh8TU2yY0wDRBhe8htAUUP6Z5rVzehxxGfZ78gVVhFLeiBD8mOPLgphCfoDMNuL083sD5KWleXyqSARwN1HzoTG7RjYGCE_MYTdijZIA3h3CBbuI4CVh4dnB_lITBjauTXqRfAkrKZle4LAQwqgYbYxRJQZ4SWo23QEeM8jL5bRjTTLscZp61f605fR5BE8fLyjdktigxkqTb851M4Dzn5HcmXeo1wkxd7DLpZcHs34gq3Pi2mLvvyMuup0-Fyzsm8I21HGFSt8zWNr56FyuPmX4xL4u2Cu2EUB-D4BNUcqAlxoBnqvpwm-OxVpyLzPDMnloHsUsEYgrxxvFdJjBdRpHYqpY56Qk6kXBnNK5KGEPJAYfpj5aUm-AgLDZCmEtA59I50EckIoIgaNRMF6tvByRBWMj1AiaIUCwVNDqreG9p4QKV_i30-FBkZyT1E2DvhCHGO2z95j_qxEsrSV6SWg138v2HxYUddNYrMTHYbUZBM6RSVmZILQDFhz-iNP3TDJwsPhae0sZoqEbprXvlwZZZfa70SVwn5HteV68GRicS5pwKT-4_9VhnnQQtZ07eMN1IXkw0pc9RUQtmqxHE15vLw-CFs_Gjheu5L1NuYEpoZEw7YCHLkQGSd6bw54v48TG_cZAdylIjGX84J1ZTqE2xW--c1phSiwB4g6btPqq693PPGbIamd0qcJiullPS-fjQApUHLuaYA9BMniNIySJ1bTU3qosxNbxWmxvAYy1ujyczcakNg78UVRsp13TJCncb5AFykKsHFDQk9VXVI7MVCgX7kfrh0u86W7jVd88YlisCKxRb2vOQetLmFnOxwuY6bo4kWhrqXnbcVMHmWNnneSQ38fYzJcRJrzqldbZf30u2wJre1Kqc9AkaPFrndCTeftPVsayGLxie3JkV24t0LM7MjQYbiewBxvjEcCQ6HsAylX0cqDZDO_l1phQ6dJ0eZlUGz-kJEP0-0pq5r19wO-FRAOJ4b7JepL94tvwVuz2JSQekSBZOrsreY4jKGhouQEC5EGe1VCGgm_YYZF5CXmiqzoLB5bEMogaRq381RQhPCLTc88UfGICNmjpSuGJ7KivGTFktudBXYUvnnpvMricZxMbZwnwqoEgnHkB4gH9xPDSluTMNsv6TmpN6XvHVyDIKWXNPIKIO1P9H0VeFSFAB5OrHHuhIyFghhhE9RgsqyXrm9qcjSm31Vw5gqmpb_kfxwNiznF3x3bT_CzgUveOes7JjHnhMu0Jpfih9OCh3iymu9VJ6zxiKirBZQ7mGNrrg7L06LEcBt-btLynsaW6La2R9d5Pg1SpuHBpw3MSNx49kw0FmGLnGls1P6Wg-LtzK2ihvwKkIwGplhdUS7aqUcYz-XoLo-kVJdI37hgFMLBnKk6ypmLW5XXK3lptnOn_cSG4q4Q698IRvQ5sLXQ.XbvvDyJyRgGSb-eV91SIqg
+.chatgpt.com	TRUE	/	TRUE	1784198983	oai-sc	0gAAAAABod4PGbAyVQBxWXgKyQpKkyDFj56WmsW-dDtJd2mL1tjAxq4mv0dIIiNiO1_LFms1rdDnVIhJvpTeUK45mz0DvcUVZofdOVRcLvEONCzt2i_51LbcwZPhPKWFYo5Gqh5lviOFmkh5m-Gdyvh5LdUrTnLFkn8m7-wbvFfDd9fBfqnfuXi5PPlayUQ9pa05NRQu5Wy3YKMm9y3LlZaRb0ut6oG_u9QYRxqTDi-6un3GOZhR0ZvA
+chatgpt.com	FALSE	/	FALSE	0	oai-gn	
+chatgpt.com	FALSE	/	FALSE	0	oai-hm	AGENDA_TODAY%20%7C%20ON_YOUR_MIND
+.savefrom.net	TRUE	/	FALSE	1787225360	_ga_YZBZRGCYS9	GS2.2.s1752665360$o2$g0$t1752665360$j60$l0$h0
+.gitlab.adata.kz	TRUE	/	TRUE	1787226709	_sp_id.4a0e	74c85b1e-def8-49a4-9ac5-6bb2a23eac1f.1750929878.30.1752666709.1752648748.dea9e473-ca3a-4a8e-a361-f403f086fdea.3f2f1884-f300-43ee-9678-1aaedf8529ef.87d970ce-5271-4f71-b628-1ba6ab52366f.1752666018773.7
+my.telegram.org	FALSE	/	TRUE	1784188792	stel_token	2502dcb6d81b27504d75743c7cd9d7ad2502dcbb250294af88bb93775c6b41c53ab93
+mc.yandex.ru	FALSE	/	TRUE	0	yabs-sid	2130136681752674459
+.yandex.ru	TRUE	/	TRUE	1787234460	i	TNMkp/5MAeMQwcx0oHBCw3JwA7+B5AnENvPUi7BTmBBenbLMMz5OkKyWmR2V8vcZy+Z2SFpBCG3ixkk00HfFVOvmLQs=
+.yandex.ru	TRUE	/	TRUE	1787234460	yandexuid	9738342731752674459
+.yandex.ru	TRUE	/	TRUE	1787234460	yuidss	9738342731752674459
+.yandex.ru	TRUE	/	TRUE	1784210459	ymex	2068034459.yrts.1752674459#2068034459.yrtsi.1752674459
+.adata.kz	TRUE	/	TRUE	1784210460	_ym_uid	1750151805356259187
+.adata.kz	TRUE	/	TRUE	1784210460	_ym_d	1752674460
+.adata.kz	TRUE	/	TRUE	1752746460	_ym_isad	1
+.adata.kz	TRUE	/	FALSE	1787235179	_ga	GA1.1.959929185.1752674460
+pk.adata.kz	FALSE	/	FALSE	1784210463	i18n_redirected	ru
+id.adada.kz	FALSE	/	FALSE	0	redirect_url	https%3A%2F%2Fpk.adada.kz%2Fcompany%2F941240000193
+.adada.kz	TRUE	/	FALSE	1787234513	_ga_MPNBF8EYCE	GS2.1.s1752674513$o13$g0$t1752674513$j60$l0$h0
+.adada.kz	TRUE	/	TRUE	1752760914	token_create_time	2025-07-16+19%3A02%3A23
+.adada.kz	TRUE	/	TRUE	1752760914	access_token	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiODc2OTY2YzM4NWE0NTkyZjYwYzIyYjRkMjM5M2U0MDFkY2IxOWE2MzJlM2I1OGM3YTVkMTg1ZDMwYjUwOTZkN2FkY2VmOTliMTQ4YWUyNTUiLCJpYXQiOjE3NTI2NzQ1NDIsIm5iZiI6MTc1MjY3NDU0MiwiZXhwIjoxNzUyNjgxNzQyLCJzdWIiOiIxOTU1MjIiLCJzY29wZXMiOltdfQ.SibGRbIPXxSaIfExcwoewSFu69_YAMHXhrEf9KGbTb-c3wF3-2_HczM4keXIuizykUfKzc9rHgRhl7eXS9KIqhDXh4rpajXbTppGDr0UTJJIv5cmCaAneg-oqQHy3dWgziztVwBpesJ3cebDzIN_Ihd0RUIwf02jCkaERxtfIrS1e1PYSlxmG5J3LXY-yWz8qMN5laTFZcQabEB5haDMU9EEo3MMwq1lj8gpAXuBZ9YKf4zdTAri-Vd1igApk3rFMs4J1STJ7BQa6aoGz6Sa1HISu1Wa_CgDaWV-FoPM_ZNUE3pMMWVxDkKJUVhUapJHtSVelA017Rgz8_sfFwoDiMjpo6vu-2SplJoJNVI4_3MC4W-8vq-8ImO65owsyhfVLacIlmy5PPyydMzBTpssna1btnmpEE_ww5QezzR8sun8uubvSVTIvTykPZEZAJCrl2dAmCYWc-Ujqc89LqQoakm0rTME2y54zb-QZCglAUIAPuDiQrJggUu6ss8KoNy1W2luQbU2fdK4CtkG1hMTyIkPh6Mr4PdGXl5mRw31Dt8AA9FNQJn3qWMO3dFluZItpPLCNpmZwAs6LM6eoSZa63_ejpIp7K2zVdvSYoBIQrNzsPTmsWursLkkvchybzZPVbjtF3urdQlGutA-oCCUvNSMrcY-ct6Nsq-AB3Q3noA
+.adada.kz	TRUE	/	TRUE	1752760914	refresh_token	def50200629dbaf919d8a86ae2c3040d1acb377b7cab04d04352a787234168183afc22c7c5a7c094598ad7ea2920d2874c043206369bd052a603373b3c17ec8084fc61a7cf5c6b1bdac3b9dca52f53b9277b33350cdf7ddf01e560f7edd80d73e7addc367739be1f09254314e2ecb4cbb23c782ee40c375f5868a411ed71eb52ed802e867fdb721d81230b147d2e269b4e1d8e058066ed0b8da87475dc550cf0a6342165de25df8c8f663131a702f33fb257852559a3126a1cc59e1bd693c697224c4d7bd96bb2f72f97502921569856ccede8eaa80bf1b4bc30d31a15cd27490cd15ee997c64c59ec291c849bc260536e5cf8e0cb5e8b5535cb189d30ec2378fbd1ded0642a938426bc8c7405b9904907e917dbbe9e9b2793bf27ceb8a12912ca64f7a7f7765667a232759ddf696df06077be1f027146528e443368cb9e20cebf1ebfb41447ddd28c567e27467970453a29a89c9d8eddbd5a67156bd7577e32a80d5aa37c37
+id.adada.kz	FALSE	/	FALSE	0	access_token	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiODc2OTY2YzM4NWE0NTkyZjYwYzIyYjRkMjM5M2U0MDFkY2IxOWE2MzJlM2I1OGM3YTVkMTg1ZDMwYjUwOTZkN2FkY2VmOTliMTQ4YWUyNTUiLCJpYXQiOjE3NTI2NzQ1NDIsIm5iZiI6MTc1MjY3NDU0MiwiZXhwIjoxNzUyNjgxNzQyLCJzdWIiOiIxOTU1MjIiLCJzY29wZXMiOltdfQ.SibGRbIPXxSaIfExcwoewSFu69_YAMHXhrEf9KGbTb-c3wF3-2_HczM4keXIuizykUfKzc9rHgRhl7eXS9KIqhDXh4rpajXbTppGDr0UTJJIv5cmCaAneg-oqQHy3dWgziztVwBpesJ3cebDzIN_Ihd0RUIwf02jCkaERxtfIrS1e1PYSlxmG5J3LXY-yWz8qMN5laTFZcQabEB5haDMU9EEo3MMwq1lj8gpAXuBZ9YKf4zdTAri-Vd1igApk3rFMs4J1STJ7BQa6aoGz6Sa1HISu1Wa_CgDaWV-FoPM_ZNUE3pMMWVxDkKJUVhUapJHtSVelA017Rgz8_sfFwoDiMjpo6vu-2SplJoJNVI4_3MC4W-8vq-8ImO65owsyhfVLacIlmy5PPyydMzBTpssna1btnmpEE_ww5QezzR8sun8uubvSVTIvTykPZEZAJCrl2dAmCYWc-Ujqc89LqQoakm0rTME2y54zb-QZCglAUIAPuDiQrJggUu6ss8KoNy1W2luQbU2fdK4CtkG1hMTyIkPh6Mr4PdGXl5mRw31Dt8AA9FNQJn3qWMO3dFluZItpPLCNpmZwAs6LM6eoSZa63_ejpIp7K2zVdvSYoBIQrNzsPTmsWursLkkvchybzZPVbjtF3urdQlGutA-oCCUvNSMrcY-ct6Nsq-AB3Q3noA
+pk.adada.kz	FALSE	/	FALSE	0	companyOpenedDate	1752674534266
+id.adata.kz	FALSE	/	FALSE	0	redirect_url	https%3A%2F%2Fpk.adata.kz%2Fcompany%2F040940002421%2Fmass-media
+.adata.kz	TRUE	/	TRUE	1752761578	token_create_time	2025-07-16+19%3A12%3A57
+.adata.kz	TRUE	/	TRUE	1752761578	access_token	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiZTc0MjY1ZmRlOWE5OTBjOGEyOWY2YTYyYzUwNDE5MjRkMzU0OTQzODRjZWE5YzUxY2Y2Y2YyZDAxMmRjY2Q5ZTZjYTQzMzA2M2ViOTc2MDciLCJpYXQiOjE3NTI2NzUxNzcsIm5iZiI6MTc1MjY3NTE3NywiZXhwIjoxNzUyNzYxNTc3LCJzdWIiOiIyMTA3MzQiLCJzY29wZXMiOltdfQ.mD4UfqJ5Cy-GOOb4rQuRy1ojzK3GFff-fvv-GH3IIcR1tg8MoweGDrTgLxqKWuDqN7EBgD300NXycp_BbwKhzAdRik19Of1x6j3lkwmSh_qXJy2noqI9xjA42Nj8Jm3qPSg2N35BbAZAQyNH6MuhK34PgY_tJLSrSNqEpA4NnyjHvF3e4DUu4CrerQFZixFJI5l4JNlk8oAI5fmdo1xYHlcpAAxhavdK5jm3Btbus4hRSQM2cMxyElhWDwsFe1T0-gGOHU6lxvoPpGLed3J7zcpIATCRxK89reTO4wzcoJyL956HHZ0JRB8wSzAuzPspjxRVs-hHDcsjurZKMC8dWPcbP38ohWogpPtvh620TTSdCUvRa7u0qQZdaa3arrbBvFesl8DNcUpLbRfd5GV4M7qXsXqD6MTYe3zX7yuXk5ZlAsZybcVoGSeOefvV9eDtKQuVtuq8UEvGpe0dYzV81G2FyLwDQ0QkDhAykAzf9_VjDcJ26mIY2t9r7uL2q_OGP6C8TffvCW0u-vmiEGQ90pjHQVh9U1l-l5w6Q77laXCD7RheCHCTTlXklZzEqKAUUIW5gRA5wWTGFu0fAJM2v9haNUpJMD6DkxKJwUt8eDIku1xhiHpbpy-LeAoQqdLP8f5aCivwZAIrJFGcHJUC3cHa75_KQm0uK4x9-QUH3qM
+.adata.kz	TRUE	/	TRUE	1752761578	refresh_token	def50200ef35bff0d4284823d228fa352c13cd8e0bee72035516739b3e41979c7cc4374a0bd8158f60759a07ba476faa8ceddcee36e4d81bd1192cfe15a2fe55f3b30ce4ac1fa2ff4b7384af7a1f79ae659089097756bab5ed9cf46d619185c3ff8f7dccf8ea8722478c8c3fbc6963310b2806ff90225f8c99cbb6837fadd608c4828c7da092941c0d0d3bcf28e9d5d40bc1eb9c644082d959666d21f5a50fff6ea6923365e4c1b982406d6692ef3d38f8ac21eee03e25cb461db2942eb60bbe652469bddbf6bd5594fc3bd124561ccdc03307e4be99e783a19ed8fb2e7a1dc1864a6072a2f3fa026aa0e6436bad582ad50b416c2e3249ca880f404d7dfa6b654aa4ce809f4b292c1575ca8c9301d4854c5f5ec2f126b69c7360fb748232ba62c8b825cf06f92c178f0e3d0b59cab24e9bdaba6f4cad93dd5162a951f18693a532e75b05a067528770c74cbcc6a13ea26c8cdf3c9fefa38c7ee940746010f123f5da155bb81e
+id.adata.kz	FALSE	/	FALSE	0	access_token	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiZTc0MjY1ZmRlOWE5OTBjOGEyOWY2YTYyYzUwNDE5MjRkMzU0OTQzODRjZWE5YzUxY2Y2Y2YyZDAxMmRjY2Q5ZTZjYTQzMzA2M2ViOTc2MDciLCJpYXQiOjE3NTI2NzUxNzcsIm5iZiI6MTc1MjY3NTE3NywiZXhwIjoxNzUyNzYxNTc3LCJzdWIiOiIyMTA3MzQiLCJzY29wZXMiOltdfQ.mD4UfqJ5Cy-GOOb4rQuRy1ojzK3GFff-fvv-GH3IIcR1tg8MoweGDrTgLxqKWuDqN7EBgD300NXycp_BbwKhzAdRik19Of1x6j3lkwmSh_qXJy2noqI9xjA42Nj8Jm3qPSg2N35BbAZAQyNH6MuhK34PgY_tJLSrSNqEpA4NnyjHvF3e4DUu4CrerQFZixFJI5l4JNlk8oAI5fmdo1xYHlcpAAxhavdK5jm3Btbus4hRSQM2cMxyElhWDwsFe1T0-gGOHU6lxvoPpGLed3J7zcpIATCRxK89reTO4wzcoJyL956HHZ0JRB8wSzAuzPspjxRVs-hHDcsjurZKMC8dWPcbP38ohWogpPtvh620TTSdCUvRa7u0qQZdaa3arrbBvFesl8DNcUpLbRfd5GV4M7qXsXqD6MTYe3zX7yuXk5ZlAsZybcVoGSeOefvV9eDtKQuVtuq8UEvGpe0dYzV81G2FyLwDQ0QkDhAykAzf9_VjDcJ26mIY2t9r7uL2q_OGP6C8TffvCW0u-vmiEGQ90pjHQVh9U1l-l5w6Q77laXCD7RheCHCTTlXklZzEqKAUUIW5gRA5wWTGFu0fAJM2v9haNUpJMD6DkxKJwUt8eDIku1xhiHpbpy-LeAoQqdLP8f5aCivwZAIrJFGcHJUC3cHa75_KQm0uK4x9-QUH3qM
+.adata.kz	TRUE	/	FALSE	1752761577	accessToken	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiZTc0MjY1ZmRlOWE5OTBjOGEyOWY2YTYyYzUwNDE5MjRkMzU0OTQzODRjZWE5YzUxY2Y2Y2YyZDAxMmRjY2Q5ZTZjYTQzMzA2M2ViOTc2MDciLCJpYXQiOjE3NTI2NzUxNzcsIm5iZiI6MTc1MjY3NTE3NywiZXhwIjoxNzUyNzYxNTc3LCJzdWIiOiIyMTA3MzQiLCJzY29wZXMiOltdfQ.mD4UfqJ5Cy-GOOb4rQuRy1ojzK3GFff-fvv-GH3IIcR1tg8MoweGDrTgLxqKWuDqN7EBgD300NXycp_BbwKhzAdRik19Of1x6j3lkwmSh_qXJy2noqI9xjA42Nj8Jm3qPSg2N35BbAZAQyNH6MuhK34PgY_tJLSrSNqEpA4NnyjHvF3e4DUu4CrerQFZixFJI5l4JNlk8oAI5fmdo1xYHlcpAAxhavdK5jm3Btbus4hRSQM2cMxyElhWDwsFe1T0-gGOHU6lxvoPpGLed3J7zcpIATCRxK89reTO4wzcoJyL956HHZ0JRB8wSzAuzPspjxRVs-hHDcsjurZKMC8dWPcbP38ohWogpPtvh620TTSdCUvRa7u0qQZdaa3arrbBvFesl8DNcUpLbRfd5GV4M7qXsXqD6MTYe3zX7yuXk5ZlAsZybcVoGSeOefvV9eDtKQuVtuq8UEvGpe0dYzV81G2FyLwDQ0QkDhAykAzf9_VjDcJ26mIY2t9r7uL2q_OGP6C8TffvCW0u-vmiEGQ90pjHQVh9U1l-l5w6Q77laXCD7RheCHCTTlXklZzEqKAUUIW5gRA5wWTGFu0fAJM2v9haNUpJMD6DkxKJwUt8eDIku1xhiHpbpy-LeAoQqdLP8f5aCivwZAIrJFGcHJUC3cHa75_KQm0uK4x9-QUH3qM
+.adata.kz	TRUE	/	FALSE	1787235179	_ga_MPNBF8EYCE	GS2.1.s1752674460$o1$g1$t1752675178$j57$l0$h0
+pk.adata.kz	FALSE	/	FALSE	0	companyOpenedDate	1752675196441
+.adata.kz	TRUE	/	FALSE	1787235200	_ga_XBEVQM5GDQ	GS2.1.s1752672531$o82$g1$t1752675200$j35$l0$h0
+pk.adata.kz	FALSE	/	FALSE	0	openedCompanies	%5B%22941240000193%22%2C%22040940002421%22%5D
+jira.adata.kz	FALSE	/	TRUE	0	JSESSIONID	BBFB63F313DD7BA98CFD11BFD3A49C4B
+jira.adata.kz	FALSE	/	TRUE	0	atlassian.xsrf.token	BAC2-67KN-9CTD-GI91_5dd6ad2973e2efe2685afdef268da22653b0fa5a_lin
+appsgenaiserver-pa.clients6.google.com	FALSE	/	TRUE	1753589701	COMPASS	apps-genai=CgAQ1Y3iwwYaZQAJa4lXREWC8vYyL8xlXeWf6l3atKBBCSzOLnIti06C0QPG8J3LJ7Rockyf_8Tl65HW1nnXFRjuHwkuDcUMqLcYfoVO6MM5l83eFjjsdp7O62EEwGgtmpMuqJdt7LKNim80uLdWIAEwAQ
+pk-api.adata.kz	FALSE	/	FALSE	1752739695	pk_api_session	IOjakjjtBmTXqWb2lLm6r9Tc4Mgk6kptexFppY9V
+ma.adtdev.kz	FALSE	/	FALSE	0	access_token	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiMGY3NGY2ZTI2ZmUwZTE2MzAwMzFhMDM5MTVmNjJmOWIzODM0ZWFhMzRmM2NhMzhhYzA4OTcxOTQzZDk5ZmJjMjk4ZGVkMjQyMmNjOTZjNDciLCJpYXQiOjE3NTI3MjgzNjYuNDI1NDgyLCJuYmYiOjE3NTI3MjgzNjYuNDI1NDg2LCJleHAiOjE3NTI3MzU1NjYuNDAwNjc1LCJzdWIiOiI3NSIsInNjb3BlcyI6W119.0OkURVnvOcLQsbilk5bRq-CXj1b_Y-cRcOeC4ICs9c3HKRyqC81GzztwTAiRCerOTevXCqe9kjgiH0ZqlwYmJZ4F3ajSLYlB-dWgaZj_fTDmSfIucjZEFI4i7JopInl3Y584cYo2kzXcOVFV5xxCXIu9NUCDwmoStxkMrhXx58G9YSwsCvvPZ3Qip6TodngL-ZOTUd3eKTxwXOFLDbUZxOeSGm7Uls7slsTWFa6OBuCxjrG6uPEqHkZ5wU0QDY9wYKjA4YyZ40hMDDIwVlbphrZLiL1h-dxeK_MBWfN08wMxQDeonPtw_Ois9sTyA4gI_q3iLiXPHG9gScA_XrpAIOWcPapRJWnB419Ck5x-y0bw0bqCM5SxHmlFbHM8VU7a6xKR28TjjIt2iCSOHxigGbsXKlmsWtjxmfkufHdNliBGP3lqteXQmL6DCRf3LEViDqcEaS02KIvLQapsK_1dltpnNDKIact6qg5aVpM0ywrWiMrWivEb7FjSg8y9JEpGg20G_aWpVxadbQ0gKL0XAJlod7QZBpfIptYaTLgWLQP7PAkF6GkS6DWelJJpJbOkqh4FQiqhmVM0BGQ1pbnscfqJ9eRDbsILrt2eIweutWJPby8GZm1ilrzsgkYHzDJqJverWzqvS3_eSQt-vm9ndk7NZ79LMXgsdQeDyhqvC7g
+ma.adtdev.kz	FALSE	/	FALSE	0	refresh_token	def5020099d06c2c8751ed26ac019dd24088a914496d575af6c0e2a1039515eb9025b7db2e20ccdb4663e453181d6b817e7c5a549b09a8a7d59fc0e3da0c149cecb816f7477f446c2aa869416a894d3dd1595b6e4c137ad82b433ad23bf4aa687be5bfd5f14f89c5c9a49ae6949ec2cb9054c04c2ea435fea5682259312b0a99c9241d8fed432369dfb8b422fee5d66e0aadad475a5e020946964026e5fc4856c011603b8b2c1d0efe16fb6ce9bdf7cbcf12b268a30ba5249ca29ced8f724f816587796e3a8bcf000f2b4b76c48e436cd920804dbca9eef5000a89c09ff4d95097a414a0570232d1fd1b2be1d4dbda5d3c2f45268c11ee58e04bb9e167c1fa27c16431871c8825b2fc1967f1039150809577f2df8319bd596b1fced055f526972a94931e3b6b2eebf1351212238cb30355f3f0316e93d7934eed7407edc43222010ab0ef57d5efb853c74ce0df5e04caa5990415cdef031d678ce8bb927381c32d94
+ma.adtdev.kz	FALSE	/	FALSE	0	expires_in	7200
+ma.adtdev.kz	FALSE	/	FALSE	0	role	admin
+ma.adtdev.kz	FALSE	/	FALSE	1753937949	email	stepan%40test.com
+ma.adtdev.kz	FALSE	/	FALSE	1753937949	password	Adata123
+.support.google.com	TRUE	/	FALSE	1787288403	_ga	GA1.3.213870756.1751258188
+.support.google.com	TRUE	/	FALSE	1752814803	_gid	GA1.3.204609595.1752728403
+.support.google.com	TRUE	/	FALSE	1787288404	_ga_H30R9PNQFN	GS2.1.s1752728402$o4$g0$t1752728404$j58$l0$h0
+.google.com	TRUE	/	TRUE	1768546321	NID	525=TNdLCI7TvQgJANndWdz48uoaLIA39WD3sfSj04X7bbQHGEZQOXx2HGiLK4OAyhPnEnDjaj2abAp32foiAEWZE98asRiH0BV_BV1KrxhddIerIGFbeF14FDJmibB9d3QriZjF1f4YjPyx-6Es6VZHEMmOrnovqpUAgQEaqf49YLU42gznd84yCXL78AZkpBzM-fspo5ToIn5jeumSfUyKx_23uBVrrKf5_Qgz9iM3LSvMqSDMRpmVcrwQYx6vp9cX4l4oKzTd_3noB-XycZYrf8FJMFlM8_2Qz8V_sQ0TGOfny_10mJ6IMF7bmxluWQTQfdKiQJQf4z-yWSt_ZfjQjvkcH_RH-pFpA88HsTnyvWwvv94NrUx-1mkWwhrVo2jJ59HFz40FFrpg2CPGEo_vUMU_AcVXoKtkVjvfeThQU9tvNDNiE2DRYw4KdYt2LkS4LVczIoZH676A7_VEEDwLp5lUtMvBA0gyDmC-JSY5JL3c5CWyK_ECRHAnZCEg6MVp6Ai-mFmgNoCSnAbzBDENcwKehIYgTwk8OKrNHVGckAdr4q_jVr6QH3MaxQp-urTKB05bjWnpWLy_GUEOoQ4WJzAoiKllVp9iA7iHnMHeeXyKazW2pg_xQOYZDR-B7uKmrqp2pZxXdfUlE2I9fDvomgdTnc1n4ewD4Buw6JMy8PiLORFYkviPrqEJAvlXopwDmaH_kLyywVs2kNumN7EKDarZsWTl3AUPhAtKh4GzsGMTbzYv
+.chromewebstore.google.com	TRUE	/	FALSE	1787297438	_ga_C2WJL5J9RY	GS2.1.s1752737434$o1$g0$t1752737438$j56$l0$h0
+.editthiscookie.com	TRUE	/	FALSE	1787297441	__utma	165587563.1536304802.1752737441.1752737441.1752737441.1
+.editthiscookie.com	TRUE	/	FALSE	0	__utmc	165587563
+.editthiscookie.com	TRUE	/	FALSE	1768505441	__utmz	165587563.1752737441.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)
+.editthiscookie.com	TRUE	/	FALSE	1752738041	__utmt	1
+.editthiscookie.com	TRUE	/	FALSE	1752739241	__utmb	165587563.1.10.1752737441
+.twitter.com	TRUE	/	TRUE	1752739243	__cf_bm	AvCci9T6LsXF3sFyUzBObLKcup2rK5MTGJbuNdTLayQ-1752737443-1.0.1.1-6oT7k4cE_1uGHNk7xlYqa3E6aX0ZQWGgrZK92UXfK9lPNCQiNJuhLeutJAgD9RZ8j62j_YWd3BOvS2SEoP5cLiyzayruguSkPIY.JNEGrUQ
+.youtube.com	TRUE	/	TRUE	1784273462	__Secure-1PSIDTS	sidts-CjEB5H03P609ixgebFfG-pbNQwbLqE1_MejjSZZbilPnJP71GgYC7vl8rs9zL66A7AfxEAA
+.youtube.com	TRUE	/	TRUE	1784273462	__Secure-3PSIDTS	sidts-CjEB5H03P609ixgebFfG-pbNQwbLqE1_MejjSZZbilPnJP71GgYC7vl8rs9zL66A7AfxEAA
+.yandex.ru	TRUE	/	TRUE	1787297499	bh	EkAiTm90KUE7QnJhbmQiO3Y9IjgiLCAiQ2hyb21pdW0iO3Y9IjEzOCIsICJHb29nbGUgQ2hyb21lIjt2PSIxMzgiGgN4ODYiDTEzOC4wLjcyMDQuOTIqAj8wOgciTGludXgiQgU2LjEuMEoCNjRSWCJOb3QpQTtCcmFuZCI7dj0iOC4wLjAuMCIsIkNocm9taXVtIjt2PSIxMzguMC43MjA0LjkyIiwiR29vZ2xlIENocm9tZSI7dj0iMTM4LjAuNzIwNC45MiJg283iwwZqGdzK6YgO8qy3pQv7+vDnDev//fYPitTNhwg=
+.google.com	TRUE	/	TRUE	1784273743	__Secure-1PSIDTS	sidts-CjEB5H03P0bxXI0_1jDKw8ssMuAcaz0W0r8TbRkCEABbcOJQufI7PDbMXYQurxIRuQTNEAA
+.google.com	TRUE	/	TRUE	1784273743	__Secure-3PSIDTS	sidts-CjEB5H03P0bxXI0_1jDKw8ssMuAcaz0W0r8TbRkCEABbcOJQufI7PDbMXYQurxIRuQTNEAA
+.youtube.com	TRUE	/	FALSE	1784273869	SIDCC	AKEyXzVX46fqyg8BtIMEYNyIca4Hi7RO2US-OdRbd4_avCsDq4UU-VGUAqwRX-7AShxK5bD8guo
+.youtube.com	TRUE	/	TRUE	1784273869	__Secure-1PSIDCC	AKEyXzUxCkE4OeN3a2hxmOAW_-ubA5sGAqb6_Aj0Cfg1a58CW8MbIiaKyWUalFbgm0YwnzNHVA
+.youtube.com	TRUE	/	TRUE	1784273869	__Secure-3PSIDCC	AKEyXzUUww4oE49NB0dffbaEVklo4jAFPsRyDZwg16avr21BdYx7zJyUeD5WGdCDL2-4WGqzVg
+.google.com	TRUE	/	TRUE	1765789274	AEC	AVh_V2hec1DK9cg61TIvk5zfTB2Y7S7YdcCLuzkLW74Ud_Y-sfVdcx9OUmE
+www.google.com	FALSE	/	FALSE	1752738513	DV	Y-j1xaFPFS9k0LiuPDVHP2VxmCF1gdm-g7kjb7seKQEAAEAIMU5ewDV2UAAAANS51Ng5A-OHIgAAAFgvVcgWkPXiEwAAABcvHEcTwwEsBgAAAA
+.chromewebstore.google.com	TRUE	/	FALSE	1787297918	_ga_KHZNC1Q6K0	GS2.1.s1752737406$o2$g1$t1752737918$j57$l0$h0
+.google.com	TRUE	/	FALSE	1784273919	SIDCC	AKEyXzUWzI3GLIPkr63JLTZkuDCLuXVoFeP2I3_-_ab6OWIJNdyqJEzW7l_yq6uuqqsVWG9QTaDR
+.google.com	TRUE	/	TRUE	1784273919	__Secure-1PSIDCC	AKEyXzVw0gF2j8aeJxgKWf9Jb_z85c-N7lDnD8p5JBnWrVmTeEsdt-t_cnr3a4PLtC1lvGv6bKdq
+.google.com	TRUE	/	TRUE	1784273919	__Secure-3PSIDCC	AKEyXzVO_a2v-QzfOYSIEBc4Gq7Z6bev-Wvzzc1VJlIN2_pcfSw2KIbCm1VZFgCf0Zc-EtINoqA
+tengrinews.kz	FALSE	/crime/arest-byivshih-vitse-ministrov-kvartirah-naydenyi-ogromnyie-574473/	FALSE	0	Article_lang	ru
+.apple.com	TRUE	/us/app/tiktok-videos-shop-live	FALSE	0	geo	KZ
+.apple.com	TRUE	/global-elements/2426.0.0/en_US	FALSE	0	geo	KZ
+www.figma.com	FALSE	/api/figment-proxy/monitor	TRUE	1754542968	figma.reporting	%22eyJ1aHAiOiJzdGFydGVyIn0=%22
+account.proton.me	FALSE	/api/auth/refresh	TRUE	1783157884	REFRESH-vdlsomxtfbouwtvho7ohkpgyydo7pt5r	%7B%22ResponseType%22%3A%22token%22%2C%22ClientID%22%3A%22WebAccount%22%2C%22GrantType%22%3A%22refresh_token%22%2C%22RefreshToken%22%3A%22da3mvimhri4gn6jtwijkgkbn44svkc3e%22%2C%22UID%22%3A%22vdlsomxtfbouwtvho7ohkpgyydo7pt5r%22%7D
+mail.proton.me	FALSE	/api/auth/refresh	TRUE	1783157891	REFRESH-diititfkbw6agw7gxt43dlrpiiaftn4i	%7B%22ResponseType%22%3A%22token%22%2C%22ClientID%22%3A%22WebMail%22%2C%22GrantType%22%3A%22refresh_token%22%2C%22RefreshToken%22%3A%22jb375bcimnyuzzgrlh3rjoykt3yrtquz%22%2C%22UID%22%3A%22diititfkbw6agw7gxt43dlrpiiaftn4i%22%7D
+account.proton.me	FALSE	/api/auth/refresh	TRUE	1783157924	REFRESH-ajzgduft6cyid4teurcxeerqd7vqspw4	%7B%22ResponseType%22%3A%22token%22%2C%22ClientID%22%3A%22WebAccount%22%2C%22GrantType%22%3A%22refresh_token%22%2C%22RefreshToken%22%3A%224ksuyaem5wz5kwdriifhrgorgqm5dwjt%22%2C%22UID%22%3A%22ajzgduft6cyid4teurcxeerqd7vqspw4%22%7D
+mail.proton.me	FALSE	/api/auth/refresh	TRUE	1783570946	REFRESH-2h7mynbm3fsenclrj3jjgkhyg4isom2w	%7B%22ResponseType%22%3A%22token%22%2C%22ClientID%22%3A%22WebMail%22%2C%22GrantType%22%3A%22refresh_token%22%2C%22RefreshToken%22%3A%222rr5fgjcfonipi2cjkunyr4u2rksptky%22%2C%22UID%22%3A%222h7mynbm3fsenclrj3jjgkhyg4isom2w%22%7D
+mail.google.com	FALSE	/mail/u/0	TRUE	0	GMAIL_AT	AF6bupM5--WuoCb9S-wiSWB5muYL2B48qw
+mail.google.com	FALSE	/mail/u/0	TRUE	1753080829	COMPASS	gmail_ps=CrMBAAlriVeRVeU6v4Uj4VE9G_4OFobyUdCO76_WsGqBZ0FVTr3s4pdbagwo7Xdj8FRYVGzp_50BlmcYj-OQToEE5NypoCob6Cgp4c_8ZFjQGptjBch10vDelSD0eg4i3oFeStf35Ak7V_bGt1C4o7ybxZbhXp1S8oi3jhCnG6OYHTNuUi2JeSTKs3r9Cpr1gXWFyEE401ZGhCmz--2cY7KA7-swQ5eoW6Msp9svTY0__Pm7u8MQ7pbIwwYa7AEACWuJV3ONqBQqyqHSb9aDtE2Dt9UfHBhFWsKklLpZuiR6qd7cLDqS-MPhwsqhp-8N7omRWm2D3OiM3A4iVVEcnREpDkO9lRb_LFwqTqsjd0V4xkN5Bb-B-4V8uljFEt8S99Fre265bN9JF1WRIuucxvCum3VgtHl66oHW1TB2SQUpWEzhoaDAp8bnXSYjsMjtAiKdHmJS2TQC6Jr3014asKqtABzRQCgkorX15OrDkRNUotdty8D_yCG6JJuqJ45kduLlzQCjFeesN0iulagD-34Qpnt5OLImSQdmTfTkaQ8idHPgpmcqtgWavDAB:gmail=CsQBAAlriVdqMY025kHp1KSRrn1x1jpRPJ2jrDTS0az1shuY5pHOy_wEuJP5QFDvWzkrWA1hb0Rmj5P1el8maoQSLmh_RWBJ7dv9exXQgvyUXfuvYmJ_UZHJojl1WBKZIx5qtDnQa59Gq16E18yb9I99Kpb4f2C30JS2Q5sKXGwd2KUk_xhEYQtBKH84uFljPrfqffCl7yMjPdyhFgb43tMFbnhWXJSCLYm3wZMjtmShrgQc6ZH0H_9UlhU2beglV4opYaCPXBC1icjDBhr9AQAJa4lXWg3VJvDKP_ZYyT06wmZgi5JkuGiChK4KFpaizIdtEVWHVj8lTaC5hQXgvLN5RzDISMt9kQW9jko8WH3rwXbAI0thmL3Uh5mjnOMozFw5YpI6xFPzmWj8Jv4ydXlqe703_HJ_clVSZjdwiUilGV7tcV_h-KFvAkdkMZf1o3u3lpqn-lLZOxCoHD8eB2qXncB9OjjDBjAtVIxaQxtov7pd0QhNbkHpbkxWr-YOKvJkJ8wJ4vHF8MirZ-_Xt4_VfogRQWcYuQ2teezlU6ufGLphcqvW9OCaQWiCMaAxfBcags9mlxiMbWvD3qHEy6pzP-q0p8qVaqFnFsYwAQ
+mail.google.com	FALSE	/sync/u/0	TRUE	1753080830	COMPASS	bigtop-sync=CsMBAAlriVcEIESZuHwQVS-qsizId6KRy1dVFEYICGGRTcstsJ6m0RNipfh_ne1P3ZLnXrh2V5H2TEDwkvRHHlXsiOhRWk2BiU1EqgU-pp-fH3wlxu1gyLQe2fc2rKbOMK-9ZET6TvioLbAn-DXfDjOf9p6pHliUmwOr9YzQkPT8g9fjmdNGpcaU4Eiq994Ytp30eSv2wpvX8swbuk8IyD9eIkLv4eXqLrwDxHcecQG9a-mux77Ah8OJUdOgehcShWbWX9vjEN2QyMMGGvwBAAlriVdt2HCAWMjA7EHL4sgDIlXLmlftjvuOAFyYKJmpwKu0805mqAXyQl-mdwBz5drgPj4KTG0duMOkV5O_k-VvJfPia0nyYI0MrxkO7aKcsAQLmiAMr68vgx7cs7Ji_EjyyScxvmoxGSjj-vtDzsOsCEkaIzFfiwfKaygXnSIdR0VZan92_kz9S2N1POApF1P-Wv5ZFM5QtIOvi-YJq-9yzCvV22rU530i0T40gL0K-2sIAzwXjp9Jfz_zU8AJQd7tyOizrAhMYk21dCB74mXJ5NtR0bRdBOVZrmap4e4CF09C_r2Vw0jrnYnAv2eHFSmhDhm_JGiGb5y8MAE
+.apple.com	TRUE	/US/app	FALSE	0	geo	KZ
+10.10.22.211	FALSE	/api/v2	FALSE	0	session	ywSN9KdY2nk0c1WLkx8w9AtgIWYUQUyPg47EBtGg4URyCr3rDMP9FqhITeneRNQ_qB93AQ6LYB0vK57jLuchYA==
+.google.com	TRUE	/verify	TRUE	1768546320	SNID	ABablnegwyHSGA9qP0PxFynruHdMdBHKxvJ8DyRD0ymqCgrH8kDKvjEtTyMa02XEWWtAfEPPefqYg7BbA_yDlN7mztTkOTmHKig
+kaspi.kz	FALSE	/shop	FALSE	1782219086	layout	d
+kaspi.kz	FALSE	/shop	FALSE	1782219137	dt-i	env=production|ssrVersion=v1.19.5|pageMode=product
+account.proton.me	FALSE	/api/	TRUE	1783157884	AUTH-vdlsomxtfbouwtvho7ohkpgyydo7pt5r	czjkufuxcvgfli2kd4diis6iuumrautb
+mail.proton.me	FALSE	/api/	TRUE	1783157891	AUTH-diititfkbw6agw7gxt43dlrpiiaftn4i	ckxlxcdkfkn3tf2kxg4rvl6mbdutyqm6
+account.proton.me	FALSE	/api/	TRUE	1783157924	AUTH-ajzgduft6cyid4teurcxeerqd7vqspw4	3okqcvqjr4m3qhakb5ggrru2ycvnu4d7
+mail.proton.me	FALSE	/api/	TRUE	1783570946	AUTH-2h7mynbm3fsenclrj3jjgkhyg4isom2w	wbb2yizn5kszwyssx3ld5yphxkz5bt62
+mail.google.com	FALSE	/mail	TRUE	1753080842	COMPASS	gmail_ps=CrMBAAlriVeRVeU6v4Uj4VE9G_4OFobyUdCO76_WsGqBZ0FVTr3s4pdbagwo7Xdj8FRYVGzp_50BlmcYj-OQToEE5NypoCob6Cgp4c_8ZFjQGptjBch10vDelSD0eg4i3oFeStf35Ak7V_bGt1C4o7ybxZbhXp1S8oi3jhCnG6OYHTNuUi2JeSTKs3r9Cpr1gXWFyEE401ZGhCmz--2cY7KA7-swQ5eoW6Msp9svTY0__Pm7u8MQwpDIwwYa7AEACWuJV3ONqBQqyqHSb9aDtE2Dt9UfHBhFWsKklLpZuiR6qd7cLDqS-MPhwsqhp-8N7omRWm2D3OiM3A4iVVEcnREpDkO9lRb_LFwqTqsjd0V4xkN5Bb-B-4V8uljFEt8S99Fre265bN9JF1WRIuucxvCum3VgtHl66oHW1TB2SQUpWEzhoaDAp8bnXSYjsMjtAiKdHmJS2TQC6Jr3014asKqtABzRQCgkorX15OrDkRNUotdty8D_yCG6JJuqJ45kduLlzQCjFeesN0iulagD-34Qpnt5OLImSQdmTfTkaQ8idHPgpmcqtgWavDAB:gmail=CsQBAAlriVdqMY025kHp1KSRrn1x1jpRPJ2jrDTS0az1shuY5pHOy_wEuJP5QFDvWzkrWA1hb0Rmj5P1el8maoQSLmh_RWBJ7dv9exXQgvyUXfuvYmJ_UZHJojl1WBKZIx5qtDnQa59Gq16E18yb9I99Kpb4f2C30JS2Q5sKXGwd2KUk_xhEYQtBKH84uFljPrfqffCl7yMjPdyhFgb43tMFbnhWXJSCLYm3wZMjtmShrgQc6ZH0H_9UlhU2beglV4opYaCPXBC7iMjDBhr9AQAJa4lXWg3VJvDKP_ZYyT06wmZgi5JkuGiChK4KFpaizIdtEVWHVj8lTaC5hQXgvLN5RzDISMt9kQW9jko8WH3rwXbAI0thmL3Uh5mjnOMozFw5YpI6xFPzmWj8Jv4ydXlqe703_HJ_clVSZjdwiUilGV7tcV_h-KFvAkdkMZf1o3u3lpqn-lLZOxCoHD8eB2qXncB9OjjDBjAtVIxaQxtov7pd0QhNbkHpbkxWr-YOKvJkJ8wJ4vHF8MirZ-_Xt4_VfogRQWcYuQ2teezlU6ufGLphcqvW9OCaQWiCMaAxfBcags9mlxiMbWvD3qHEy6pzP-q0p8qVaqFnFsYwAQ
+pixel.dsp.onetarget.ru	FALSE	/sape	TRUE	1787140750	USER_ID	560646b0-18c4-4061-acff-771ca943f782
+pixel.dsp.onetarget.ru	FALSE	/sape	TRUE	1783339150	SAPE_USER_ID	0100007F8C4276683D3BF7B50294A4A9
+accounts.google.com	FALSE	/	TRUE	1752829187	OTZ	8132220_36_32__32_
+.google.com	TRUE	/	FALSE	1784797273	SID	g.a000yQgg92MTJUTQOJbCyKg5lQ4HfVPSxGjLq_AHb3UvyFW0FZ8arnVgaAewJlAGXdNs8MQ4NgACgYKAcESARMSFQHGX2MivXf2hMV6MOY7UXOmy6pz8xoVAUF8yKqFz5MkxBMUCaHsFPdxdsXk0076
+.google.com	TRUE	/	TRUE	1784797273	__Secure-1PSID	g.a000yQgg92MTJUTQOJbCyKg5lQ4HfVPSxGjLq_AHb3UvyFW0FZ8aU99FsBl6RvTlHw-71TQkugACgYKAewSARMSFQHGX2MiHqOoqOri_MB85md67FiqLBoVAUF8yKpq6k-we-c9bN3yg--bjwVz0076
+.google.com	TRUE	/	TRUE	1784797273	__Secure-3PSID	g.a000yQgg92MTJUTQOJbCyKg5lQ4HfVPSxGjLq_AHb3UvyFW0FZ8aqyZPKGsXs6e1kpqdFkv7swACgYKAWUSARMSFQHGX2MiNn9ijw77Nc0KisBoF7bDYhoVAUF8yKpai5xqtNbyBHNTDwk0lf6p0076
+.google.com	TRUE	/	FALSE	1784797273	HSID	A9ozeL-5ErApgqewS
+.google.com	TRUE	/	TRUE	1784797273	SSID	ARgeH1AjqEIwmcwce
+.google.com	TRUE	/	FALSE	1784797273	APISID	Y0FGvK21m3GLBm56/AW8kHZGLXXPLD6kVb
+.google.com	TRUE	/	TRUE	1784797273	SAPISID	nVgN6FHJk7lF8t9V/A-0PKtZWdsFiXheG9
+.google.com	TRUE	/	TRUE	1784797273	__Secure-1PAPISID	nVgN6FHJk7lF8t9V/A-0PKtZWdsFiXheG9
+.google.com	TRUE	/	TRUE	1784797273	__Secure-3PAPISID	nVgN6FHJk7lF8t9V/A-0PKtZWdsFiXheG9
+accounts.google.com	FALSE	/	TRUE	1784797273	ACCOUNT_CHOOSER	AFx_qI6v86bR9qWH2UkJJsm_LwQRD1CQr8fIuH6zekkvn2K8WQTXUw24ep0zvmX7DjdrJ7vQdRaneCZiP9EbL8eUiGI8BiEEDMlaR2CaGRwYrputvVPn0TwklJgmaiI0dl7mVlVffnx5k29d445zVww4HrA7BZ0S_zOCzoeUTGI10rFB9yJ7bx8
+accounts.google.com	FALSE	/	TRUE	1784797273	SMSV	ADHTe-C0TUCJ_ZMbO4Kkz1VZ21C7F3lIzDt2c1ZNYqDRdMhCcZsVFGx27MntWls3oYwNJnZ_cRUIIq43yVuqDlTQ0d6auP1oRH13CqDj5dNmeJNGhvqDxVU
+.youtube.com	TRUE	/	FALSE	1784797273	HSID	Ay2dZP2V4R_T7E4wf
+.youtube.com	TRUE	/	TRUE	1784797273	SSID	AZOdJVPogIvO9wE9g
+.youtube.com	TRUE	/	FALSE	1784797273	APISID	Y0FGvK21m3GLBm56/AW8kHZGLXXPLD6kVb
+.youtube.com	TRUE	/	TRUE	1784797273	SAPISID	nVgN6FHJk7lF8t9V/A-0PKtZWdsFiXheG9
+.youtube.com	TRUE	/	TRUE	1784797273	__Secure-1PAPISID	nVgN6FHJk7lF8t9V/A-0PKtZWdsFiXheG9
+.youtube.com	TRUE	/	TRUE	1784797273	__Secure-3PAPISID	nVgN6FHJk7lF8t9V/A-0PKtZWdsFiXheG9
+.youtube.com	TRUE	/	FALSE	1784797273	SID	g.a000yQgg92MTJUTQOJbCyKg5lQ4HfVPSxGjLq_AHb3UvyFW0FZ8arnVgaAewJlAGXdNs8MQ4NgACgYKAcESARMSFQHGX2MivXf2hMV6MOY7UXOmy6pz8xoVAUF8yKqFz5MkxBMUCaHsFPdxdsXk0076
+.youtube.com	TRUE	/	TRUE	1784797273	__Secure-1PSID	g.a000yQgg92MTJUTQOJbCyKg5lQ4HfVPSxGjLq_AHb3UvyFW0FZ8aU99FsBl6RvTlHw-71TQkugACgYKAewSARMSFQHGX2MiHqOoqOri_MB85md67FiqLBoVAUF8yKpq6k-we-c9bN3yg--bjwVz0076
+.youtube.com	TRUE	/	TRUE	1784797273	__Secure-3PSID	g.a000yQgg92MTJUTQOJbCyKg5lQ4HfVPSxGjLq_AHb3UvyFW0FZ8aqyZPKGsXs6e1kpqdFkv7swACgYKAWUSARMSFQHGX2MiNn9ijw77Nc0KisBoF7bDYhoVAUF8yKpai5xqtNbyBHNTDwk0lf6p0076
+.google.com	TRUE	/	FALSE	1765789273	SEARCH_SAMESITE	CgQIoZ4B
+ogs.google.com	FALSE	/	TRUE	1752829278	OTZ	8132221_36_32__32_
+lens.google.com	FALSE	/	TRUE	1784797357	OSID	g.a000yQgg9ytv3NbQUwEXokMdroFz80FxPhz2kBbw8PCVZe68-wgleTBLdSltQYPb1T92aD5R7QACgYKARwSARMSFQHGX2Minn2hR_WQiSsE3501cALOkhoVAUF8yKpFFhHdlbLIuj99CZiWtkx50076
+lens.google.com	FALSE	/	TRUE	1784797357	__Secure-OSID	g.a000yQgg9ytv3NbQUwEXokMdroFz80FxPhz2kBbw8PCVZe68-wglRBp2qooFwKRxQxgozg-cEwACgYKATUSARMSFQHGX2MihqkLhAsGZeNG1bPl3Un3kxoVAUF8yKrLbO5nfmMjUr8_O7r_KRgt0076
+jira.adata.kz	FALSE	/	FALSE	1781773896	com.porzelt.jira.darktheme.active	true
+edo.adtdev.kz	FALSE	/	FALSE	1781774068	i18n_redirected	ru
+id.adtdev.kz	FALSE	/	FALSE	1781774070	i18n_redirected	ru
+.adtdev.kz	TRUE	/	FALSE	1787221428	_ga	GA1.1.827091292.1750238071
+.adtdev.kz	TRUE	/	TRUE	1781774071	_ym_uid	1750152989682398277
+.adtdev.kz	TRUE	/	TRUE	1781774071	_ym_d	1750238071
+.yandex.ru	TRUE	/	TRUE	1784197428	receive-cookie-deprecation	1
+edo.adtdev.kz	FALSE	/	FALSE	0	message	false
+.smallpdf.com	TRUE	/	TRUE	1784798397	_s.lt	9683392b094b237b96d5c0ef9d51d828
+.youtube.com	TRUE	/	TRUE	1765790422	VISITOR_INFO1_LIVE	ItI4Fl4zsjk
+.youtube.com	TRUE	/	TRUE	1765790422	VISITOR_PRIVACY_METADATA	CgJLWhIEGgAgWA%3D%3D
+.youtube.com	TRUE	/	TRUE	1765790422	__Secure-ROLLOUT_TOKEN	CLzRz7uZo6vJ_gEQwfCUm9L6jQMYwfCUm9L6jQM%3D
+.wondershare.com.ru	TRUE	/	TRUE	1781774424	_ym_uid	1750238425574789815
+.wondershare.com.ru	TRUE	/	TRUE	1781774424	_ym_d	1750238425
+.yandex.ru	TRUE	/	TRUE	1781774433	receive-cookie-deprecation	1
+.wondershare.com.ru	TRUE	/	FALSE	1758014425	_gcl_au	1.1.529140833.1750238426
+.pdf.wondershare.com.ru	TRUE	/	TRUE	1752830433	usi_id	3ygkb1_1750238426
+.linkconnector.com	TRUE	/	TRUE	1784798434	LCID	LC1750238425.7778966
+.bing.com	TRUE	/	TRUE	1784957488	MUID	01040ABF1E4A69153F0F1CB01FC168BA
+pdf.wondershare.com.ru	FALSE	/	FALSE	1784798435	sensorsdata2015jssdkcross	%7B%22distinct_id%22%3A%221978257039989d-04392b796ee5f18-10462c6e-5308416-1978257039a19c5%22%2C%22first_id%22%3A%22%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22url%E7%9A%84domain%E8%A7%A3%E6%9E%90%E5%A4%B1%E8%B4%A5%22%2C%22%24latest_search_keyword%22%3A%22url%E7%9A%84domain%E8%A7%A3%E6%9E%90%E5%A4%B1%E8%B4%A5%22%2C%22%24latest_referrer%22%3A%22url%E7%9A%84domain%E8%A7%A3%E6%9E%90%E5%A4%B1%E8%B4%A5%22%7D%2C%22identities%22%3A%22eyIkaWRlbnRpdHlfY29va2llX2lkIjoiMTk3ODI1NzAzOTk4OWQtMDQzOTJiNzk2ZWU1ZjE4LTEwNDYyYzZlLTUzMDg0MTYtMTk3ODI1NzAzOWExOWM1In0%3D%22%2C%22history_login_id%22%3A%7B%22name%22%3A%22%22%2C%22value%22%3A%22%22%7D%2C%22%24device_id%22%3A%221978257039989d-04392b796ee5f18-10462c6e-5308416-1978257039a19c5%22%7D
+.pardot.com	TRUE	/	TRUE	1784798431	visitor_id285052	1416765065
+.pardot.com	TRUE	/	TRUE	1784798431	visitor_id285052-hash	4fd69aaa5e4f92c513734727e74fea6d99861203cf79955ff730f820bea386f8f879a3b6f9156b3197d278342ec7a13c3470be43
+pdf.wondershare.com.ru	FALSE	/	FALSE	1784798431	visitor_id285052	1416765065
+pdf.wondershare.com.ru	FALSE	/	FALSE	1784798431	visitor_id285052-hash	4fd69aaa5e4f92c513734727e74fea6d99861203cf79955ff730f820bea386f8f879a3b6f9156b3197d278342ec7a13c3470be43
+go.pardot.wondershare.com	FALSE	/	TRUE	1784798434	visitor_id285052	1416765065
+go.pardot.wondershare.com	FALSE	/	TRUE	1784798434	visitor_id285052-hash	4fd69aaa5e4f92c513734727e74fea6d99861203cf79955ff730f820bea386f8f879a3b6f9156b3197d278342ec7a13c3470be43
+.wondershare.com.ru	TRUE	/	TRUE	1784798435	_ga	GA1.1.1260874522.1750238423
+.wondershare.com.ru	TRUE	/	FALSE	1783934434	_uetvid	78993d004c2511f09bc423fd570c7362
+.bing.com	TRUE	/	TRUE	1783934435	MSPTC	v1nhAi8pkoa3-GxDGcV_5sFdz8ie9nBO9jbcOMfIyPE
+drive.google.com	FALSE	/	TRUE	1784798439	OSID	g.a000yQgg94VZd1mvWdKKCArPLZ5T4Y415k9G1vi4jl9b1fSaHD3dOyVHHIomCbJfe5P1ppcssAACgYKAVISARMSFQHGX2MiaMpW2qEfYuSMiUEEkZ7WLRoVAUF8yKoJgIJOtFcHJfGjmBn0yDGq0076
+drive.google.com	FALSE	/	TRUE	1784798439	__Secure-OSID	g.a000yQgg94VZd1mvWdKKCArPLZ5T4Y415k9G1vi4jl9b1fSaHD3dBLp1Xm-jfNdeAlnyCW13twACgYKAdYSARMSFQHGX2MilhZF-WOPsTXDMb48jdlN-RoVAUF8yKpzxAj0_5XOSR2ryO1ZddJR0076
+.docs.google.com	TRUE	/	TRUE	1784798446	OSID	g.a000yQgg96MwAVK8mGw0xe5OcFD5tuGLf-f2QaXoUdUiQ223VRAOc7jj0kMvg2bRWXbxhUsR6wACgYKAQESARMSFQHGX2MiyG688aCYu0ga7SXnCR6s2BoVAUF8yKpTND69cBy2o4zfp2u_9W030076
+.docs.google.com	TRUE	/	TRUE	1784798446	__Secure-OSID	g.a000yQgg96MwAVK8mGw0xe5OcFD5tuGLf-f2QaXoUdUiQ223VRAO0ShmJ4zg5vYiuUhNX7xifgACgYKATESARMSFQHGX2MiOV00bbMuIs2mvQUHVN0u_xoVAUF8yKqdWBbw500qgYM5dTufSWly0076
+contacts.google.com	FALSE	/	TRUE	1752830446	OTZ	8132241_36_32__32_
+docs.google.com	FALSE	/	TRUE	1752830454	OTZ	8132241_36_32__32_
+www.figma.com	FALSE	/	TRUE	1781780136	__Host-figma.did	MTc1MDI0NDEzNg.dV1bLlZe65zVAlYTsie3NVRvtDc6yZD9Xh%2BbmWlKIH8.wDenjXQVXMVMJSRTNf2WWz8Fk6qFlesp9Dvf79zqRsI
+.figma.com	TRUE	/	TRUE	1752836136	ajs_anonymous_id	%229cff24f9-acdb-4b3f-904c-39a9ba2b4c98%22
+.figma.com	TRUE	/	FALSE	1758020141	_gcl_au	1.1.2096742658.1750244141
+.figma.com	TRUE	/	TRUE	1758020142	_rdt_uuid	1750244142972.18c40c0e-1568-4a20-9880-eb1690ae9e8b
+.figma.com	TRUE	/	FALSE	1783940143	_uetvid	c82998004c3211f093ad255b49a3ab53
+.marketing.figma.com	TRUE	/	FALSE	1784804144	_fwb	70VtA5qZ81f0rr1RxgaIYN.1750244143938
+marketing.figma.com	FALSE	/	FALSE	1784804144	wcs_bt	s_3e00a0800832:1750244143
+.figma.com	TRUE	/	FALSE	1758020144	_fbp	fb.1.1750244144024.670797055297411301
+.bing.com	TRUE	/	TRUE	1783940145	MSPTC	7TQLzpl5QOCzAFc_tKfttvFX7OiCsxc0Pb8oMKv_w3I
+.wcs.naver.com	TRUE	/	TRUE	1784804146	NWB	84fb0db3329167fdaf1b3297b12c4941.1750244145481
+.figma.com	TRUE	/	FALSE	1781780148	_clck	1ds2pri%7C2%7Cfwv%7C0%7C1995
+.naver.com	TRUE	/	TRUE	1784804151	NAC	5njABoAwcx1e
+.c.bing.com	TRUE	/	TRUE	1784957488	SRM_B	01040ABF1E4A69153F0F1CB01FC168BA
+.clarity.ms	TRUE	/	TRUE	1784957488	MUID	01040ABF1E4A69153F0F1CB01FC168BA
+www.figma.com	FALSE	/	TRUE	1755406968	__Host-figma.authn-state	1
+.www.figma.com	TRUE	/	TRUE	1753700206	figma.mst	1
+.www.figma.com	TRUE	/	TRUE	1755407106	figma.session	BAh7CEkiD3Nlc3Npb25faWQGOgZFVG86HVJhY2s6OlNlc3Npb246OlNlc3Npb25JZAY6D0BwdWJsaWNfaWRJIkUyODEwMDgxZTc4NWI4MjEwNjdlYzVlYzExOTkyNTVjMjE1NDZmOGJmMWZlNjczMTEwZjg5NDA4NDc0ZDQyNWNlBjsARkkiCmZsYXNoBjsARnsASSINdXNlcm5hbWUGOwBGSSITMjI3NzNAYWRhdGEua3oGOwBU--fed8095e9de6a7af34ba2c0e26244bbe560ce694
+www.figma.com	FALSE	/	TRUE	1752836208	recent_user_data	%22eyJjb21tdW5pdHlVc2VySWQiOm51bGwsImNvbW11bml0eVByb2ZpbGVJZCI6IjE1MDg4MDQ3ODQxNjkzNzMxMzEiLCJmaWxlQnJvd3NlclVzZXJJZCI6bnVsbCwidXNlcklkVG9PcmdJZCI6e319%22
+avto.adata.kz	FALSE	/	FALSE	1781781103	i18n_redirected	ru
+.yandex.com	TRUE	/	TRUE	1784805103	i	fHqUWGx5S2RV22Erg/2gDeXRC7ogLyHxNbXDg6oVJ2UJDv3pjVJ6v2OjNsAwj7UccaAFoP5cfcCpAqRBp9q70M//M/s=
+.yandex.com	TRUE	/	TRUE	1784805103	yandexuid	2618430941750245103
+.yandex.com	TRUE	/	TRUE	1781781103	yashr	6610767311750245103
+.yandex.com	TRUE	/	TRUE	1784805103	bh	EkEiR29vZ2xlIENocm9tZSI7dj0iMTM3IiwgIkNocm9taXVtIjt2PSIxMzciLCAiTm90L0EpQnJhbmQiO3Y9IjI0IioCPzA6ByJMaW51eCJg773KwgZqGdzK6YgO8qy3pQv7+vDnDev//fYPwvPMhwg=
+.wondershare.com.ru	TRUE	/	TRUE	1784806474	_ga_24WTSJBD5B	GS2.1.s1750246474$o2$g0$t1750246474$j60$l0$h842403766
+jira.adata.kz	FALSE	/	FALSE	0	jira.editor.user.mode	wysiwyg
+id.adada.kz	FALSE	/	FALSE	1781784968	i18n_redirected	ru
+.yandex.ru	TRUE	/	TRUE	1784210513	receive-cookie-deprecation	1
+.googleadservices.com	TRUE	/	TRUE	1760501956	ar_debug	1
+.youtube.com	TRUE	/	TRUE	0	YSC	QMRP65UMXKg
+.youtube.com	TRUE	/	TRUE	1784867377	LOGIN_INFO	AFmmF2swRAIgPtoo91rt8qwl_U85vRNWdICqEvB63_JPY_HiIVsK9pACIEdg0GeeNCrrTx3sLYtWqzlfMY7TESvzdipjPX_GbeQd:QUQ3MjNmejVmeGtaT014Q25rZmFqZWZhTl9yNnBkM1cxa2ZmbmwyWXdYVTJIbjM4R1dteVFUMmJFclZ4cXN1d1NSQ2xzbU5tRk9tM0RReGFMdF82UHFVcmc2R2FLNVA1WVdjeW5EOEl0ay1WWDItMXkyV1JncHVfSWdCeTJVQnZKTnU3V3pYMnotVF9VWnkzMmhyQUhtdFFmckhEaUdEREV3
+.youtube.com	TRUE	/	TRUE	1768037022	VISITOR_INFO1_LIVE	LRtoSaBnP_I
+.youtube.com	TRUE	/	TRUE	1768037022	VISITOR_PRIVACY_METADATA	CgJLWhIEGgAgDQ%3D%3D
+chatgpt.com	FALSE	/	TRUE	0	__Host-next-auth.csrf-token	54c27ef79a8eb1561f8198aea0ae9e11902da0cfdb1166b8a4be044cfd071632%7Ce99987de3b0bf34df27fc1662e04560f182d1e8b5232012b0a4c2ccf4acfd635
+.chatgpt.com	TRUE	/	FALSE	1781413861	oai-did	ec8eb379-3fb0-40af-80c5-f7286f5af0d6
+adtdev.kz	FALSE	/	FALSE	1781846050	i18n_redirected	ru
+widget.tiptoppay.kz	FALSE	/	TRUE	0	widget-tiptop-kz	widget-next-tp|6821be3050e3324399116cc8
+pk.adtdev.kz	FALSE	/	TRUE	0	cookie	1750310088.822.37.470217|b9f48c5f036f6d4672a81a76d006936e
+edo.adata.kz	FALSE	/	FALSE	1781848968	i18n_redirected	ru
+oauth.yandex.ru	FALSE	/	TRUE	1784884029	uniqueuid	904853721750324029
+passport.yandex.ru	FALSE	/	TRUE	1784884029	uniqueuid	332016661750324030
+.yandex.ru	TRUE	/	TRUE	1784021363	receive-cookie-deprecation	1
+.mail.ru	TRUE	/	FALSE	1787045561	oid	yJE77irhkEfEHr2qvnJb
+.mail.ru	TRUE	/	FALSE	1784884094	mrcu	52606853D37E3CC1D6C51B0BDB59
+.tns-counter.ru	TRUE	/	TRUE	1784021562	guid	D7D974056853D37FX1750324095
+.mail.ru	TRUE	/	TRUE	1784884096	p	38IAAO+cy5AA
+.vk.com	TRUE	/	TRUE	1781523542	remixlang	0
+.vk.com	TRUE	/	TRUE	1781860096	remixstlid	9074960859535646240_bTTPhx9arVPDxEBZX1jyZqwLufvftkVzkX5u4WoRYcs
+.www.google-analytics.com	TRUE	/	TRUE	1760264334	ar_debug	1
+.jetbrains.com	TRUE	/	FALSE	1765948661	optimizelyEndUserId	oeu1750396371517r0.471942700853736
+.jetbrains.com	TRUE	/	FALSE	1758172372	_gcl_au	1.1.748458687.1750396372
+.jetbrains.com	TRUE	/	TRUE	1781500372	first_utm_parameters	google|organic|organic|undefined|undefined|undefined
+.jetbrains.com	TRUE	/	FALSE	1786009856	_mkto_trk	id:426-QVD-114&token:_mch-jetbrains.com-bca658619273fe8d643ad04acd5d31a5
+.jetbrains.com	TRUE	/	FALSE	1759225856	_fbp	fb.1.1750396374932.97033890890901533
+.jetbrains.com	TRUE	/	TRUE	1786009856	_dcid	dcid.1.1750396375937.746276560
+.jetbrains.com	TRUE	/	TRUE	1786009855	_ga	GA1.1.1280795145.1750396375
+.bing.com	TRUE	/	TRUE	1784092375	MSPTC	H5RPmphEyDkDJMyC2aKWidwX7XZ8orS64z9n6BLo6Iw
+.jetbrains.com	TRUE	/	TRUE	1758172372	FPAU	1.1.748458687.1750396372
+.jetbrains.com	TRUE	/	FALSE	1781932376	_clck	b5w2i1%7C2%7Cfwx%7C1%7C1997
+.tiktok.com	TRUE	/	TRUE	1784092662	_ttp	2yl5a7OEcbY5k471mv6TaPyNcPR
+.jetbrains.com	TRUE	/	FALSE	1784092662	_tt_enable_cookie	1
+.jetbrains.com	TRUE	/	FALSE	1784092662	_ttp	01JY5W28J734H5TS45C4E0AE4J_.tt.1
+.jetbrains.com	TRUE	/	FALSE	1786009856	cookiehub	eyJhbnN3ZXJlZCI6dHJ1ZSwicmV2aXNpb24iOjMsImRudCI6ZmFsc2UsImFsbG93U2FsZSI6dHJ1ZSwiaW1wbGljdCI6ZmFsc2UsInJlZ2lvbiI6IkcwIiwidG9rZW4iOiJNRVl5alR4TkZwTU9janUxU1g4V1ZraEtURHJiREtic2tLZnhTZVhXV0dZWFE0RW1GS0lPWWhjNVdBMnAyV3U3IiwidGltZXN0YW1wIjoiMjAyNS0wNi0yMFQwNToxMjo1NS4yNTdaIiwiYWxsQWxsb3dlZCI6dHJ1ZSwiY2F0ZWdvcmllcyI6W10sInZlbmRvcnMiOltdLCJzZXJ2aWNlcyI6W119
+.jetbrains.com	TRUE	/	TRUE	1758172384	_gtmeec	e30%3D
+.jetbrains.com	TRUE	/	FALSE	1765948384	optimizelySession	1750396384348
+.jetbrains.com	TRUE	/	FALSE	1784092662	ttcsid	1750396379723::ThwU6tHPg40yu7Df0z4p.1.1750396662223
+.jetbrains.com	TRUE	/	FALSE	1784092662	ttcsid_CSDQL43C77U7H0AIB4PG	1750396379723::MaMgR7JzFgGb_cXa3wzI.1.1750396662428
+adada.kz	FALSE	/	FALSE	1781946795	i18n_redirected	ru
+pk-stable.adata.kz	FALSE	/	FALSE	1781953946	i18n_redirected	ru
+edo.adada.kz	FALSE	/	FALSE	1781958271	i18n_redirected	ru
+payments.google.com	FALSE	/	TRUE	1753018626	OTZ	8135377_36_32__32_
+.google.com	TRUE	/	FALSE	0	S	billing-ui-v3=VJ2mCTCCi_arvoDoZljVtQMWDvwGX8xX:billing-ui-v3-efe=VJ2mCTCCi_arvoDoZljVtQMWDvwGX8xX
+support.mozilla.org	FALSE	/	TRUE	1753074328	session_id	ovm4s7dlve2u4bjj7zk1bib9q14encbs
+support.mozilla.org	FALSE	/	TRUE	1782104728	csrftoken	79lGeV1AbYdvzw5I8r9SwReUdViacwk6
+.mozilla.org	TRUE	/	FALSE	1785215128	_ga	GA1.1.1372203836.1750655128
+.mozilla.org	TRUE	/	FALSE	1785215179	_ga_2VC139B3XV	GS2.1.s1750655127$o1$g1$t1750655179$j8$l0$h0
+chromewebstore.google.com	FALSE	/	TRUE	1785215719	OSID	g.a000yQgg952kWlzrePPi1R0eipufFg7ocBeyMY1ULVgEXWMFYqrJIMdlRw-iZFIAMN8fSHMqTQACgYKAUUSARMSFQHGX2MiFrYLttdFNgo7541SSCNNRxoVAUF8yKq62CWPZHW1ReVthBfzMSQL0076
+chromewebstore.google.com	FALSE	/	TRUE	1785215719	__Secure-OSID	g.a000yQgg952kWlzrePPi1R0eipufFg7ocBeyMY1ULVgEXWMFYqrJnetj3rk18NGYaWrb9lnJaAACgYKAWsSARMSFQHGX2MiGpNqywH9vcC8ZBucX8uoOBoVAUF8yKqtG6Na7BSozzvRBcUJlHhN0076
+.chromewebstore.google.com	TRUE	/	FALSE	1787297915	_ga	GA1.1.505212405.1750655720
+.chromewebstore.google.com	TRUE	/	FALSE	1785215720	_ga_5FRQC0YKWF	GS2.1.s1750655720$o1$g0$t1750655720$j60$l0$h0
+chromewebstore.google.com	FALSE	/	TRUE	1753247720	OTZ	8139195_36_32__32_
+kaspi.kz	FALSE	/	FALSE	1782219086	ks.tg	70
+kaspi.kz	FALSE	/	FALSE	1782219086	k_stat	c87f38cc-5c45-44a3-9325-bed1963f22a8
+kaspi.kz	FALSE	/	FALSE	1782219090	kaspi.storefront.cookie.city	750000000
+.maibenben.kz	TRUE	/	FALSE	1758459229	_gcl_au	1.1.1175068686.1750683229
+.maibenben.kz	TRUE	/	FALSE	1785243288	_ga	GA1.1.921637419.1750683229
+.maibenben.kz	TRUE	/	TRUE	1782219229	_ym_uid	1750683229844320328
+.maibenben.kz	TRUE	/	TRUE	1782219229	_ym_d	1750683229
+.yandex.ru	TRUE	/	TRUE	1782219304	receive-cookie-deprecation	1
+.maibenben.kz	TRUE	/	FALSE	1785244466	_ga_NW25LC769R	GS2.1.s1750683229$o1$g1$t1750684465$j60$l0$h0
+pk.adtdev.kz	FALSE	/	FALSE	1782303613	i18n_redirected	ru
+chatgpt.com	FALSE	/	TRUE	0	__Secure-next-auth.callback-url	https%3A%2F%2Fchatgpt.com%2F
+.openai.com	TRUE	/	FALSE	1782474167	oai-did	b2de7100-e197-4c14-b27e-206468acdc6f
+chatgpt.com	FALSE	/	FALSE	1781928372	oai-hlib	true
+chatgpt.com	FALSE	/	FALSE	1753416373	oai-model-sticky-for-new-chats	false
+selectorshub.com	FALSE	/	TRUE	1785386782	selectorshub authentication	true
+analytics-new.adata.kz	FALSE	/	FALSE	1782365286	i18n_redirected	ru
+.youtube.com	TRUE	/	TRUE	1766399354	VISITOR_INFO1_LIVE	BFXxMGjd9Ec
+.youtube.com	TRUE	/	TRUE	1766399354	VISITOR_PRIVACY_METADATA	CgJLWhIEGgAgFA%3D%3D
+.youtube.com	TRUE	/	TRUE	1766399354	__Secure-ROLLOUT_TOKEN	CKfq883thOLvXxCzo8_UroyOAxit9_XUroyOAw%3D%3D
+.pi7.org	TRUE	/	FALSE	1782384072	FCNEC	%5B%5B%22AKsRol82A8rClOd7rbF6eOuVXwymUZe9IC1t96hJjpIAt8EUfzU2GWY7E1cLXavoda5FMoj4qe8X2LqgWceUNg19RJD90lNK7Zc8jbjq3RW9k3t7tpGNkobyZgER4GouhhK3NGTxJldCcReS6CdDf5NyUmlFpQIvYA%3D%3D%22%5D%5D
+.adada.kz	TRUE	/	FALSE	1787234513	_ga	GA1.1.382581948.1750856591
+.adada.kz	TRUE	/	TRUE	1782392591	_ym_uid	1750163515318324394
+.adada.kz	TRUE	/	TRUE	1782392591	_ym_d	1750856591
+pk.adada.kz	FALSE	/	FALSE	1782392600	i18n_redirected	ru
+widget.tiptoppay.kz	FALSE	/	TRUE	0	widget-tiptop-kz	widget-next-tp|6821be3050e3324399116cc8
+gitlab.adata.kz	FALSE	/	TRUE	0	preferred_language	en
+.openai.com	TRUE	/	FALSE	1774268105	intercom-id-dgkjq2bp	36daf9c2-62f9-4473-aeca-1742616198fe
+.openai.com	TRUE	/	FALSE	1774269698	intercom-device-id-dgkjq2bp	a612ceb7-de66-4bcc-8f5d-68fa0058ab17
+.auth.openai.com	TRUE	/	TRUE	1782474168	cf_clearance	nciYju4EKP6Alda_kCw0ZKHlQK.ZJ3Gif51OZ2906iM-1750938168-1.2.1.1-H5B52kVTR5Z7sVY0dBPW.jbgSM9460dodQYA5cdniCqSi53FVDP.9wO3kxcF0xHsoqNGNxNoL1gdtOLtUkUkyZBlQcA80tPFWnyZqnkt_v3HqEyi_6iA8CBP8tqHUj_x4rWN_Nui1mvhVrt3yIhLZZ37nt_J8jg8FildJUYPqeHr47wp.QUA6CLYnQfp56Nb0RIkHrhpOT2xnbA94SMZ9xoQR24Gx29MWykBijSIjqvzksZoKTcv3TwCcFpnt68k_oZ8O5pNhN8UNO2vMed7pritNb7fn4V7OVda0IDfpHgUYa9SZ5DZROoEIemgPXBtHULDepcwacetDV0JVUuAogyP05KHzAWIf_QyCLnVbL4
+.openai.com	TRUE	/	TRUE	1782475694	cf_clearance	Rv6SDNYcGOKBXfcsC2p.qbqU9q9CWII6Z.QjqEv_vnc-1750939696-1.2.1.1-5SxAPWzOilP.s.hskWtfxwte9_vJEciEfEcdiUywU9ZbgpqQWWoJu1PR0WPKgT9w0arV.Nk3DQbSSPF2YHaTfj_BLtmowxrXrOaVNnqZwy.cNcNJ7x4g_bltN_27PBaQ2quEfEgBqakeFUROyUng_KjoYHiKoN0_ph6i.9yQte_iHWyMzb7eF6ctZjg1AImkRW7MNvDw.R2Gr.31BGt7.SoP.apARJNWDeNs87oMfQshaZ7rylJEu6N_i.03dh11l3sVTRErZeUTEPcggNdMPkfuO7lGrSN6f3rYSjxi17lQ7f6yfs1tIUG4gWTUCfT0k2hxfBSWGXAqbUSkhQx3atCe63kmb1eapmzfdRQKko0
+.kezekte.kz	TRUE	/	FALSE	1785501184	_ga	GA1.2.653960834.1750941183
+elicense.kz	FALSE	/	TRUE	1782477384	lang	ru
+elicense.kz	FALSE	/	FALSE	1782477384	cookiesession1	678B76A7FAD2F393BE2C35D3C636D366
+elicense.kz	FALSE	/	FALSE	1782477396	_zero_cc	e15aa59ce0f238
+elicense.kz	FALSE	/	FALSE	1782477396	_zero_ss	685d3ed46a363.1750941397.1750941397.1
+.elicense.kz	TRUE	/	FALSE	1785501397	__utma	226182350.1249069655.1750941397.1750941397.1750941397.1
+.elicense.kz	TRUE	/	FALSE	1766709396	__utmz	226182350.1750941397.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)
+.elicense.kz	TRUE	/	TRUE	1782477397	_ym_uid	175094139765109653
+.elicense.kz	TRUE	/	TRUE	1782477397	_ym_d	1750941397
+.yandex.ru	TRUE	/	TRUE	1782477399	receive-cookie-deprecation	1
+.kezekte.kz	TRUE	/	FALSE	1785501411	_ga_2E5VR6WWMN	GS2.1.s1750941183$o1$g1$t1750941410$j60$l0$h0
+.katalon.com	TRUE	/	FALSE	1785647560	_ga	GA1.2.1854754180.1751087560
+demo.arcade.software	FALSE	/	TRUE	1782623560	ajs_anonymous_id	3c8666d8-bab5-4a71-bd2c-7e65c5751150
+.katalon.com	TRUE	/	FALSE	1758863561	_gcl_au	1.1.618080519.1751087561
+.katalon.com	TRUE	/	FALSE	1785647561	_ga_N0SQP5NSSD	GS2.1.s1751087559$o1$g0$t1751087560$j59$l0$h0
+.a-brands.kz	TRUE	/	TRUE	1782792012	_ym_uid	1751256013981445630
+.a-brands.kz	TRUE	/	TRUE	1782792012	_ym_d	1751256013
+.yandex.ru	TRUE	/	TRUE	1784007848	receive-cookie-deprecation	1
+.a-brands.kz	TRUE	/	FALSE	1787031848	_ga	GA1.1.1160607604.1751256013
+.a-brands.kz	TRUE	/	FALSE	1760247848	_fbp	fb.1.1751256013577.948970965312497824
+.calc.ru	TRUE	/	FALSE	1785817010	_ga	GA1.2.1587781853.1751257010
+.calc.ru	TRUE	/	TRUE	1782793010	_ym_uid	1751257010401921110
+.calc.ru	TRUE	/	TRUE	1782793010	_ym_d	1751257010
+www.calc.ru	FALSE	/	FALSE	1753849010	guid	3cc5c5ae-a3c6-4260-8e04-46d23a626b06
+.yandex.ru	TRUE	/	TRUE	1782793011	receive-cookie-deprecation	1
+.calc.ru	TRUE	/	FALSE	1785817011	_ga_V00MLJYCD9	GS2.2.s1751257010$o1$g0$t1751257010$j60$l0$h0
+2gis.kz	FALSE	/	TRUE	1785817834	spid	1751257833449_3ac2e8f1a6ccb97ffa99b33c132ab49e_mij3nau3n8ockpkv
+.2gis.kz	TRUE	/	FALSE	1785817834	_2gis_webapi_user	acb3a53f-e2a1-48a7-9370-af21deec0a5b
+2gis.kz	FALSE	/	FALSE	1785817922	dg5_is_friends_clicked	
+.2gis.kz	TRUE	/	FALSE	1785817922	_ga	GA1.1.1825283481.1751257867
+.2gis.kz	TRUE	/	TRUE	1782793866	_ym_uid	1751257867429754071
+.2gis.kz	TRUE	/	TRUE	1782793866	_ym_d	1751257867
+.2gis.kz	TRUE	/	FALSE	1780029121	tmr_lvid	509cf24d233e83cc2d4afc80854c9422
+.2gis.kz	TRUE	/	FALSE	1780029121	tmr_lvidTS	1751257866963
+.yandex.ru	TRUE	/	TRUE	1782793921	receive-cookie-deprecation	1
+.apec.training	TRUE	/	TRUE	1782793867	_ym_uid	1751257867564915595
+.apec.training	TRUE	/	TRUE	1782793867	_ym_d	1751257867
+.yandex.ru	TRUE	/	TRUE	1782793867	receive-cookie-deprecation	1
+.yadro.ru	TRUE	/	TRUE	1782766801	VID	2bGVx42Vc7v31eOXCB002UPH
+2gis.kz	FALSE	/	TRUE	1785817868	spsc	1751257868178_cbd070b379342fdc9520e5f65008981d_fFvdPZMFIi8VyXV1B8Tdetq1J7cJXxfdZ7FEY0YVLMkZ
+.2gis.kz	TRUE	/	FALSE	1785817999	_ga_P27NC6GZM0	GS2.1.s1751257866$o1$g1$t1751257998$j60$l0$h0
+top-fwz1.mail.ru	FALSE	/	TRUE	1782880400	PVID	0xvYaX10fyoX00002h1NLKIX:::0-0-0-d7c6bcb-0-d7c6c4f:CAASEPcUXbNfWC6i6REuB2TctiAaYGKohcksupcxHKGoMT1crBnLQpukbm_QkAAeFe1qkkHwsm3JQs565mGs4w7KExUes4Fyxoj10xFVF9_xhSLx3Kd_3Je2Pr6W_rwBOQnOmWcGW4wghpIEcmkh51sgHx8cfA
+tnved.adata.kz	FALSE	/	FALSE	1782797438	i18n_redirected	ru
+.uchet.kz	TRUE	/	FALSE	1782365512	UCHET_SM_GUEST_ID	10132685
+.uchet.kz	TRUE	/	FALSE	1782797479	BITRIX_CONVERSION_CONTEXT_s1	%7B%22ID%22%3A63%2C%22EXPIRE%22%3A1751309940%2C%22UNIQUE%22%3A%5B%22conversion_visit_day%22%5D%7D
+.uchet.kz	TRUE	/	FALSE	1759037480	_gcl_au	1.1.515789994.1751261480
+.youtube.com	TRUE	/	TRUE	1766813480	__Secure-ROLLOUT_TOKEN	CJriv6vvn_f0WxCrxqCztZiOAxirxqCztZiOAw%3D%3D
+.youtube.com	TRUE	/	TRUE	1766813480	VISITOR_INFO1_LIVE	VFSy7oZ5OWg
+.youtube.com	TRUE	/	TRUE	1766813480	VISITOR_PRIVACY_METADATA	CgJLWhIEGgAgNA%3D%3D
+.uchet.kz	TRUE	/	TRUE	1782797479	_ym_uid	1751261480853925593
+.uchet.kz	TRUE	/	TRUE	1782797479	_ym_d	1751261480
+.uchet.kz	TRUE	/	FALSE	1780032712	tmr_lvid	14e59da83df0fa16251674a0e682e73e
+.uchet.kz	TRUE	/	FALSE	1780032712	tmr_lvidTS	1751261480001
+.yandex.ru	TRUE	/	TRUE	1782797512	receive-cookie-deprecation	1
+.uchet.kz	TRUE	/	FALSE	1759037513	_fbp	fb.1.1751261480488.305423625709758900
+www.clarity.ms	FALSE	/	TRUE	1782797484	CLID	a01c977dd30d43549d8920b56c3a2e56.20250618.20260630
+.uchet.kz	TRUE	/	FALSE	1782797484	_clck	rnkgkb%7C2%7Cfx7%7C0%7C2007
+edo.uchet.kz	FALSE	/	FALSE	1782797494	i18n_redirected	ru
+.uchet.kz	TRUE	/	FALSE	1785821495	_ga_Z6FYXFLKPP	GS2.2.s1751261495$o1$g0$t1751261495$j60$l0$h0
+edo.uchet.kz	FALSE	/	TRUE	1782797495	_ymab_param	9L51u1q4OiW-lzz4CHhwsgq1klM1f4C_s_cGJjqmGuqVtdrhdwWtBF90vJfS2v_uRRf0kiIr-qvkSF52bm37cVNwLjE
+.uchet.kz	TRUE	/	FALSE	1785821507	_ga_28KG771N5V	GS2.1.s1751261495$o1$g1$t1751261506$j49$l0$h0
+.uchet.kz	TRUE	/	FALSE	1782365512	UCHET_SM_LAST_VISIT	30.06.2025%2010%3A31%3A52
+.uchet.kz	TRUE	/	FALSE	1785821513	_ga	GA1.1.1472491990.1751261480
+ac.adata.kz	FALSE	/	FALSE	1782798311	i18n_redirected	ru
+.uchet.kz	TRUE	/	FALSE	1785823228	_ga_3QSV8CVZHW	GS2.1.s1751261479$o1$g1$t1751263227$j60$l0$h0
+.uchet.kz	TRUE	/	FALSE	1785823228	_ga_341066832	GS2.1.s1751261479$o1$g1$t1751263227$j60$l0$h0
+top-fwz1.mail.ru	FALSE	/	TRUE	1782885628	PVID	0xvYaX10fyoX00002h1NLKIX:::0-0-0-d7c6bcb-0-d7c80bc:CAASEJjnBaeNiAAWWeSp7BtpzXcaYHsiN9nsLZY6p_UlGymaIXwvKRMLKvtjZDLdsQZiR3fcVKOClRwATF_Ca7oew9gp8McHGcjwpUh2eF5SzWOK8zjEATH7wgjr0AYc4QO5TSvdna70rk1IkG-yb4hQtyMsEg
+drive.google.com	FALSE	/	TRUE	1753855636	OTZ	8149327_36_32__32_
+.youtube.com	TRUE	/	TRUE	1768289841	VISITOR_INFO1_LIVE	NKZ_bOsHD8k
+.youtube.com	TRUE	/	TRUE	1768289841	VISITOR_PRIVACY_METADATA	CgJLWhIEGgAgYg%3D%3D
+gosreestr.kazpatent.kz	FALSE	/	FALSE	1782882212	lang	ru
+.kazpatent.kz	TRUE	/	FALSE	1785935752	_ga	GA1.2.713543552.1751346214
+.dfo.kz	TRUE	/	FALSE	1785907362	_ga	GA1.1.1004057620.1751346325
+www.dfo.kz	FALSE	/	FALSE	1782882919	_zero_cc	19a07f38d43302
+www.dfo.kz	FALSE	/	FALSE	1782882919	_zero_ss	68636ee7303ad.1751346920.1751346920.1
+dfo.kz	FALSE	/	FALSE	1782883190	_zero_cc	19a07f38d43302
+dfo.kz	FALSE	/	FALSE	1782883190	_zero_ss	68636ff67880e.1751347191.1751347191.1
+.dfo.kz	TRUE	/	FALSE	1785907193	_ga_2XZ6YH9X9V	GS2.1.s1751346919$o1$g1$t1751347193$j57$l0$h0
+kgd.gov.kz	FALSE	/	FALSE	1782890283	_zero_cc	330e27f86ba402
+.kgd.gov.kz	TRUE	/	TRUE	1782890164	_ym_uid	1750155423867309962
+.kgd.gov.kz	TRUE	/	TRUE	1782890164	_ym_d	1751354165
+.yandex.ru	TRUE	/	TRUE	1782910688	receive-cookie-deprecation	1
+kgd.gov.kz	FALSE	/	FALSE	1782890283	_zero_ss	68638b3484d8e.1751354164.1751354283.8
+.mitwork.kz	TRUE	/	FALSE	1759143686	_fbp	fb.1.1751367660914.34354090511292429
+.mitwork.kz	TRUE	/	FALSE	1785927686	_ga	GA1.1.1793774382.1751367661
+grafana.adtdev.kz	FALSE	/	FALSE	1753966339	grafana_session	5cb4fcf9f105270568712c56f526143c
+grafana.adtdev.kz	FALSE	/	FALSE	1753966339	grafana_session_expiry	1751374933
+.mitwork.kz	TRUE	/	FALSE	1785934600	_ga_96NWHP3ECM	GS2.1.s1751374599$o2$g0$t1751374600$j59$l0$h0
+.dfo.kz	TRUE	/	FALSE	1785934835	_ga_E0MVK21WRM	GS2.1.s1751374795$o2$g1$t1751374834$j21$l0$h0
+.kazpatent.kz	TRUE	/	FALSE	1785935752	_ga_420H39JQP3	GS2.2.s1751374796$o2$g1$t1751375751$j59$l0$h0
+meet.google.com	FALSE	/	TRUE	1785994074	OSID	g.a000ywgg94EukCtngUtdY15iVWYmXxxwa5CCo349eBjGw6B2TO-kcfhbKzVRRYScXmJebAvhOQACgYKAZ0SARMSFQHGX2MitivTDj--xsn8MWXG1VobyRoVAUF8yKoKgRGHvLcSeRjEnrsaAQYY0076
+meet.google.com	FALSE	/	TRUE	1785994074	__Secure-OSID	g.a000ywgg94EukCtngUtdY15iVWYmXxxwa5CCo349eBjGw6B2TO-kbRMa8qz_leby2R0LnGn6TQACgYKAeYSARMSFQHGX2MiD3EaIx_Op9sjOzT1RC74ZRoVAUF8yKoQlZMYYmFx9dIvwjTpOU-M0076
+meet.google.com	FALSE	/	TRUE	1754026076	OTZ	8152168_36_32__32_
+accounts.google.com	FALSE	/	TRUE	1785999640	LSID	o.chromewebstore.google.com|o.drive.google.com|o.lens.google.com|o.mail.google.com|o.meet.google.com|s.youtube:g.a000yQgg91-98gsGDHUqMsr68lVo9SxjI9qsDvITWB2MeqtakKO6zmm_eG4kZ4z11sXzQSlBqQACgYKAQQSARMSFQHGX2Mi0eG08d0TsXyOW8XAtvSHqhoVAUF8yKpgz2oqDZIweTimo4kqmnAo0076
+accounts.google.com	FALSE	/	TRUE	1785999640	__Host-1PLSID	o.chromewebstore.google.com|o.drive.google.com|o.lens.google.com|o.mail.google.com|o.meet.google.com|s.youtube:g.a000yQgg91-98gsGDHUqMsr68lVo9SxjI9qsDvITWB2MeqtakKO6MaX9pFpW19ackTRSwYv9AgACgYKAScSARMSFQHGX2MimqKxgC0yrpH0E_mhEEuGyBoVAUF8yKoYamcGi1drlIR7J_PVGZTx0076
+accounts.google.com	FALSE	/	TRUE	1785999640	__Host-3PLSID	o.chromewebstore.google.com|o.drive.google.com|o.lens.google.com|o.mail.google.com|o.meet.google.com|s.youtube:g.a000yQgg91-98gsGDHUqMsr68lVo9SxjI9qsDvITWB2MeqtakKO6ete0Eiu2jIcbYOOr9V28ngACgYKAX0SARMSFQHGX2MirvXfIU-VtJmvF0sFYQcmlBoVAUF8yKolEV30yGd4dPB6cZ9fjX7X0076
+mail.google.com	FALSE	/	TRUE	1785999640	OSID	g.a000ywgg97NLcCZuFZiQdF9LElG0wu_XaXmpHG66VjDo4aPjbLQgUZsfF6DgNGXCnMdNQWV2xwACgYKAdoSARMSFQHGX2Miy3RG8eyT3OI6P26pFr_zeBoVAUF8yKpoP6t1C7QoWbvF2fsieVSh0076
+mail.google.com	FALSE	/	TRUE	1785999640	__Secure-OSID	g.a000ywgg97NLcCZuFZiQdF9LElG0wu_XaXmpHG66VjDo4aPjbLQgmvt0loR6JD-Vo3rF65WBiwACgYKAaYSARMSFQHGX2MiTKUIyRepUCkAdCPobsbP0RoVAUF8yKqVNKBoJZHS608nsSAxbOd50076
+mail.google.com	FALSE	/	TRUE	1754031641	__Host-GMAIL_SCH_GMN	1
+mail.google.com	FALSE	/	TRUE	1754031641	__Host-GMAIL_SCH_GMS	1
+mail.google.com	FALSE	/	TRUE	1754031641	__Host-GMAIL_SCH_GML	1
+mail.google.com	FALSE	/	TRUE	0	__Host-GMAIL_SCH	nsl
+.jetbrains.com	TRUE	/	TRUE	1782553855	last_utm_parameters	product|link|PC|undefined|2025.1|undefined
+www.jetbrains.com	FALSE	/	FALSE	1759225855	userToken	paxgosmojldoasc9chjda
+.jetbrains.com	TRUE	/	TRUE	1786009855	_ga_M8TDRLXFQH	GS2.1.s1751449855$o2$g1$t1751449855$j60$l0$h184805082
+.jetbrains.com	TRUE	/	TRUE	1786009856	_ga_9J976DJZ68	GS2.1.s1751449855$o2$g1$t1751449856$j59$l0$h0
+.jetbrains.com	TRUE	/	FALSE	1785145857	_uetvid	39033f604d9511f094b8f7592f7ef562
+.jetbrains.com	TRUE	/	TRUE	1759225857	_rdt_uuid	1750396374682.3d9061bb-cb32-4e0b-9c02-89d4ca0030c7
+developer.chrome.com	FALSE	/	FALSE	1785236365	cookies_accepted	true
+developer.chrome.com	FALSE	/	FALSE	1767002316	django_language	ru
+.chrome.com	TRUE	/	FALSE	1786100366	_ga	GA1.1.539045299.1751450318
+chat.deepseek.com	FALSE	/	FALSE	1786011674	smidV2	202507021521134d28022a7a642a560e0104806a1c7d070072e4af00eabf1a0
+chat.deepseek.com	FALSE	/	FALSE	1786011679	.thumbcache_6b2e5483f9d858d7c661c5e276b6a6ae	htQAxq5QTnbxMABNIoYgYPs6BTgAR4cpS6BqO7TDgNWuPlmcIBqjhVVgPLtvN/O+dj4+HyAfEB2eRPTUZFfC5Q%3D%3D
+.deepseek.com	TRUE	/	TRUE	1774788903	intercom-device-id-guh50jw4	10531119-aecd-470b-a2f9-13c5fde331f7
+pki.gov.kz	FALSE	/	FALSE	1782993193	cookiesession1	678B76A80B373C77085E7593C172A03B
+.culs.kz	TRUE	/	FALSE	1786018899	_ga	GA1.1.606284945.1751458340
+.deepseek.com	TRUE	/	TRUE	1782994902	cf_clearance	jUlRzpyJj1dz4JGAuPkqgGtLr62aDJGesLzAuiJyNmg-1751458902-1.2.1.1-rMkaf34zPbHLCr1Xy90bsS_4RE2.hlSkn28F4NCJk1kTQhFgYG915.H82FSHw4Q2h2VqzvurE.dsKQsMiqcL14Ob85mmA.mEMS_ApkQqjRmr5K9OFdC8WbVQKnuUicjy7xu7GfSakHzwlVFdtqpSsitbrIqfvaCqE5IwNGFMq_s_ky2mVmAbXgH4ayMBxfHQgG5F718kP9NwCMJQwScfznAOtIJ8yAyU73SZBJak.mA
+.culs.kz	TRUE	/	FALSE	1786020174	_ga_FFLZ3BPLVM	GS2.1.s1751458339$o1$g1$t1751460173$j60$l0$h0
+.text.ru	TRUE	/	FALSE	1780294687	tmr_lvid	f2bb3347a6798e3889d3d7ec008fdac4
+.text.ru	TRUE	/	FALSE	1780294687	tmr_lvidTS	1751460915476
+.text.ru	TRUE	/	TRUE	1782996915	_ym_uid	1751460916816576249
+.text.ru	TRUE	/	TRUE	1782996915	_ym_d	1751460916
+.yandex.ru	TRUE	/	TRUE	1783059488	receive-cookie-deprecation	1
+text.ru	FALSE	/	TRUE	1783059488	_ymab_param	zkZJ10GF40rrNMDUO-RC_wljXOmtZlsbbVo7ai9XlkRFMftm07Jg3Fi2t6XzHD-lfejK0AhJOxsRtIo5CgWR1ZZaUoE
+jira.adata.kz	FALSE	/	FALSE	0	atlassian.oidcSso.autoLogin.lastAttempt	1751515165887
+.mail.ru	TRUE	/	TRUE	0	act	12fdcc7f4e784b3188c7e181ba3673ba
+.vk.com	TRUE	/	TRUE	1782951762	remixuas	MDNjNDlhNDI0YjBmYjNlODBiZDI3YzU1
+.vk.com	TRUE	/	TRUE	1783489381	remixuacck	eef8bf13933efec14b
+.mail.ru	TRUE	/	TRUE	1754112911	ph_ShowedSnowHint	1
+.mail.ru	TRUE	/	TRUE	1784107954	tmr_lvid	becfcb0ce323f33a5146e0899f00f4d3
+.mail.ru	TRUE	/	TRUE	1784107954	tmr_lvidTS	1751520911357
+.vk.com	TRUE	/	TRUE	1782928975	remixstid	1413947595_wk0RWAmchRpTEmoQFqQ6WPDsoUQNtRub5mAzzNg93qw
+analytics-new.adtdev.kz	FALSE	/	FALSE	1783057309	i18n_redirected	ru
+.adtdev.kz	TRUE	/	FALSE	1786081324	_ga_JNPZVWBM73	GS2.1.s1751521320$o1$g0$t1751521323$j57$l0$h0
+.yandex.kz	TRUE	/	TRUE	1783057816	yashr	7758971691751521816
+.yandex.ru	TRUE	/	TRUE	1783057818	receive-cookie-deprecation	1
+.yandex.kz	TRUE	/	TRUE	1783057817	_ym_uid	1751521818103843781
+.yandex.kz	TRUE	/	TRUE	1783057817	_ym_d	1751521818
+.yandex.kz	TRUE	/	TRUE	1786788230	yandexuid	8532479311750237183
+.yandex.kz	TRUE	/	TRUE	1786788230	yuidss	8532479311750237183
+.yandex.kz	TRUE	/	TRUE	1786788230	i	5JLvaionOu66z5zzs8HrHWpycMFIqRlnLDHONdkDFeA1UDgXDW9z3PWzMNPR4fKhPpc5uH8UeypcaXhF00uDrJ5TUss=
+.yandex.kz	TRUE	/	FALSE	1754113819	spravka	dD0xNzUxNTIxODE5O2k9ODkuMjE5LjExLjI3O0Q9Mzg4NDg0QUU2Q0Y4OTk5MjQyMUFCNUY1ODcxRUFCMThGQzBCRjBFRUUyMzIyRTE2OEJENUVFNDk0MkE5MDAxREY2NjJCNzE5Q0M3OUZGRkI3MEJCMzZBRjdERTJGRUVEREZERjczQzVDQkQwMzY0MzgxMTk0OUQ5NkFBQjY5MDJFMTQ4M0RBMkUzRjJBNENCNTEwRDg2MTA7dT0xNzUxNTIxODE5OTg1MjQwOTQzO2g9NWNkNDVlZmU2N2ZjZGQ1YWMzNzNmYzc1ZTMyMzQ5MDc=
+.yandex.kz	TRUE	/	TRUE	1786081820	is_gdpr	0
+.yandex.kz	TRUE	/	TRUE	1786081820	is_gdpr_b	COOeNhDYyQIoAg==
+.yandex.kz	TRUE	/	TRUE	1786081821	_yasc	txg71+Y+f7zfiaDOCPvKLWYv1GuxseNU6E74+Zt+oDZZaa3U+su/fBRDMqxFqQRSvIIfQRXTFDJT
+.yandex.kz	TRUE	/	TRUE	1783057836	receive-cookie-deprecation	1
+text.ru	FALSE	/	FALSE	1786083487	session	UzNTP1EwUG4BIQ99VTpQPAFhUTldcFxzU2MBJlwjBD9QagtmV1wAMlUwUycOYAN0UTALOQViUDdVJ1AxWmYGbgE1VGUAOQRgUDRUYQFmAG1TN1NgUT1QbAE8Dz9VMlA%2BAWBROl1mXDRTZQE2XDYENVA8C2xXNgBqVTFTJw5gA3RRMAs7BWBQN1UnUGtaJQYFATVUZABoBCRQYFQkASYAeVNpU3ZRPlBlAWgPNFUiUDUBaFEtXWBcMVM%2FAXtcYQRnUCsLOlc0AHlVb1N2DmEDNlE6CzAFclB4VXZQZ1onBgUBNVRnAGkEOFBxVHUBbgAoU2hTMFE0UG4BeA9DVW9QdwE4UW9dPlxhUykBYFx%2BBGZQJQsgV1sAalVlUz4OewNLUWMLZAUlUHVVJVB6Wm0GbAELVDYAOAR%2FUCVUFgElACtTPlNgUVNQMQE4D0VVaVB5AX5RNl1hXDdTKAFmXGYEdFA%2BC3tXOQBqVWdTPw55A2tRawt5BSRQUlVkUGFaIQYzASJUaQB4BC9QJ1RsATwAYVNjUzJRMVBlAW8PPFUzUDkBaVE0XWlcfQ%3D%3D
+.text.ru	TRUE	/	FALSE	1760163488	v1_sessions_callibri	1133326404
+m.stripe.com	FALSE	/	TRUE	1786086827	m	526aefe4-3da3-4405-bafc-16d38609e6291e0956
+top-fwz1.mail.ru	FALSE	/	TRUE	1783160385	PVID	0xvYaX10fyoX00002h1NLKIX:::0-0-0-d7c6bcb-0-d80b200:CAASEHs0pgdA4f1nUju4uC8qTj4aYEgGmk7KnQ11h2LmuoZyuyW1frBwTCdz9BMf6lzpBC4Z4sto8syaNL5kiLq_syf2iWDeJ6BIm-kmHNr6BRuNs46hmpTW36S5kNrCPhzVV7O8VoRy2bUo_KRx5kv63kRJ_A
+.chrome.com	TRUE	/	FALSE	1786100370	_ga_H1Y3PXZW9Q	GS2.1.s1751540365$o2$g0$t1751540369$j56$l0$h0
+.chrome.com	TRUE	/	FALSE	1786100370	_ga_64EQFFKSHW	GS2.1.s1751540365$o2$g0$t1751540369$j56$l0$h0
+.aspose.app	TRUE	/	FALSE	1786101919	_ga	GA1.1.2105996661.1751541919
+.aspose.app	TRUE	/	FALSE	1786102062	_ga_1LEXT1ZD9X	GS2.1.s1751541918$o1$g1$t1751542061$j55$l0$h0
+.github.com	TRUE	/	TRUE	1783080815	_octo	GH1.1.1914082111.1751544805
+github.com	FALSE	/	TRUE	1784034830	_device_id	3631b6c08b3f0b1997158f844bf0519f
+github.com	FALSE	/	TRUE	1759320810	saved_user_sessions	125943303%3A0XmJsMQXHH4re1TgpuEjLYTQf1Xgvbq17X-Q0uw-V9SyOUgL
+github.com	FALSE	/	TRUE	1753708430	user_session	0XmJsMQXHH4re1TgpuEjLYTQf1Xgvbq17X-Q0uw-V9SyOUgL
+github.com	FALSE	/	TRUE	1753708430	__Host-user_session_same_site	0XmJsMQXHH4re1TgpuEjLYTQf1Xgvbq17X-Q0uw-V9SyOUgL
+.github.com	TRUE	/	TRUE	1783080810	logged_in	yes
+.github.com	TRUE	/	TRUE	1783080810	dotcom_user	daring667
+.oaiusercontent.com	TRUE	/	TRUE	0	_cfuvid	qkcwRUIpLfQPZ.lamDAxrMnyZsCGAlYOxzMh6tmDrbc-1751604821144-0.0.1.1-604800000
+.ilovepdf.com	TRUE	/	FALSE	1786178083	_ga	GA1.1.1485285630.1751618074
+.dndalmaty.kz	TRUE	/	FALSE	1759394236	_fbp	fb.1.1751618236387.863794335644852402
+.dnd.su	TRUE	/	FALSE	1786179207	_ga	GA1.1.1133002141.1751618245
+.dnd.su	TRUE	/	TRUE	1783154245	_ym_uid	1751618245554609874
+.dnd.su	TRUE	/	TRUE	1783154245	_ym_d	1751618245
+.yandex.ru	TRUE	/	TRUE	1783155208	receive-cookie-deprecation	1
+.dnd.su	TRUE	/	FALSE	1786179745	_ga_P6QSMG73H5	GS2.1.s1751618245$o1$g1$t1751619744$j60$l0$h0
+.ilovepdf.com	TRUE	/	FALSE	1786179795	_ga_44KQ8HETWT	GS2.1.s1751618073$o1$g1$t1751619795$j60$l0$h0
+id.adata.kz	FALSE	/	FALSE	1752829879	password	Cntgfy555%40
+id.adata.kz	FALSE	/	FALSE	1752830006	username	22773%40adata.kz
+.proton.me	TRUE	/	TRUE	1759815217	Session-Id	aGeg3qxS0zF4objwgAeLOAAAAUs
+proton.me	FALSE	/	TRUE	1759406888	Tag	default
+proton.me	FALSE	/	TRUE	1759406887	Domain	proton.me
+account.proton.me	FALSE	/	TRUE	1759812829	Tag	default
+account.proton.me	FALSE	/	TRUE	1759406890	Domain	proton.me
+account-api.proton.me	FALSE	/	TRUE	1759406891	Tag	default
+account.proton.me	FALSE	/	TRUE	1754247599	Features	VPNDashboard:A
+mail.proton.me	FALSE	/	TRUE	1759815217	Tag	default
+mail.proton.me	FALSE	/	TRUE	1759812830	Domain	proton.me
+mail.proton.me	FALSE	/	TRUE	1754679599	Features	VPNDashboard:A
+mail-api.proton.me	FALSE	/	TRUE	1759812830	Tag	default
+.proton.me	TRUE	/	TRUE	1786181927	iaas	WzEsMF0
+id.adada.kz	FALSE	/	FALSE	1752840957	username	22773%40adata.kz
+id.adada.kz	FALSE	/	FALSE	1752840957	password	Cntgfy555%40
+.upload.wikimedia.org	TRUE	/	TRUE	1783150314	WMF-Uniq	aCOfdcDbMQFGHX3nA88o5wIiAAEBAFvdQcAvkuZ1EMvAei9yCwuP00PmFJwcUI13
+www.figma.com	FALSE	/	TRUE	1755406968	__Host-figma.authn	%7B%221247744655468500297%22%3A%22figtkn.3806884910.authn.RM9dify5VwHRQLFQix32S8%22%2C%221508804784052600454%22%3A%22figtkn.3806884762.authn.XX3zVeGOdeqfDY92PG1pWr%22%7D
+www.figma.com	FALSE	/	TRUE	1755406968	__Host-figma.authn.mac	1.eyJwbGFuIjoic3RhcnRlciIsImV4cGlyZXNfYXQiOjE3NTcxMzQ5Njh9.4c29f0513968e8deb18176a143ce739589d2e3f71772ec7b7457d4cd3d5f7836
+www.figma.com	FALSE	/	TRUE	1755406968	__Host-figma.embed	%7B%221247744655468500297%22%3A%22figtkn.3806884911.embed.pFxy7H4V00107JoLKGWs6W%22%2C%221508804784052600454%22%3A%22figtkn.3806884763.embed.beEcJDqUMyCIYcOkQawEqN%22%7D
+www.figma.com	FALSE	/	TRUE	1755406968	__Host-figma.embed.mac	1.eyJwbGFuIjoic3RhcnRlciIsImV4cGlyZXNfYXQiOjE3NTcxMzQ5Njh9.4cfadcac15c2f8eefcb199367bf79f8fa95e8ca10ae42e3d065b0411c4baede7
+.www.figma.com	TRUE	/	TRUE	1755406968	IP_ADDRESS_CONTROLS	FVxgxB3FKIQVJyHMLJzLvXZ6gdfX-epr.pJEy9iHaEuOlPgbPhC1WTvlJdBQ5j48d2QHgKZkpVV09y4X5xoflcKJIWTnBR8Oy8KydbbsONLZeFKqfKOSie2Anj_iJAX5r9Ae1efvSrQbgA5Kg_kHZWrwcsgCcutmIFoSwDWe8lQKhLLU23peAoR6e56HWtmcFw5qC-bWKGt1dkk5YFJRriKCnQLzLY9D7A29tDrO766p5mKhGh3KnykCOgQ%3D%3D
+.youtube.com	TRUE	/	TRUE	0	YSC	8qdw5FrLfEA
+.youtube.com	TRUE	/	TRUE	1787297842	PREF	f4=4000000&f6=40000000&tz=Asia.Almaty&f7=100
+.youtube.com	TRUE	/	FALSE	0	wide	1
+.corewin.ua	TRUE	/	FALSE	1786512789	_ga	GA1.1.62151225.1751952789
+xss-game.appspot.com	FALSE	/	FALSE	1786512869	level1	f148716ef4ed1ba0f192cde4618f8dc5
+.corewin.ua	TRUE	/	FALSE	1786515682	_ga_ZP2FB305MQ	GS2.1.s1751955681$o2$g0$t1751955681$j60$l0$h0
+api-docs.adata.kz	FALSE	/	FALSE	0	auth_token	jkV3clUNsrb6UNokOccidQza3NVh4P6
+.wallpaperflare.com	TRUE	/	TRUE	1783576412	cf_clearance	Jnem_RnsKNEsB4ML2kR2qBiU_nm2lSt1FYZL4BDGXGk-1752040411-1.2.1.1-nOO21b7i1oE30qn1s.DGU7dU4BbexAIacaP42V0C4wENDdFNAx9tB6jn3KJBiDzJ6Yi..lONnNdEqJfAnJntPStuMVvYIzCvVInK3S4TMpsYI5Uye6Pz8_e_r7odXYxL6iBmIc0OGcN0Bd8_U50o3M3iHd4nEptzkvX4WcRK8cJTmSOi0TMcCsOQpoPZx8LW8KAoGnT2E0rTvqKyA06935ahDPuDrgLN_rzoPxuokNg
+.wallpaperflare.com	TRUE	/	FALSE	1786600768	_ga	GA1.1.123181119.1752040412
+luckyforbet.com	FALSE	/	FALSE	1757224417	trk_cpa_pixel	0e216100-5c89-11f0-930e-21122dc44a48
+.condles-temark.com	TRUE	/	TRUE	1783576433	cc-v4	TD1iy1jwdFBRR%2FexpiIBTHfImyW4ftjtmLFGCvmMm%2Be2TMsEHEQrU79XHbT5fH1T%2Bxz1AtDz3Osq5vDtSkHnN4y7B6pIvM0CDIh%2FNa9%2BLrxL9b5Dc7fdYKdysRB4lUZgCiMWZqYeyoHNqRXHLsHT5g%3D%3D
+.exness.com	TRUE	/	FALSE	1786600435	track_uid	9393b419-b32d-4481-8c20-2009b2bca6e2
+.exness.com	TRUE	/	FALSE	1759816435	agent	c_4junm3rdmy
+.exness.com	TRUE	/	FALSE	1759816435	agent_timestamp	1752040434678
+.exness.com	TRUE	/	FALSE	1759816435	agent_platform	mt4
+.exness.com	TRUE	/	FALSE	1759816435	agent_link	"/intl/en/a/c_4junm3rdmy"
+.exness.com	TRUE	/	FALSE	1759816435	agent_full_path	"/intl/en/a/c_4junm3rdmy?cid=w68440vbsa4jn55b381d8aog&ex_ol=1"
+.exness.com	TRUE	/	FALSE	1759816435	partnercode_enabled	false
+www.exness.com	FALSE	/	FALSE	1754668436	country	KZ
+www.exness.com	FALSE	/	FALSE	1754668436	language	en
+.exness.com	TRUE	/	TRUE	1783576437	cf_clearance	nsZ9C05WAA5bMUZWF5Sge864hv67Zez_I5qveeHL8yo-1752040437-1.2.1.1-g9W.SG1yG56QThONxkErcAezjzQxgpOAHC.rrnnwtafIUCAOHmYQQAUB9.vlnex7ox6M0cTYe2b_Pn0PtaTo_jku4z33ucrDtfDduUMw.azH93tEaCxiJv3rv6EiUuOgcF16XZK.zU5eqlZ0AMDI2SMW3CWn.iuKTqKLqLD0suEbddzd.RHZZPe5xVKCaRZr8rmNd4MtaffJ4blluLT5RUFi6Ux7Vets_WY7jg.zpG4
+.exness.com	TRUE	/	FALSE	1783662837	_vwo_uuid_v2	D86C55B41A86AC7D2F50F69288444E3D7|3683591bad4f25d97258432e2aaf4b9a
+.exness.com	TRUE	/	FALSE	1783597390	_vwo_uuid	D86C55B41A86AC7D2F50F69288444E3D7
+.exness.com	TRUE	/	FALSE	1760680438	_vis_opt_s	1%7C
+.exness.com	TRUE	/	FALSE	1759816439	_gcl_au	1.1.677048536.1752040439
+.exness.com	TRUE	/	FALSE	1786600441	_ga	GA1.1.718507503.1752040441
+.exness.com	TRUE	/	FALSE	1759816442	_fbp	fb.1.1752040442328.35071441246799255
+.exness.com	TRUE	/	FALSE	1754632442	ip	89.219.11.27
+.exness.com	TRUE	/	FALSE	1754632442	ua	Mozilla%2F5.0%20(X11%3B%20Linux%20x86_64)%20AppleWebKit%2F537.36%20(KHTML%2C%20like%20Gecko)%20Chrome%2F138.0.0.0%20Safari%2F537.36
+.exness.com	TRUE	/	FALSE	1785736442	_uetvid	1d870d205c8911f0a98b956583e9454e
+.igodigital.com	TRUE	/	TRUE	1786600443	igodigitaltc2	1d8f78da-5c89-11f0-8170-06eb7deece1d
+.exness.com	TRUE	/	TRUE	1783576443	_hjSessionUser_2797246	eyJpZCI6ImJmM2MxNjAwLWFhNmYtNTMzOS1hYzVmLTc0NmE1ZTdiOTYyYyIsImNyZWF0ZWQiOjE3NTIwNDA0NDMxNTUsImV4aXN0aW5nIjpmYWxzZX0=
+.bing.com	TRUE	/	TRUE	1785736444	MSPTC	tMouCaebQx6CHIlx-GmmKe5BLo1qi9dIPTUndmQmb8I
+.exness.com	TRUE	/	FALSE	1783576443	AMP_2b790405f1	JTdCJTIyZGV2aWNlSWQlMjIlM0ElMjJlZjYwYmMzYi1hOThiLTRhZGUtOWJhMS1mMDQ0N2E3MzUwMjUlMjIlMkMlMjJzZXNzaW9uSWQlMjIlM0ExNzUyMDQwNDQyODAxJTJDJTIyb3B0T3V0JTIyJTNBZmFsc2UlMkMlMjJsYXN0RXZlbnRUaW1lJTIyJTNBMTc1MjA0MDQ0MjgwMyUyQyUyMmxhc3RFdmVudElkJTIyJTNBMSUyQyUyMnBhZ2VDb3VudGVyJTIyJTNBMCU3RA==
+.exness.com	TRUE	/	FALSE	1759816444	_vwo_ds	3%3At_0%2Ca_0%3A0%241752040436%3A93.96519109%3A%3A%3A%3A6
+.exness.com	TRUE	/	FALSE	1786600455	_ga_M71C3QBXSG	GS2.1.s1752040441$o1$g0$t1752040454$j47$l0$h1761233958
+.xf38lo22j1y0ihymst.com	TRUE	/	FALSE	1754718859	TID	6821377903
+.yrngncmb.com	TRUE	/	TRUE	1786600462	uidz	7348590308269154304
+.yrngncmb.com	TRUE	/	TRUE	1786600464	uid	7348590308751450112
+.yrngncmb.com	TRUE	/	TRUE	1786600460	rst4-uid	7348590308751450112
+.yrngncmb.com	TRUE	/	TRUE	1786600461	rulid	01JZPVZN2989RWD5H0SDJ06PDQ
+.yrngncmb.com	TRUE	/	TRUE	1786600461	rculid	01JZPVZN2989RWD5H0SDJ06PDQ
+yrngncmb.com	FALSE	/	TRUE	1754632462	PHPSESSID	aqtn5e53e39405t41j014e5o39
+yrngncmb.com	FALSE	/	FALSE	1783576463	User_cookie_key	01JZPVZPDCDJW0P488PZFHXDDX
+yrngncmb.com	FALSE	/	FALSE	1754632464	cid	6821377903
+yrngncmb.com	FALSE	/	FALSE	1754632464	prid	most_partner.6821377903
+yrngncmb.com	FALSE	/	FALSE	1754632464	pid	113180
+yrngncmb.com	FALSE	/	FALSE	1754632464	sip	0
+yrngncmb.com	FALSE	/	FALSE	1783576463	design	old
+.wallpaperflare.com	TRUE	/	FALSE	1786600907	_ga_EZMQTMLQ1T	GS2.1.s1752040412$o1$g1$t1752040906$j60$l0$h0
+id.adata.kz	FALSE	/	FALSE	1783579670	i18n_redirected	ru
+confluence.adata.kz	FALSE	/	TRUE	1753264204	seraph.confluence	97320982%3A0426c9aea0306946db55e9383e226a1e2d32f64f
+.graylog.org	TRUE	/	FALSE	1786615184	_ga	GA1.1.958696838.1752054803
+.bing.com	TRUE	/	TRUE	1785750805	MSPTC	5y804QcYCFSOpWsdFKrU6AdUvK_q0vBxHiRwwkLkSUk
+.graylog.org	TRUE	/	FALSE	1786615184	_ga_VKTT9G7CVC	GS2.1.s1752054802$o1$g1$t1752055184$j60$l0$h0
+.graylog.org	TRUE	/	FALSE	1786615184	_ga_NCQ7VMMZNQ	GS2.1.s1752054802$o1$g1$t1752055184$j60$l0$h0
+.graylog.org	TRUE	/	FALSE	1785751184	_uetvid	8d7f13f05caa11f0b4c1b7f845bd0d9d
+.habr.com	TRUE	/	FALSE	1759841035	_gcl_au	1.1.535801335.1752065035
+.habr.com	TRUE	/	FALSE	1786625035	_ga	GA1.1.1706114615.1752065035
+habr.com	FALSE	/	FALSE	1783601035	hl	ru
+habr.com	FALSE	/	FALSE	1783601035	fl	ru
+.habr.com	TRUE	/	TRUE	1783601035	habr_uuid	1oBxbJmzHsKShUQB6iiJH%2BUgJximSvdB6FqX%2F22Y3ruq4R4Tq9XoW7QgZAgL89VzThSlA8XzG7eYg79AZRK4vg
+.habr.com	TRUE	/	FALSE	1786625038	_ga_S28W1WC23F	GS2.1.s1752065035$o1$g0$t1752065038$j57$l0$h603153999
+store.steampowered.com	FALSE	/	TRUE	1783657484	browserid	375603285825254654
+store.steampowered.com	FALSE	/	TRUE	1759897484	recentapps	%7B%22274190%22%3A1752121484%7D
+store.steampowered.com	FALSE	/	FALSE	1783657505	timezoneOffset	18000,0
+adata.kz	FALSE	/	FALSE	1783666493	i18n_redirected	ru
+.chatgpt.com	TRUE	/	TRUE	0	_cfuvid	uUYUT4pDgIVJw0iJXNYgE_icBOb72e39zFicFnxzOxQ-1752140320215-0.0.1.1-604800000
+.calibre-ebook.com	TRUE	/	FALSE	1786705956	_ga	GA1.1.1619924933.1752145926
+.calibre-ebook.com	TRUE	/	FALSE	1786706064	_ga_YMW4X5CSKP	GS2.1.s1752145925$o1$g1$t1752146063$j60$l0$h0
+gitlab.adata.kz	FALSE	/	TRUE	1753360527	known_sign_in	WStyTE1tWHYvVTFoczJEQktiS2haTGJEZ1ZiUGlGU3NXS3haamtvWlQ3clF2VG9LSHhJdUR5eFNQbkVEWXRMUGdFWVZaZmM2SlU0K3dEOHVwRUlHMVB5d2RIcFk0N3IxR2JtU09BWXhjSTVlSHp2ZVNXWkdna0tMb1RTazhNMlEtLXpPa09oOUR3MWcrak8wN2pMZGU3d3c9PQ%3D%3D--962f65f7ce076cbc0d587de6ffaab29405fa1792
+gitlab.adata.kz	FALSE	/	TRUE	0	_gitlab_session	f49902e607f8f129f324505345e6ea68
+gitlab.adata.kz	FALSE	/	TRUE	0	event_filter	all
+gitlab.adata.kz	FALSE	/	TRUE	1783687104	hide_auto_devops_implicitly_enabled_banner_1298	false
+.omiod.com	TRUE	/	FALSE	1786712556	_ga	GA1.2.386622620.1750392982
+.omiod.com	TRUE	/	FALSE	1786712559	_ga_9RDG78PVXB	GS2.1.s1752152555$o3$g0$t1752152558$j57$l0$h0
+mail.google.com	FALSE	/	TRUE	1753080830	COMPASS	appsfrontendserver=CgAQjYbDwwYafQAJa4lXXISItkl4oi6Por0C7GItI8zQF0E_BvsEJaeoXGbP990P_TYZjoAyDq9TgEbbgXzovn9w_8vBlHKa9aN4Xg5nJSNKMiX7fwk4wx1c7XnmVa4Sg2dMHnjDgoZeCNVGXQ8Glk8ACrRUv8XNq3SoGxPfetwiZVvxx4npIAEwAQ
+www.goszakup.gov.kz	FALSE	/	FALSE	0	ci_session	a%3A4%3A%7Bs%3A10%3A%5C%22session_id%5C%22%3Bs%3A32%3A%5C%22152a6fee044998236948e5ec7ab49eca%5C%22%3Bs%3A10%3A%5C%22ip_address%5C%22%3Bs%3A7%3A%5C%220.0.0.0%5C%22%3Bs%3A10%3A%5C%22user_agent%5C%22%3Bs%3A101%3A%5C%22Mozilla%2F5.0+%28X11%3B+Linux+x86_64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F138.0.0.0+Safari%2F537.36%5C%22%3Bs%3A13%3A%5C%22last_activity%5C%22%3Bi%3A1752225935%3B%7Ddb8cc47d85c32756b3c4352e2f3b0de5
+.adada.kz	TRUE	/	FALSE	1786786887	_ga_6R82GR1EQB	GS2.1.s1752226881$o8$g1$t1752226886$j55$l0$h0
+.youtube.com	TRUE	/	TRUE	0	YSC	pr0UuotbdJ0
+.youtube.com	TRUE	/	TRUE	1767780227	VISITOR_INFO1_LIVE	ynIQb-lGf8I
+.youtube.com	TRUE	/	TRUE	1767780227	VISITOR_PRIVACY_METADATA	CgJLWhIEGgAgGw%3D%3D
+.banker.kz	TRUE	/	TRUE	0	PHPSESSID	tXMspWrpt2eGE4Ha0xrJouy7veICpRcx
+.banker.kz	TRUE	/	TRUE	1783764227	_ym_uid	1752228228278798687
+.banker.kz	TRUE	/	TRUE	1783764227	_ym_d	1752228228
+.yandex.ru	TRUE	/	TRUE	1783764227	receive-cookie-deprecation	1
+.www.banker.kz	TRUE	/	FALSE	1786788228	_ga	GA1.3.906272891.1752228228
+.zakon.kz	TRUE	/	FALSE	1786790643	_ga	GA1.1.2062102970.1752228228
+www.banker.kz	FALSE	/	FALSE	1783764227	_zero_cc	306190eb32a411
+www.banker.kz	FALSE	/	FALSE	1783764227	_zero_ss	6870e18372465.1752228228.1752228228.1
+.webvisor.org	TRUE	/	TRUE	1786788228	bh	EkAiTm90KUE7QnJhbmQiO3Y9IjgiLCAiQ2hyb21pdW0iO3Y9IjEzOCIsICJHb29nbGUgQ2hyb21lIjt2PSIxMzgiKgI/MDoHIkxpbnV4ImCEw8PDBmoZ3MrpiA7yrLelC/v68OcN6//99g+K1M2HCA==
+.www.banker.kz	TRUE	/	FALSE	1786788228	_ga_V5ZJ5FJ022	GS2.3.s1752228228$o1$g0$t1752228228$j60$l0$h0
+.instagram.com	TRUE	/	TRUE	1786788228	mid	aHDhhAAEAAEg-b_EB4RTqGOeX3zd
+.zakon.kz	TRUE	/	TRUE	1783764228	_ym_uid	175222822971769734
+.zakon.kz	TRUE	/	TRUE	1783764228	_ym_d	1752228229
+www.zakon.kz	FALSE	/	TRUE	1783766643	_ymab_param	wgAIwR08JD-kfUNEkVeXKLKavZTLUJlO0fNGT9BT0nGfREr_isw9e3gpfRcy0u-JPFYoyrMCeMM0TmKtd5OOtdC0qiY
+.yandex.ru	TRUE	/	TRUE	1783766643	receive-cookie-deprecation	1
+.zakon.kz	TRUE	/	FALSE	1760006643	_fbp	fb.1.1752228229211.265071921398608293
+.webvisor.org	TRUE	/	TRUE	1786788229	yandexuid	8532479311750237183
+.webvisor.org	TRUE	/	TRUE	1786788229	yuidss	8532479311750237183
+.webvisor.org	TRUE	/	TRUE	1786788229	i	5JLvaionOu66z5zzs8HrHWpycMFIqRlnLDHONdkDFeA1UDgXDW9z3PWzMNPR4fKhPpc5uH8UeypcaXhF00uDrJ5TUss=
+.yandex.kz	TRUE	/	TRUE	1786788229	bh	EkAiTm90KUE7QnJhbmQiO3Y9IjgiLCAiQ2hyb21pdW0iO3Y9IjEzOCIsICJHb29nbGUgQ2hyb21lIjt2PSIxMzgiGgUieDg2IiIPIjEzOC4wLjcyMDQuOTIiKgI/MDICIiI6ByJMaW51eCJCByI2LjEuMCJKBCI2NCJSWiJOb3QpQTtCcmFuZCI7dj0iOC4wLjAuMCIsICJDaHJvbWl1bSI7dj0iMTM4LjAuNzIwNC45MiIsICJHb29nbGUgQ2hyb21lIjt2PSIxMzguMC43MjA0LjkyIloCPzBghcPDwwZqGdzK6YgO8qy3pQv7+vDnDev//fYPitTNhwg=
+.yandex.kz	TRUE	/	TRUE	1786788230	yp	1752385821.dlp.3#2066881821.pcs.1#1783057821.swntab.0#1752126621.szm.1_25:3072x1728:3057x1575:15#1752314629.yu.8532479311750237183
+.yandex.kz	TRUE	/	TRUE	1783764229	ymex	1754820229.oyu.8532479311750237183#2066881821.yrts.1751521821
+.tengrinews.kz	TRUE	/	TRUE	1783764231	_ym_uid	1752228232937219681
+.tengrinews.kz	TRUE	/	TRUE	1783764231	_ym_d	1752228232
+.yandex.ru	TRUE	/	TRUE	1783764231	receive-cookie-deprecation	1
+.tengrinews.kz	TRUE	/	FALSE	1786788238	_ga	GA1.1.47449127.1752228238
+tengrinews.kz	FALSE	/	FALSE	0	Authorized	False
+.youtube.com	TRUE	/	TRUE	1767780833	__Secure-ROLLOUT_TOKEN	CMmao7CEjpHKsgEQiOit6Ma0jgMY8oK5icm0jgM%3D
+.zakon.kz	TRUE	/	FALSE	1786791236	_ga_K87DQB6Z8F	GS2.1.s1752228227$o1$g1$t1752231235$j60$l0$h0
+.zakon.kz	TRUE	/	FALSE	1786791236	_ga_QQ21TQ3QJX	GS2.1.s1752228228$o1$g1$t1752231235$j60$l0$h935396367
+.zakon.kz	TRUE	/	FALSE	1786791236	_ga_EXZE6NRRYG	GS2.1.s1752228228$o1$g1$t1752231235$j60$l0$h0
+.zakon.kz	TRUE	/	FALSE	1786791236	_ga_7ZQXGKGQJG	GS2.1.s1752228228$o1$g1$t1752231236$j60$l0$h2101937422
+.tengrinews.kz	TRUE	/	FALSE	1786792572	_ga_EKJ8741MGP	GS2.1.s1752232572$o2$g0$t1752232572$j60$l0$h0
+.sputnik.kz	TRUE	/	FALSE	1786793797	sputnik_kaz	6870f7435fff176ee53cf337
+.sputnik.kz	TRUE	/	FALSE	1783769797	ab_subscriber	a
+ru.sputnik.kz	FALSE	/	FALSE	1754825797	fb_check3	1
+ru.sputnik.kz	FALSE	/	FALSE	1754825797	ab_emoji_test	a
+a.sputniknews.com	FALSE	/	TRUE	1786793798	spid	1752233797563_ca8362ababee72acdb15206dca5b3394_ka9e9xrggjkotuum
+ru.sputnik.kz	FALSE	/	FALSE	1786188998	_pk_id.sputnik_kaz.b988	876545c6f63c467d.1752233798.1.1752233798.1752233798.
+ru.sputnik.kz	FALSE	/	FALSE	1783769798	_zero_cc	8d71604fdb6156
+ru.sputnik.kz	FALSE	/	FALSE	1783769798	_zero_ss	6870f746f7d8f.1752233798.1752233798.1
+.sputnik.kz	TRUE	/	FALSE	1781004998	tmr_lvid	efafaacdff62be93a7252f062c6286b6
+.sputnik.kz	TRUE	/	FALSE	1781004998	tmr_lvidTS	1752233798298
+.sputnik.kz	TRUE	/	FALSE	1786793798	_ga	GA1.2.745547119.1752233798
+.sputnik.kz	TRUE	/	TRUE	1783769798	_ym_uid	1752233798979381356
+.sputnik.kz	TRUE	/	TRUE	1783769798	_ym_d	1752233798
+.yandex.ru	TRUE	/	TRUE	1783769798	receive-cookie-deprecation	1
+ru.sputnik.kz	FALSE	/	FALSE	1752838601	domain_sid	gCRAHjBi9K1tAmd7ivC_g%3A1752233800712
+.sputnik.kz	TRUE	/	FALSE	1786795966	_ga_C1BZFKVEW1	GS2.1.s1752235965$o2$g0$t1752235965$j60$l0$h0
+top-fwz1.mail.ru	FALSE	/	TRUE	1783858366	PVID	0xvYaX10fyoX00002h1NLKIX:::0-0-0-d7c6bcb-0-d8b587e:CAASEM7dQF_hwo0Ce3HJNiFUuTcaYE2rIZx6yM0o-sUXi_IDngr-MIyj9uXAKIiaqtezjVRMsyqTnY694-0XBNQHi8q11W3OdN9wcAtZxbGbyXBX07VQZoDf4hq3KGQ6zgnRNUav2e9Ci0NbCtQ4i53r6uVqUQ
+.adtdev.kz	TRUE	/	FALSE	1783776384	colorMode	dark
+export.adtdev.kz	FALSE	/	FALSE	1784007679	i18n_redirected	en
+a-brands.kz	FALSE	/	FALSE	0	PHPSESSID	KfveZ7KnvB8oxxChpgHwY0qugukhjtJ6
+a-brands.kz	FALSE	/	FALSE	0	ASPRO_MAX_USE_MODIFIER	Y
+a-brands.kz	FALSE	/	FALSE	1783575847	BITRIX_SM_GUEST_ID	336299
+a-brands.kz	FALSE	/	FALSE	0	prefers-color-scheme	dark
+a-brands.kz	FALSE	/	FALSE	0	_ym_debug	null
+a-brands.kz	FALSE	/	FALSE	1784007843	BITRIX_CONVERSION_CONTEXT_s1	%7B%22ID%22%3A5%2C%22EXPIRE%22%3A1752519540%2C%22UNIQUE%22%3A%5B%22conversion_visit_day%22%5D%7D
+.a-brands.kz	TRUE	/	FALSE	0	current_region	492
+.a-brands.kz	TRUE	/	FALSE	0	current_location	17
+a-brands.kz	FALSE	/	FALSE	1783575847	BITRIX_SM_LAST_VISIT	14.07.2025%2010%3A44%3A07
+a-brands.kz	FALSE	/	FALSE	0	was_called_in_current_session_104054	1
+a-brands.kz	FALSE	/	FALSE	0	was_called_in_current_session_104055	1
+a-brands.kz	FALSE	/	FALSE	0	was_called_in_current_session_104056	1
+.a-brands.kz	TRUE	/	FALSE	1760248023	_gcl_au	1.1.2054109095.1752472024
+.a-brands.kz	TRUE	/	FALSE	1787032024	_ga_B3D3PC94X9	GS2.1.s1752471843$o2$g1$t1752472023$j60$l0$h1473798760
+a-brands.kz	FALSE	/	FALSE	0	was_called_in_current_session_104057	1
+a-brands.kz	FALSE	/	FALSE	0	seconds_on_page_104054	766
+a-brands.kz	FALSE	/	FALSE	0	seconds_on_page_104055	766
+a-brands.kz	FALSE	/	FALSE	0	seconds_on_page_104056	766
+a-brands.kz	FALSE	/	FALSE	0	seconds_on_page_104057	766
+.youtube.com	TRUE	/	TRUE	1768037022	__Secure-ROLLOUT_TOKEN	CIKR_Zi8tofxPBCvpNaL0_yNAxiA6-G5g7yOAw%3D%3D
+ezsigner.kz	FALSE	/	FALSE	0	JSESSIONID	EB6E456AC7FFA6BB2C995289535BB589
+ezsigner.kz	FALSE	/	FALSE	1753090034	check_fileDir	
+.ezsigner.kz	TRUE	/	FALSE	1787045237	_ga	GA1.1.1145713169.1752485023
+.passport.yandex.ru	TRUE	/	TRUE	1787045363	sessguard	1.1752485363.1750324058443:GwvbWQ:e3ce..3.500:54905.UAUzRFuw.9Si2lROQsvnRoVWgD-puj3d5RsQ
+.passport.yandex.ru	TRUE	/	TRUE	1787045363	mda2_beacon	1752485363283
+.passport.yandex.ru	TRUE	/	TRUE	1787045363	lah	2:1815557363.10043029.wHWxqqfJOKyE83DQ.jfQkb7nSBZ2v3tUiI9DfCUJwZ1jjeEbHvkH1DyWjww0I5LH0g-g6Wp-IpvHdBWEzGslaUZcSBgeOGg9OYl1FzYfuJwQ.k3c1xU7c1_yqkR7WwQeV1A
+accounts.google.com	FALSE	/	TRUE	1787045506	__Host-GAPS	1:uGoB74APRwnv7D-GJZtP7xwenzUasXT3x73z0Zi95X9hxS2DZ5Tju73xp0vs0xjP1HsISl00kLd-NRDbzdm4S6KalZz72Q:LMxrgmL6X6Dnbia1
+.mail.ru	TRUE	/	TRUE	1784021515	o	:11025:CA==.s:4930:QAA=.m
+.vk.com	TRUE	/	FALSE	1781256720	tmr_lvid	09b9f4dd72fdc0971c58efa240681ee6
+.vk.com	TRUE	/	FALSE	1781256720	tmr_lvidTS	1752485520734
+id.vk.com	FALSE	/	FALSE	1753090322	domain_sid	bjxQGCJDe9ZqFe9pwrGcU%3A1752485522167
+.login.vk.com	TRUE	/	TRUE	1784021539	p	vk1.a.p8vK1jOtXdRMwVolBzlSn3EI7YniqP5i_yv4BUT5HvPByWprmLnxWptiIomX0_2pHqurinQRKEizbyyXfjs-gFP8VnBUNs5gE0EE4jRjQnTBhRReuIiDIPzIxV2dyww6MGhD3UF_bKfvZQdjPtVvVgYKsrW1w-5fZlLRTW9squo
+.login.vk.com	TRUE	/	TRUE	1783558502	sua	cOoAddt9xGZvYbQREw6yDc-XBtNk3OiOomGWV2IVXig%23443251404%5Evk1.a.GgdcO0V0JMoILhQF3DNgGur1Pbz-KeSsR6JOkefgvIB_jbV3wTOUcn7qf-9F1OpaMq6H8xpjJoAfP5SjCP06AF-pp6hrZCdJBZYUw56uw8tUWmHr9rB5jwcWwyNgJwFz36rZM6KMQx3tgDxibyiC9KdexnDlnJ8EaL6xNACxc868slBr8Ewx1Zmg7up35YDO%5E1752485539
+.login.vk.com	TRUE	/	TRUE	1783558502	sui	443251404%2CLKhPWrje_QvYyS20nPU6zLIItDiz_EOf6OczdziQnhU
+.vk.com	TRUE	/	TRUE	1783558502	remixsuc	1%3A
+vk.com	FALSE	/	TRUE	1784144255	remixnsid	vk1.a.gyDd0T6_Keo9nYqUOrRvKTlEWeT0-jsRbNrv39054DXaA7C_YpoVB3ltr-Y9QY3iP4l9-vy3dxc-fNF_mkjpyCxzHdlEh01i6DvsYPnxSXBlf-lcU7VZxKXaKzRV1ijJFOGMCIn5Oeo9_8j7i0VRQl0En6_b-5rRmYGVI-pMl8hCOrMPd0mmyJmuIXpJVL7Y
+.vk.com	TRUE	/	TRUE	1784290621	remixsid	1_v3JmnWV3mwq1Cu9NLOHzDPZL4Rv03wfTMb5qEIZ2cLdqdd84HmD3ZlHfrViUPuJBqMwlqmFqjMO3Rp6kwJy84w
+.vk.ru	TRUE	/	TRUE	1784502908	remixlang	0
+.login.vk.ru	TRUE	/	TRUE	1784021541	p	vk1.a.p8vK1jOtXdRMwVolBzlSn3EI7YniqP5i_yv4BUT5HvPByWprmLnxWptiIomX0_2pHqurinQRKEizbyyXfjs-gFP8VnBUNs5gE0EE4jRjQnTBhRReuIiDIPzIxV2dyww6MGhD3UF_bKfvZQdjPtVvVgYKsrW1w-5fZlLRTW9squo
+.vk.ru	TRUE	/	TRUE	1784165118	remixsid	1_DfUwYXA_45pmeSY8eRVQN6JnaeTcbpMUKKOCyl_YpmAqrR7KdUGVpuOyqSwTZL96B26ziD9aiy54bZPkDZzUbA
+.vk.ru	TRUE	/	TRUE	1783748827	remixuas	MDNjNDlhNDI0YjBmYjNlODBiZDI3YzU1
+.vk.ru	TRUE	/	TRUE	1784021541	remixstlid	9074960859535646240_bTTPhx9arVPDxEBZX1jyZqwLufvftkVzkX5u4WoRYcs
+.login.vk.ru	TRUE	/	TRUE	1783523833	sua	cOoAddt9xGZvYbQREw6yDc-XBtNk3OiOomGWV2IVXig%23443251404%5Evk1.a.GgdcO0V0JMoILhQF3DNgGur1Pbz-KeSsR6JOkefgvIB_jbV3wTOUcn7qf-9F1OpaMq6H8xpjJoAfP5SjCP06AF-pp6hrZCdJBZYUw56uw8tUWmHr9rB5jwcWwyNgJwFz36rZM6KMQx3tgDxibyiC9KdexnDlnJ8EaL6xNACxc868slBr8Ewx1Zmg7up35YDO%5E1752485539
+.login.vk.ru	TRUE	/	TRUE	1783523833	sui	443251404%2CLKhPWrje_QvYyS20nPU6zLIItDiz_EOf6OczdziQnhU
+.vk.ru	TRUE	/	TRUE	1783523833	remixsuc	1%3A
+.vk.ru	TRUE	/	TRUE	1784302604	remixdmgr	a6b979e0bb590a619e9f4d3091a157cc1d9322b4fc4a1d576bbea3b718d4db9c
+top-fwz1.mail.ru	FALSE	/	TRUE	1784107941	PVID	0xvYaX10fyoX00002h1NLKIX:::0-0-0-d7c6bcb-0-d8f2765:CAASEPfgqJcuqWFJKs6jfKUhyqcaYNgfZgG8-uhWRpD-a4zH3KV0MCCEvta02Ir7VVX21oeO9WqVOfEsIh2GnICLIf-re8UbPfJtHTB_R1FILij1fcm00Ehd5hLILe2_kLOwnHE9SYncaAYtAgMAbwokTFff0w
+.mail.ru	TRUE	/	TRUE	0	ukey	ndjx8HHR49Fe3gExoGRJJ00
+.vk.com	TRUE	/	TRUE	1784463402	remixdmgr	826a99d788860501dc4d72fad49ff33542a3e6daaad9508c4f43c162061cc113
+help.mail.ru	FALSE	/	TRUE	0	loginValue	stepan555bal@mail.ru
+.mail.ru	TRUE	/	TRUE	1753090351	mtrc	%7B%22mytrackerid%22%3A0%2C%22tmr_lvid%22%3A%22becfcb0ce323f33a5146e0899f00f4d3%22%7D
+.mail.ru	TRUE	/	TRUE	1784021551	_ym_uid	1752485552304728143
+.mail.ru	TRUE	/	TRUE	1784021551	_ym_d	1752485552
+.mail.ru	TRUE	/	FALSE	1787045552	_ga	GA1.1.1794341541.1752485552
+.yandex.ru	TRUE	/	TRUE	1784021551	receive-cookie-deprecation	1
+.help.mail.ru	TRUE	/	FALSE	1787045552	hsid	0ni30u7ezycs
+help.mail.ru	FALSE	/	FALSE	1753090353	domain_sid	LErd6mBc908kGQS0O_Ss9%3A1752485553389
+.mail.ru	TRUE	/	FALSE	1787045554	_ga_N8Z19TG6GN	GS2.1.s1752485551$o1$g0$t1752485554$j57$l0$h0
+top-fwz1.mail.ru	FALSE	/	TRUE	1784107954	PVID	0xvYaX10fyoX00002h1NLKIX:::0-0-0-d7c6bcb-0-d8f2772:CAASEA1NJWb2iRhwIat_acQrWAcaYIb25rveSisk8bBt9J-7vNLxycetm2GJShDqFeVmWj67z__vz4C-Wqd43aTi1HGVLPlWBL_2_EgbU3GmLLMjmGcGsN7ecRfxwtClOWr4gneaX7vXDC8vbaCs6Vqg01QHzA
+.auth.mail.ru	TRUE	/	TRUE	1784021577	GarageID	73a6edc71c8d4765a1da6995fab09c2e
+.auth.mail.ru	TRUE	/	TRUE	1760261577	ssdc	c14983012bb846b0a18ad2ebd31dd08f
+.auth.mail.ru	TRUE	/	TRUE	1760261577	ssdc_info	c149:0:1752485565
+.mail.ru	TRUE	/	FALSE	1768037566	t	obLD1AAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAACAAAsF0AcA
+.mail.ru	TRUE	/	FALSE	1755077566	s	dpr=1.25|rt=1
+.mail.ru	TRUE	/	TRUE	1760261577	Mpop	1752485576:465e710041437d631b7f760560637074605c7c1058585e591b4441:spas.stepan@mail.ru:
+.o2.mail.ru	TRUE	/	TRUE	1760175177	sdcs	sl1:1752485577:0n9ggznhh_yftA7fzVnc7SEr9pIu_frsitdURhFiK7I
+.o2.mail.ru	TRUE	/	TRUE	0	o2csrf	447957d506764b84a2c5980312b7b14d
+.ezsigner.kz	TRUE	/	FALSE	1787045845	_ga_1PYZ5L9NNS	GS2.1.s1752485023$o1$g1$t1752485845$j60$l0$h0
+.smi24.kz	TRUE	/	TRUE	1784024327	_ym_uid	1752488327501363219
+.smi24.kz	TRUE	/	TRUE	1784024327	_ym_d	1752488327
+.yandex.ru	TRUE	/	TRUE	1784024327	receive-cookie-deprecation	1
+kapital.kz	FALSE	/	FALSE	1784024333	_zero_cc	c13aa1f1662a8c
+kapital.kz	FALSE	/	FALSE	1784024333	_zero_ss	6874d98dca00e.1752488333.1752488333.1
+.kapital.kz	TRUE	/	FALSE	1760264333	_gcl_au	1.1.418830427.1752488334
+.kapital.kz	TRUE	/	FALSE	1787048334	_ga_795LXVBMCJ	GS2.1.s1752488333$o1$g0$t1752488333$j60$l0$h507480946
+.kapital.kz	TRUE	/	FALSE	1787048334	_ga_F6SXS658JD	GS2.1.s1752488333$o1$g0$t1752488333$j60$l0$h0
+.kapital.kz	TRUE	/	TRUE	1784024333	_ym_uid	1752488334175474304
+.kapital.kz	TRUE	/	TRUE	1784024333	_ym_d	1752488334
+.kapital.kz	TRUE	/	FALSE	1781259533	tmr_lvid	c0e843a65b5a0649eb52bcd0608f79d0
+.kapital.kz	TRUE	/	FALSE	1781259533	tmr_lvidTS	1752488333731
+.kapital.kz	TRUE	/	FALSE	1787048334	_ga	GA1.2.1148420476.1752488334
+.yandex.ru	TRUE	/	TRUE	1784024333	receive-cookie-deprecation	1
+.kapital.kz	TRUE	/	FALSE	1760264333	_fbp	fb.1.1752488333892.887369040815363067
+top-fwz1.mail.ru	FALSE	/	TRUE	1784110734	PVID	0xvYaX10fyoX00002h1NLKIX:::0-0-0-d7c6bcb-0-d8f324e:CAASEG_irc69GFPYGXDSJ-6yPAkaYMNb0zrbb8Sp4CLfa-kDvo8y9gxvmlwvwee7CO3zzuot0yh-pz6zh05mX6-4Fg0ETFG_d9simyDKDJKdgqdX3ePPJ1CdXVdoJcE9o4u9CwbIzze_3QOqjGGONTEY_65dUA
+.tiktok.com	TRUE	/	TRUE	0	tt_csrf_token	pX96zc2e-cBBJnndRKJorC1Y1Er8Gn5z3BcE
+.tiktok.com	TRUE	/	TRUE	1768199715	tt_chain_token	hwkQFrHNMkWG1wHs2acGOg==
+.www.tiktok.com	TRUE	/	TRUE	1778408503	delay_guest_mode_vid	5
+.tiktok.com	TRUE	/	FALSE	1784024504	odin_tt	09b9306a171105f3e7da5713c3bf09a3790fd883cf5d0f65c7bdbaf70f2045aea3693c065eff5f80744ef928cd4f8df5448a77dc82b5cd804232a39bcdc7e49eb76a6d0306ada844e7fc914d2c077424
+.www.tiktok.com	TRUE	/	FALSE	1753104301	_tea_utm_cache_1988	{%22utm_source%22:%22copy%22%2C%22utm_medium%22:%22android%22%2C%22utm_campaign%22:%22client_share%22}
+.www.tiktok.com	TRUE	/	FALSE	1753104079	_tea_utm_cache_345918	{%22utm_source%22:%22copy%22%2C%22utm_medium%22:%22android%22%2C%22utm_campaign%22:%22client_share%22}
+docs.google.com	FALSE	/	TRUE	1753357770	COMPASS	blobstore-http-onepick-kix=CgAQ2vnTwwYafQAJa4lXzvP48rtCg1KMqTZB4ymRTQ2a5-WQ8g1wsJgWSGBtht49o6CGGgF6HcnucU4nlCBeuVAosYC3Ji9nSO-FPaVpC-PQLv7gHzES5oe52wfOWg-aEpwlOF-oftqM6zY4U0XyJ9LsuZAmXZfn3Vas-6OtBxoO8DDqGNTnMAE
+.oaistatic.com	TRUE	/	TRUE	0	_cfuvid	elNCghYfXSHEyXlkUVKW.nYZ5dRGgdamReNvtMdvLUI-1752498380666-0.0.1.1-604800000
+.github.com	TRUE	/	TRUE	0	color_mode	%7B%22color_mode%22%3A%22auto%22%2C%22light_theme%22%3A%7B%22name%22%3A%22light%22%2C%22color_mode%22%3A%22light%22%7D%2C%22dark_theme%22%3A%7B%22name%22%3A%22dark%22%2C%22color_mode%22%3A%22dark%22%7D%7D
+.github.com	TRUE	/	TRUE	0	cpu_bucket	xlg
+.github.com	TRUE	/	TRUE	0	preferred_color_mode	dark
+.github.com	TRUE	/	TRUE	0	tz	Asia%2FAlmaty
+.tiktok.com	TRUE	/	TRUE	0	s_v_web_id	verify_md34rq77_KkwjrUg6_U0ZG_4YRW_95NK_fwkqLAsaJKYN
+.tiktok.com	TRUE	/	TRUE	1757683259	passport_csrf_token	9851936f0ae0c44aec71a93a99cb9e01
+.tiktok.com	TRUE	/	TRUE	1757683259	passport_csrf_token_default	9851936f0ae0c44aec71a93a99cb9e01
+.www.tiktok.com	TRUE	/	FALSE	1753104301	_tea_utm_cache_594856	{%22utm_source%22:%22copy%22%2C%22utm_medium%22:%22android%22%2C%22utm_campaign%22:%22client_share%22}
+tikwm.com	FALSE	/	FALSE	1755091486	current_language	en
+.tikwm.com	TRUE	/	FALSE	1787206251	_ga	GA1.1.906692076.1752499487
+.tikwm.com	TRUE	/	FALSE	1760275487	_gcl_au	1.1.1101418511.1752499487
+gitlab.adata.kz	FALSE	/	TRUE	1787131061	sidebar_pinned_section_expanded	false
+github.com	FALSE	/	TRUE	0	_gh_sess	dsNqmf9qwRrsFuEzfZGYD2PP%2BfDPmHiGXnTGk11DRxju8HGdv2DiyBWzEsU%2F8iFBozDrBnbP2FN2vEzRKPloy0q%2FzxLXkiWuNgflh6XITn00SyA2%2BZaeizA%2BAC3PIYfV%2BXozPZgqIX63sPNwisLfE%2BNShmVKzIDeFor4rWq47b70%2BplBeXdN1u7SwvHUMCpyiig7i3E5UU2Eqyx8pdyDSfwDqaVqkHJYOAxyusywfFfqDB2Mg8Nkobj28v%2BUsqKeysPUhfauEylvl3CcJ53kklIhqJZdAom%2BDM1dAoxwFOMvrQA5hWJKr47Sjg%2BkcBuzX%2BndhPcZXJtej6B%2F8%2BUF%2FJdBSd3%2BAgm8tKW%2Bbg%3D%3D--%2BWxN6jm1YDowa56z--2N%2FyfiSASoarXaRX4d06VQ%3D%3D
+.adtdev.kz	TRUE	/	FALSE	1787139991	_ga_6R82GR1EQB	GS2.1.s1752578390$o24$g1$t1752579990$j58$l0$h0
+pk.adtdev.kz	FALSE	/	FALSE	0	openedCompanies	%5B%22941240000193%22%2C%22200140023023%22%2C%22231041001332%22%2C%22220540010525%22%2C%22181040037076%22%2C%22040940002421%22%2C%22971240001315%22%5D
+sknews.kz	FALSE	/	FALSE	0	_csrf	2515833bbe48f91600e7ed05851f29251ee8ab1b700fb7ca634ad2ce95ed1722a%3A2%3A%7Bi%3A0%3Bs%3A5%3A%22_csrf%22%3Bi%3A1%3Bs%3A32%3A%22qvh3yTHwoXENXV1ONCJ-SUpGJNhzCMoa%22%3B%7D
+sknews.kz	FALSE	/	FALSE	1784116735	_zero_cc	a63ab50d844f4a
+sknews.kz	FALSE	/	FALSE	1784116735	_zero_ss	6876427fdbeb2.1752580736.1752580736.1
+.sknews.kz	TRUE	/	TRUE	1784116736	_ym_uid	1752580736892233326
+.sknews.kz	TRUE	/	TRUE	1784116736	_ym_d	1752580736
+.yandex.ru	TRUE	/	TRUE	1784116736	receive-cookie-deprecation	1
+.sknews.kz	TRUE	/	FALSE	0	PHPMYSESSIONNEWS	54ihkv7upsducgcr77a1hcfk17
+sknews.kz	FALSE	/	FALSE	1783684736	hash	7985348e2ba53df48334cea3d4388331hd9s17t72eg6ibzhhohgdyrzlv9naz
+.sknews.kz	TRUE	/	FALSE	1787140737	_ga	GA1.2.735023732.1752580736
+.newskz.press	TRUE	/	TRUE	1784116748	_ym_uid	1752580748247614799
+.newskz.press	TRUE	/	TRUE	1784116748	_ym_d	1752580748
+.yandex.ru	TRUE	/	TRUE	1784116748	receive-cookie-deprecation	1
+newskz.press	FALSE	/	FALSE	1787140748	fid	572feb47-794b-4644-bfc9-64c6e3bb4b98
+newskz.press	FALSE	/	FALSE	1787140749	_ac_oid	7774fd78d43cc76b841fe506a24e8ab2%3A1752584348580
+.acint.net	TRUE	/	TRUE	1787140749	aid	fwAAAWh2Qoy19zs9qaSUAox+Bjv4+UQe2/gFdmvp6lTHAT4s
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp14v6	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp17v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp53v5	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp62v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp67v5	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp68v3	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp71v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp85v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp95v4	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp98v3	1752580748
+.acint.net	TRUE	/	TRUE	1753790349	cSyncDp104v3	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp107v2	1752580748
+.acint.net	TRUE	/	TRUE	1753876749	cSyncDp125v4	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp126v3	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp129v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp136v3	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp148v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp149v3	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp151v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp251v3	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp186v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp217v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp226v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp239v3	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp243v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp260v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp244v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp248v3	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp261v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp264	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp274	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp289v2	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp296v3	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp312v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp313v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp368v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp331v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp337v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp351v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp361v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp353v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp362v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp366v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp390v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp399v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp394v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp420v1	1752580748
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp424	1752580748
+sync.opendsp.ru	FALSE	/	TRUE	0	chk	1
+.opendsp.ru	TRUE	/	TRUE	1787140749	pid	MThiYzZkNmFhZTIxZGRmNQ
+.ohmy.bid	TRUE	/	TRUE	1755172749	uid	eb4aa806-8ac0-47b1-9e94-31d621d3adb7.6876428d.6c5c349f7a4be3b8
+.hybrid.ai	TRUE	/	TRUE	1784116770	vid	3b2585e613451349234f
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp7v3	1752580749
+.acint.net	TRUE	/	TRUE	1755172749	cSyncDp14v4	1752580749
+.bumlam.com	TRUE	/	TRUE	1787140749	suuid3	IiQxZDcyM2YyNC02MTczLTExZjAtYjYwYy0wMDI1OTBjODI0MzY*
+sync.gonet-ads.com	FALSE	/	TRUE	0	chk	1
+sync.dsp.solta.io	FALSE	/	TRUE	0	chk	1
+.dsp.solta.io	TRUE	/	TRUE	1787140750	pid	NjI2NTMzYmU1OGFmZGZmMg
+.gonet-ads.com	TRUE	/	TRUE	1784116750	pid	Nzg1NjkxMzA3MDYwNWJiNQ
+sync.adspend.space	FALSE	/	TRUE	1784116750	as-user	fdfc37b2-b89c-4ccc-9b99-687f383d4def
+.pxltag.com	TRUE	/	TRUE	1784116750	smi_uid	hW_IlwOjN
+.weborama-tech.ru	TRUE	/	TRUE	1786535950	AFFICHE_W	vragwelRRIW@71
+sync.techdsp.ru	FALSE	/	TRUE	1784116750	uid	Vsk1tNg0Q4W8A_4DuaN51A
+.linkssp.ru	TRUE	/	TRUE	1755172750	uid	95d8137a-91b7-47ee-b113-3d7bc17f318c.6876428e.6be8cbe045c2606a
+.acint.net	TRUE	/	TRUE	1755172751	cSyncDp241v2	1752580750
+.sknews.kz	TRUE	/	FALSE	1787145126	_ga_RE7PS0W9LV	GS2.1.s1752585125$o2$g0$t1752585125$j60$l0$h0
+.doubleclick.net	TRUE	/	TRUE	1787206251	IDE	AHWqTUmLVPuP3cTUPaKBzBH8TUw22QdD5R4BbgIfeuit3izjE1fkz_It8XcIzI5q
+.tikwm.com	TRUE	/	FALSE	1787206319	_ga_5370HT04Z3	GS2.1.s1752646250$o3$g1$t1752646318$j60$l0$h0
+savefrom.net	FALSE	/	FALSE	1753251164	country	KZ
+ru.savefrom.net	FALSE	/	FALSE	1753251165	country	KZ
+ru.savefrom.net	FALSE	/	FALSE	1787206390	x-requested-with	
+.savefrom.net	TRUE	/	FALSE	1787206417	uid	85955077dc5c68df
+.savefrom.net	TRUE	/	FALSE	1755238364	sfHelperDist	70
+.savefrom.net	TRUE	/	FALSE	1755238364	apkHelperDist	95
+.savefrom.net	TRUE	/	FALSE	1755238365	reference	58
+.savefrom.net	TRUE	/	FALSE	1755238365	clickAds	92
+.savefrom.net	TRUE	/	FALSE	1755238365	clickAdsOnError	75
+.savefrom.net	TRUE	/	FALSE	1755238365	poropellerAdsPush-e	32
+.savefrom.net	TRUE	/	FALSE	1755238365	rsya-e	13
+.savefrom.net	TRUE	/	FALSE	1755238365	rsyaRuBanners-new	54
+.savefrom.net	TRUE	/	FALSE	1755238365	promoBlock	53
+.savefrom.net	TRUE	/	FALSE	1755238365	helperWidget	12
+.savefrom.net	TRUE	/	FALSE	1755238365	helperBanner	93
+.savefrom.net	TRUE	/	FALSE	1755238365	helperOffer	21
+.savefrom.net	TRUE	/	FALSE	1755238365	tzTopQuality	91
+.lifehacker.ru	TRUE	/	FALSE	1784182366	__ddg1_	RYIubkWT32fOBIe8pNJe
+.lifehacker.ru	TRUE	/	FALSE	1781417568	tmr_lvid	0553739903381e8043104e314de2b163
+.lifehacker.ru	TRUE	/	FALSE	1781417568	tmr_lvidTS	1752646368489
+top-fwz1.mail.ru	FALSE	/	TRUE	1784268769	PVID	0xvYaX10fyoX00002h1NLKIX:::0-0-0-d7c6bcb-0-d919ba0:CAASED07qN1ODBPSPrr2BUKPSEUaYLUDgsKtGHYTbVl4PtSg2vyl9NrKG6BGbEtcUnxy1lDb9WYHokJuFiQtQYmT2opaXiDIF09Yf3pZIgVQfqqBFS_YQ2CeQlTDVjaOk4ZCR9yzA9oTzphafKJN1rlgJxBNJg
+.mail.ru	TRUE	/	TRUE	1784268769	VID	0xvYaX10fyoX00002h1NLKIX:::0-0-0-d7c6bcb-0-d919ba0:CAASED07qN1ODBPSPrr2BUKPSEUaYLUDgsKtGHYTbVl4PtSg2vyl9NrKG6BGbEtcUnxy1lDb9WYHokJuFiQtQYmT2opaXiDIF09Yf3pZIgVQfqqBFS_YQ2CeQlTDVjaOk4ZCR9yzA9oTzphafKJN1rlgJxBNJg
+lifehacker.ru	FALSE	/	TRUE	1787206369	_sp_id.0d18	77329fa8-13c1-4e3c-be7f-312a650b11bc.1752646369.1.1752646369..d7dbba3a-058b-428e-a6bb-b9364ffc5d81..8eb046bc-4bdd-4849-823a-cbe5637ec5ec.1752646368799.1
+.lifehacker.ru	TRUE	/	TRUE	1784182368	_ym_uid	1752646369980085513
+.lifehacker.ru	TRUE	/	TRUE	1784182368	_ym_d	1752646369
+.yandex.ru	TRUE	/	TRUE	1784182368	receive-cookie-deprecation	1
+ssyoutube.com	FALSE	/	FALSE	1761718389	_yt_r8r	eyJpdiI6IjFvUXhjWGNGODRwTmdUTjRWd0c2dmc9PSIsInZhbHVlIjoiOWxaQnZRQnZYTURlbW9wUFdVNVBVTUdFd2lMQW5CNXlpbjBiYnlLYzZISTlXWW5jVkVlOXFuMDlESmNYenlyMCIsIm1hYyI6ImEwNzE3MGEyMDZmNTE1YWY4YWQ3NmJhNWU2NjRjNTcyOTA0NTk3YzgwYzFjYjQzYWE0MDRkZDEyZWY5ZTgzNTgiLCJ0YWciOiIifQ%3D%3D
+savefrom.net	FALSE	/	FALSE	1787206390	x-requested-with	
+.savefrom.net	TRUE	/	FALSE	1787206390	_ga_Z6SY4HF8P8	GS2.2.s1752646366$o1$g0$t1752646390$j36$l0$h0
+.savefrom.net	TRUE	/	FALSE	1787206417	_ga	GA1.2.474984983.1752646366
+.savefrom.net	TRUE	/	FALSE	1787206394	_ga_90KLEJZPNC	GS2.2.s1752646366$o1$g1$t1752646393$j33$l0$h0
+.savefrom.net	TRUE	/	FALSE	1787206394	_ga_9ZMEKK0DW7	GS2.1.s1752646369$o1$g1$t1752646393$j36$l0$h0
+.savefrom.net	TRUE	/	FALSE	1787206417	lang	en
+en1.savefrom.net	FALSE	/	FALSE	1753251217	country	KZ
+.savefrom.net	TRUE	/	FALSE	1787206417	_ga_R1P8SYKKYC	GS2.2.s1752646367$o1$g1$t1752646417$j10$l0$h0
+.www.tiktok.com	TRUE	/	TRUE	1753079633	perf_feed_cache	{%22expireTimestamp%22:1752818400000%2C%22itemIds%22:[%227518510833064840504%22%2C%227500183031991274757%22%2C%227506189660381777198%22]}
+.www.tiktok.com	TRUE	/	TRUE	1778567715	tiktok_webapp_theme_source	light
+.www.tiktok.com	TRUE	/	TRUE	1778567715	tiktok_webapp_theme	light
+.apple.com	TRUE	/	FALSE	0	geo	KZ
+.tiktok.com	TRUE	/	TRUE	1784183716	ttwid	1%7C-zR8QP121QJqeKrfDL1AVkDkWihd42nA8gcP7Z9EraE%7C1752647715%7Cf9bc2c90f7189c0a43c79dcaa48239a51907c9d74bcca3dd604398881d88c251
+.tiktok.com	TRUE	/	TRUE	1753511723	msToken	xdOEc4AZ7-HSHT-2j7atj_QZWhkHxCGEzHTB9IYEw_rHyFw2RUYjn7x_at1Rsayi2GFC0fQy85p4P8Xdrqu7V0RkRClIH6CuDNs5zvWwp4DXyKtE_4CNZ8W0U7VKJxZeJz1LMG5hdkYp2DZHnelN6vaLiKM=
+www.tiktok.com	FALSE	/	FALSE	1760423722	msToken	xdOEc4AZ7-HSHT-2j7atj_QZWhkHxCGEzHTB9IYEw_rHyFw2RUYjn7x_at1Rsayi2GFC0fQy85p4P8Xdrqu7V0RkRClIH6CuDNs5zvWwp4DXyKtE_4CNZ8W0U7VKJxZeJz1LMG5hdkYp2DZHnelN6vaLiKM=
+.gitbook.com	TRUE	/	TRUE	1787208148	__session	8d0ca91f-0015-417d-b612-cea26d307286R
+id.adtdev.kz	FALSE	/	FALSE	0	redirect_url	https%3A%2F%2Fpk.adtdev.kz%2Fcompany%2F040940002421
+.adtdev.kz	TRUE	/	FALSE	1787221430	_ga_MPNBF8EYCE	GS2.1.s1752661428$o27$g0$t1752661429$j59$l0$h0
+.adtdev.kz	TRUE	/	TRUE	1752747830	token_create_time	2025-07-16+15%3A24%3A18
+.adtdev.kz	TRUE	/	TRUE	1752747830	access_token	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiNTUwZGIxYmM4NjEzMWQ3YmE0NGFmY2UxOTUwZTZjZTk4ZjdhNTc2ZjIwY2JjMWNiMWI3YWE4OGY1N2E5OWJhMmVjNzk2MTRkMzRlYzViYjAiLCJpYXQiOjE3NTI2NjE0NTgsIm5iZiI6MTc1MjY2MTQ1OCwiZXhwIjoxNzUyNzQ3ODU4LCJzdWIiOiIxOTU1MjIiLCJzY29wZXMiOltdfQ.gga4Cnxbdeup04DD-2QZVnSWEMYyKtTkl5AmDkcNNVzD6sVz9zXCT94XLNsZMEG4hheBN3Gz01RJROQnQPo8sxD4dUFVBA0cCviQzfBzxqPQIDrxz2a60H_34nUm25Y3JaYIORASedC7dH_vnsvNNyv8wGP2pyv6Mq-0et7RnNLeFng_Ds7hJsQslN-OhpBcUDyEJrBFWK4m-tXr1GjO8Y42GvlRk9QtFefLZ7OvpfnB9laoNFAf-TqbX0L3MNvokpn5d5lThQqSlPT0DwboRGGkiU2eBM3Wa1cvsb5QLz63dOyzyPEI6Rz5ebBzBpiY0sPtQsOgDLT0L-czssCX49Jn1ZStvcKQbh-BJTAePXHm1UuGpIxpWHMqd_5Q2nfUEkreMw-kXr6KDQi2R_jCUl6oK6lXqLcsX-IBKy4rJySTbMgbYUf_pl2WlXUhyqO6vWZj552w4moexM84JX8ab8uFvmLhUNppUN67TsXiaZFBGNdwtFsliIMPitU8v-krWldA5eAZKD5Ns8zH0Jg_zBf9YXN1VQPITFYLSjnQHQJ83mDTODO0rgMDpc0fotKx_43nxxqSOTOc2c8kOV5txlz9_jOks0gZ_V_TQtsIH5ePeuMYetznRvR259adI2xjL5sOsWXiKAOe7J1usl-Cc8h4XxGws4kILbXtMAreLCk
+.adtdev.kz	TRUE	/	TRUE	1752747830	refresh_token	def5020064cf3602a97455b2603bfc050f3261443e8146ea8b0105bd27e213dda512a885d595c39dd14142338bf5c1588a98bdb0c05805a71296d507bde56c9e3449840e2c364d8872205dbfc39f095ebff901531dc9e82adaa1a5f2a710e1c3b2c43f9371301a56e8c9afd5f3b0e63b72348a015631557ab647f17ccf3a3ab925f28e403013765d0df3730e5a5b811796edcbac84fc9f9860e40538ef777f51d13e93894b083e19a2fe06a4142b32df36fb32dc8321f5cc95ea2908cfbf3922f2e7c7275116e4393f265f7e2879cfd83a92d860acc68b02ee74c90d90c3d8446ab1cd9488a7a017d67c456ecf594e3962ac8361d9c5e27fd1af0393b9ff222fdcf9e77169e2a5aacf5b221c357650be013c3530565283280eea00f270fae6720ea0ac8489126d62b1b3dc0e571108c348eef6b6fc420e2db32f221133c9501a235806eabb376528b136226d8cc772f96da331d01279ea584eebb2a95e6f7a595b825f8ec705
+id.adtdev.kz	FALSE	/	FALSE	0	access_token	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiNTUwZGIxYmM4NjEzMWQ3YmE0NGFmY2UxOTUwZTZjZTk4ZjdhNTc2ZjIwY2JjMWNiMWI3YWE4OGY1N2E5OWJhMmVjNzk2MTRkMzRlYzViYjAiLCJpYXQiOjE3NTI2NjE0NTgsIm5iZiI6MTc1MjY2MTQ1OCwiZXhwIjoxNzUyNzQ3ODU4LCJzdWIiOiIxOTU1MjIiLCJzY29wZXMiOltdfQ.gga4Cnxbdeup04DD-2QZVnSWEMYyKtTkl5AmDkcNNVzD6sVz9zXCT94XLNsZMEG4hheBN3Gz01RJROQnQPo8sxD4dUFVBA0cCviQzfBzxqPQIDrxz2a60H_34nUm25Y3JaYIORASedC7dH_vnsvNNyv8wGP2pyv6Mq-0et7RnNLeFng_Ds7hJsQslN-OhpBcUDyEJrBFWK4m-tXr1GjO8Y42GvlRk9QtFefLZ7OvpfnB9laoNFAf-TqbX0L3MNvokpn5d5lThQqSlPT0DwboRGGkiU2eBM3Wa1cvsb5QLz63dOyzyPEI6Rz5ebBzBpiY0sPtQsOgDLT0L-czssCX49Jn1ZStvcKQbh-BJTAePXHm1UuGpIxpWHMqd_5Q2nfUEkreMw-kXr6KDQi2R_jCUl6oK6lXqLcsX-IBKy4rJySTbMgbYUf_pl2WlXUhyqO6vWZj552w4moexM84JX8ab8uFvmLhUNppUN67TsXiaZFBGNdwtFsliIMPitU8v-krWldA5eAZKD5Ns8zH0Jg_zBf9YXN1VQPITFYLSjnQHQJ83mDTODO0rgMDpc0fotKx_43nxxqSOTOc2c8kOV5txlz9_jOks0gZ_V_TQtsIH5ePeuMYetznRvR259adI2xjL5sOsWXiKAOe7J1usl-Cc8h4XxGws4kILbXtMAreLCk
+.adtdev.kz	TRUE	/	FALSE	1752747829	accessToken	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiNTUwZGIxYmM4NjEzMWQ3YmE0NGFmY2UxOTUwZTZjZTk4ZjdhNTc2ZjIwY2JjMWNiMWI3YWE4OGY1N2E5OWJhMmVjNzk2MTRkMzRlYzViYjAiLCJpYXQiOjE3NTI2NjE0NTgsIm5iZiI6MTc1MjY2MTQ1OCwiZXhwIjoxNzUyNzQ3ODU4LCJzdWIiOiIxOTU1MjIiLCJzY29wZXMiOltdfQ.gga4Cnxbdeup04DD-2QZVnSWEMYyKtTkl5AmDkcNNVzD6sVz9zXCT94XLNsZMEG4hheBN3Gz01RJROQnQPo8sxD4dUFVBA0cCviQzfBzxqPQIDrxz2a60H_34nUm25Y3JaYIORASedC7dH_vnsvNNyv8wGP2pyv6Mq-0et7RnNLeFng_Ds7hJsQslN-OhpBcUDyEJrBFWK4m-tXr1GjO8Y42GvlRk9QtFefLZ7OvpfnB9laoNFAf-TqbX0L3MNvokpn5d5lThQqSlPT0DwboRGGkiU2eBM3Wa1cvsb5QLz63dOyzyPEI6Rz5ebBzBpiY0sPtQsOgDLT0L-czssCX49Jn1ZStvcKQbh-BJTAePXHm1UuGpIxpWHMqd_5Q2nfUEkreMw-kXr6KDQi2R_jCUl6oK6lXqLcsX-IBKy4rJySTbMgbYUf_pl2WlXUhyqO6vWZj552w4moexM84JX8ab8uFvmLhUNppUN67TsXiaZFBGNdwtFsliIMPitU8v-krWldA5eAZKD5Ns8zH0Jg_zBf9YXN1VQPITFYLSjnQHQJ83mDTODO0rgMDpc0fotKx_43nxxqSOTOc2c8kOV5txlz9_jOks0gZ_V_TQtsIH5ePeuMYetznRvR259adI2xjL5sOsWXiKAOe7J1usl-Cc8h4XxGws4kILbXtMAreLCk
+pk.adada.kz	FALSE	/	TRUE	1752834236	SESSIONID	1752661454.84.13657.988715|b9f48c5f036f6d4672a81a76d006936e
+pk.adada.kz	FALSE	/	FALSE	0	openedCompanies	%5B%22230840012633%22%2C%22230640030822%22%2C%22181040037076%22%2C%22080840010555%22%2C%22140340014944%22%2C%22941240000193%22%2C%22200740017338%22%2C%22040940002421%22%2C%22070640007922%22%5D
+pk.adtdev.kz	FALSE	/	FALSE	0	companyOpenedDate	1752662691249
+.chatgpt.com	TRUE	/	TRUE	1760438981	__Secure-next-auth.session-token	eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..x3LpqyME47F7LzX_.ljcmiGhWk1EQZDr1Sjwh4pqhLc3Gi1nF6Lwe6ZHP-dLOBsQCPBqLFi8nSPk9hkge_sDRv-rt1y6SEbubYkMOlL0omwUNaC2TKYGpAliuAtjU1lUERGzmbgJuSPZaew7mWq5iuL3jLHv1npxNKx17PxHXR0k9iR3H-_h7Mmtk_z8H-GoSxHqF3VxZAnQgYVK3ClnLLL8Zoyw8DlPE3WhTXsNzH51BIFPHeFZOhWCyhyJB3Fu19rpQWUi69RYTRUOBys_tBKz57tgQW72hrXjdC-Xomu6aMZNlMh5lRjZjftgHV-sqXJUkQEqeI6ddtlElcUhh0lE9m5Ne7FrS8M1thWfL3x3VBEmxEsfGf0AUhVDD7kk_cTiTRSvOLhN0USut3v3Eja5HemWzlACRqiUoxx9h9vFbpAYuMeaysT0MHalfpq75uL7hi-J4Z-hG9mcEiLJkd2quzPkDnkGgWgVoXLvjXx1SThJiK4U5D61CcWER0roD3W3XgkG7qQUTXqEY6OHxuLEXeXH9_RRUsA-wrMKoKvj857GF67C2HeQNc6o93V_TbXd_-f36A3tmHxqTykkp1NvKJ9FFTXi_woVMtzxEPnfzNrAZKXL8tgTVITy19g4CIOR7KAvdXydfdXSZi_v1T2mnRgtJb-kOFbhsXHSEea3NfvAbIEeCn-forPQqq9JggYdJCGM2RQUdVReBOC_GJhyl21wUGwCHOPfOigt4NiRaedCGJnUiN-h8wrk2NU8_dftLDHfvJJcgqFKtQsugtmSZXgNO_8hUUNMccCqV_9DvqfPLZkh7Gub4Kvk6ngV81ytw-_rTD-KSy85gWGcu_LeMczv6vLPa--BVLDLrGs3-12Pr8BWMVzFXPwfWpcJ9xCQDcgF7_1fbjYB_gTuwk9lnHCXI7Ub0zU1FYXFLebD3dCKp0N2RMrKKesmIJVKv8EGPRlnKKlCd1zu-fY7hM1-5b2TqNKn9SXoPSfGJGp6eU7PFc0dF4garGXdfvs5YdY2BJS5dpb-0IocHQ-XYGEOFYMZuORoc5lD3Immd9wtqxZJfsXgZwRZXsp6AMo-2CS9XXvv3fQjmmB6AUicYoPki5pX0ZZjGKKmdVGGvLIFHUpsr2eDsJY0rjqSMUdMKEzDCW6mgjRYh9UPiM-_-XgrN8yTuVu5NeqCUtlTLBQrHDUheo1NQe8k_OwTu3bHHVMFgveDIHQ6gXVAhL-b5GzeqviMNimg9HJbYlmC3a6w-bMO57VV-Tzv9CpM2rlqclCRuHXpRtbdQBl1mAVxXP9cD09fZLMSWL45FeBSiLrdCf-LfI57ntF39LQcG1VzIUIvWMYIcrGrsXj9NiCIP0E2v4jt9eALT-oWKiB24wFotJtyU4esUf1zsenr7I0qrjMQjs9F0zUzHV8F3iuku-aGxnbI7dAN2S6iZqJ0JhTJqlm-VtwmOJkkh3i4HLC4d8tsxjZVcnrPDUbyF7IOkRQJyly6-ge3Q3JkLXmAIQolYg5_Ef31UgVpwj1831uNrgx7FALfYFVZZTquqX1XniwAL8_cIpc_OGj-BN0CosxspbWOL3QgcV4abQqz0f0e-skujMpVnV3nTyoC7xkfLW_sJ6sh1balMPuVpOFwY4VOqrh53JYQCG2l_PTWuecyRcPM_vB6vgfRewwJyrHLIDGMjCRzc-gClh_IDf3zC6EzIz7beNsEN5tAT1uL9gPzSPUkPuwPTyxyO3Wi-EjAsiGX22kA_XjN340DUDaOY5QMJeYOJ2u2Zv4GaeJ-yDFA6k_KU4UEr-rY97UW-aslT8DM-1ZOKkI6ncTPNCFH6FFO_jn9B1gWKy7yNvR6ZQxv4L0O9YO9V1LcPWfx7peNXqA-InIvI6xgE6JIlLopVOx7zCpdgD3hqSL6fjgV6vl0hqnSWGSHRIlMu2plaAcGinLxI4azNkQU29L7CzPzOX65H_BrGPF3AndoMD3Maakpazl5JxLHJs_VOQ67EmqqY3Vr-GqF4fBOMh0uOUuPxIGNsg4_SXgXlk_NAk9DurXfr4sI6SeblbTqu4l2WBheYkXajJcOPB32FSN7pLbF86SzBHNR-sdSi_-rK5NEHn_KwGPE1hYSvn2egaOa-2PqYPwxAknR6F_bV07KOzJfkBhI_ADsBB95HqCl5fVxlkU66_sHcFX1kyc5elJEsXzyjSXdTvq1xnNWYBHk3BpFG-kpcfBd2t6NocVT-P22bD_WqOHDbkfLetm-xh8TU2yY0wDRBhe8htAUUP6Z5rVzehxxGfZ78gVVhFLeiBD8mOPLgphCfoDMNuL083sD5KWleXyqSARwN1HzoTG7RjYGCE_MYTdijZIA3h3CBbuI4CVh4dnB_lITBjauTXqRfAkrKZle4LAQwqgYbYxRJQZ4SWo23QEeM8jL5bRjTTLscZp61f605fR5BE8fLyjdktigxkqTb851M4Dzn5HcmXeo1wkxd7DLpZcHs34gq3Pi2mLvvyMuup0-Fyzsm8I21HGFSt8zWNr56FyuPmX4xL4u2Cu2EUB-D4BNUcqAlxoBnqvpwm-OxVpyLzPDMnloHsUsEYgrxxvFdJjBdRpHYqpY56Qk6kXBnNK5KGEPJAYfpj5aUm-AgLDZCmEtA59I50EckIoIgaNRMF6tvByRBWMj1AiaIUCwVNDqreG9p4QKV_i30-FBkZyT1E2DvhCHGO2z95j_qxEsrSV6SWg138v2HxYUddNYrMTHYbUZBM6RSVmZILQDFhz-iNP3TDJwsPhae0sZoqEbprXvlwZZZfa70SVwn5HteV68GRicS5pwKT-4_9VhnnQQtZ07eMN1IXkw0pc9RUQtmqxHE15vLw-CFs_Gjheu5L1NuYEpoZEw7YCHLkQGSd6bw54v48TG_cZAdylIjGX84J1ZTqE2xW--c1phSiwB4g6btPqq693PPGbIamd0qcJiullPS-fjQApUHLuaYA9BMniNIySJ1bTU3qosxNbxWmxvAYy1ujyczcakNg78UVRsp13TJCncb5AFykKsHFDQk9VXVI7MVCgX7kfrh0u86W7jVd88YlisCKxRb2vOQetLmFnOxwuY6bo4kWhrqXnbcVMHmWNnneSQ38fYzJcRJrzqldbZf30u2wJre1Kqc9AkaPFrndCTeftPVsayGLxie3JkV24t0LM7MjQYbiewBxvjEcCQ6HsAylX0cqDZDO_l1phQ6dJ0eZlUGz-kJEP0-0pq5r19wO-FRAOJ4b7JepL94tvwVuz2JSQekSBZOrsreY4jKGhouQEC5EGe1VCGgm_YYZF5CXmiqzoLB5bEMogaRq381RQhPCLTc88UfGICNmjpSuGJ7KivGTFktudBXYUvnnpvMricZxMbZwnwqoEgnHkB4gH9xPDSluTMNsv6TmpN6XvHVyDIKWXNPIKIO1P9H0VeFSFAB5OrHHuhIyFghhhE9RgsqyXrm9qcjSm31Vw5gqmpb_kfxwNiznF3x3bT_CzgUveOes7JjHnhMu0Jpfih9OCh3iymu9VJ6zxiKirBZQ7mGNrrg7L06LEcBt-btLynsaW6La2R9d5Pg1SpuHBpw3MSNx49kw0FmGLnGls1P6Wg-LtzK2ihvwKkIwGplhdUS7aqUcYz-XoLo-kVJdI37hgFMLBnKk6ypmLW5XXK3lptnOn_cSG4q4Q698IRvQ5sLXQ.XbvvDyJyRgGSb-eV91SIqg
+.chatgpt.com	TRUE	/	TRUE	1784198982	cf_clearance	S6njLF9402JvMLE7nJtB_YK1pzqNQ6_1nW9QaZ3ynKk-1752662982-1.2.1.1-FNjoKKJ1n6FmCRudWqYJqc59jCnFF0OAPDenb6xIlh.BRL_b70xgN6ilekGAa3cERP.HeIXzB8IMpnTQKYcyqhgFV2I7tMXSv_W6nfBVqNJeb4TGdOpjMa1a2ZStgxDUXfSLs9KQlUTxV3pRA4.ToOD3kc7oPqmKZ.GvagPAHfsuvuMpub3oJ0sw3DMttx4A8y7bj_nPBaUZ9gYvvH8VopsCQDz2zEnj4yQlnju_Aq8
+.chatgpt.com	TRUE	/	TRUE	1784198983	oai-sc	0gAAAAABod4PGbAyVQBxWXgKyQpKkyDFj56WmsW-dDtJd2mL1tjAxq4mv0dIIiNiO1_LFms1rdDnVIhJvpTeUK45mz0DvcUVZofdOVRcLvEONCzt2i_51LbcwZPhPKWFYo5Gqh5lviOFmkh5m-Gdyvh5LdUrTnLFkn8m7-wbvFfDd9fBfqnfuXi5PPlayUQ9pa05NRQu5Wy3YKMm9y3LlZaRb0ut6oG_u9QYRxqTDi-6un3GOZhR0ZvA
+chatgpt.com	FALSE	/	FALSE	0	oai-gn	
+chatgpt.com	FALSE	/	FALSE	0	oai-hm	AGENDA_TODAY%20%7C%20ON_YOUR_MIND
+.savefrom.net	TRUE	/	FALSE	1787225360	_ga_YZBZRGCYS9	GS2.2.s1752665360$o2$g0$t1752665360$j60$l0$h0
+.gitlab.adata.kz	TRUE	/	TRUE	1787226709	_sp_id.4a0e	74c85b1e-def8-49a4-9ac5-6bb2a23eac1f.1750929878.30.1752666709.1752648748.dea9e473-ca3a-4a8e-a361-f403f086fdea.3f2f1884-f300-43ee-9678-1aaedf8529ef.87d970ce-5271-4f71-b628-1ba6ab52366f.1752666018773.7
+my.telegram.org	FALSE	/	TRUE	1784188792	stel_token	2502dcb6d81b27504d75743c7cd9d7ad2502dcbb250294af88bb93775c6b41c53ab93
+mc.yandex.ru	FALSE	/	TRUE	0	yabs-sid	2130136681752674459
+.yandex.ru	TRUE	/	TRUE	1787234460	i	TNMkp/5MAeMQwcx0oHBCw3JwA7+B5AnENvPUi7BTmBBenbLMMz5OkKyWmR2V8vcZy+Z2SFpBCG3ixkk00HfFVOvmLQs=
+.yandex.ru	TRUE	/	TRUE	1787234460	yandexuid	9738342731752674459
+.yandex.ru	TRUE	/	TRUE	1787234460	yuidss	9738342731752674459
+.yandex.ru	TRUE	/	TRUE	1784210459	ymex	2068034459.yrts.1752674459#2068034459.yrtsi.1752674459
+.yandex.ru	TRUE	/	TRUE	1784261720	receive-cookie-deprecation	1
+.adata.kz	TRUE	/	TRUE	1784210460	_ym_uid	1750151805356259187
+.adata.kz	TRUE	/	TRUE	1784210460	_ym_d	1752674460
+.adata.kz	TRUE	/	TRUE	1752746460	_ym_isad	1
+.adata.kz	TRUE	/	FALSE	1787235179	_ga	GA1.1.959929185.1752674460
+pk.adata.kz	FALSE	/	FALSE	1784210463	i18n_redirected	ru
+widget.tiptoppay.kz	FALSE	/	TRUE	0	widget-tiptop-kz	widget-next-tp|6821be3050e3324399116cc8
+id.adada.kz	FALSE	/	FALSE	0	redirect_url	https%3A%2F%2Fpk.adada.kz%2Fcompany%2F941240000193
+.adada.kz	TRUE	/	FALSE	1787234513	_ga_MPNBF8EYCE	GS2.1.s1752674513$o13$g0$t1752674513$j60$l0$h0
+.adada.kz	TRUE	/	TRUE	1752760914	token_create_time	2025-07-16+19%3A02%3A23
+.adada.kz	TRUE	/	TRUE	1752760914	access_token	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiODc2OTY2YzM4NWE0NTkyZjYwYzIyYjRkMjM5M2U0MDFkY2IxOWE2MzJlM2I1OGM3YTVkMTg1ZDMwYjUwOTZkN2FkY2VmOTliMTQ4YWUyNTUiLCJpYXQiOjE3NTI2NzQ1NDIsIm5iZiI6MTc1MjY3NDU0MiwiZXhwIjoxNzUyNjgxNzQyLCJzdWIiOiIxOTU1MjIiLCJzY29wZXMiOltdfQ.SibGRbIPXxSaIfExcwoewSFu69_YAMHXhrEf9KGbTb-c3wF3-2_HczM4keXIuizykUfKzc9rHgRhl7eXS9KIqhDXh4rpajXbTppGDr0UTJJIv5cmCaAneg-oqQHy3dWgziztVwBpesJ3cebDzIN_Ihd0RUIwf02jCkaERxtfIrS1e1PYSlxmG5J3LXY-yWz8qMN5laTFZcQabEB5haDMU9EEo3MMwq1lj8gpAXuBZ9YKf4zdTAri-Vd1igApk3rFMs4J1STJ7BQa6aoGz6Sa1HISu1Wa_CgDaWV-FoPM_ZNUE3pMMWVxDkKJUVhUapJHtSVelA017Rgz8_sfFwoDiMjpo6vu-2SplJoJNVI4_3MC4W-8vq-8ImO65owsyhfVLacIlmy5PPyydMzBTpssna1btnmpEE_ww5QezzR8sun8uubvSVTIvTykPZEZAJCrl2dAmCYWc-Ujqc89LqQoakm0rTME2y54zb-QZCglAUIAPuDiQrJggUu6ss8KoNy1W2luQbU2fdK4CtkG1hMTyIkPh6Mr4PdGXl5mRw31Dt8AA9FNQJn3qWMO3dFluZItpPLCNpmZwAs6LM6eoSZa63_ejpIp7K2zVdvSYoBIQrNzsPTmsWursLkkvchybzZPVbjtF3urdQlGutA-oCCUvNSMrcY-ct6Nsq-AB3Q3noA
+.adada.kz	TRUE	/	TRUE	1752760914	refresh_token	def50200629dbaf919d8a86ae2c3040d1acb377b7cab04d04352a787234168183afc22c7c5a7c094598ad7ea2920d2874c043206369bd052a603373b3c17ec8084fc61a7cf5c6b1bdac3b9dca52f53b9277b33350cdf7ddf01e560f7edd80d73e7addc367739be1f09254314e2ecb4cbb23c782ee40c375f5868a411ed71eb52ed802e867fdb721d81230b147d2e269b4e1d8e058066ed0b8da87475dc550cf0a6342165de25df8c8f663131a702f33fb257852559a3126a1cc59e1bd693c697224c4d7bd96bb2f72f97502921569856ccede8eaa80bf1b4bc30d31a15cd27490cd15ee997c64c59ec291c849bc260536e5cf8e0cb5e8b5535cb189d30ec2378fbd1ded0642a938426bc8c7405b9904907e917dbbe9e9b2793bf27ceb8a12912ca64f7a7f7765667a232759ddf696df06077be1f027146528e443368cb9e20cebf1ebfb41447ddd28c567e27467970453a29a89c9d8eddbd5a67156bd7577e32a80d5aa37c37
+id.adada.kz	FALSE	/	FALSE	0	access_token	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiODc2OTY2YzM4NWE0NTkyZjYwYzIyYjRkMjM5M2U0MDFkY2IxOWE2MzJlM2I1OGM3YTVkMTg1ZDMwYjUwOTZkN2FkY2VmOTliMTQ4YWUyNTUiLCJpYXQiOjE3NTI2NzQ1NDIsIm5iZiI6MTc1MjY3NDU0MiwiZXhwIjoxNzUyNjgxNzQyLCJzdWIiOiIxOTU1MjIiLCJzY29wZXMiOltdfQ.SibGRbIPXxSaIfExcwoewSFu69_YAMHXhrEf9KGbTb-c3wF3-2_HczM4keXIuizykUfKzc9rHgRhl7eXS9KIqhDXh4rpajXbTppGDr0UTJJIv5cmCaAneg-oqQHy3dWgziztVwBpesJ3cebDzIN_Ihd0RUIwf02jCkaERxtfIrS1e1PYSlxmG5J3LXY-yWz8qMN5laTFZcQabEB5haDMU9EEo3MMwq1lj8gpAXuBZ9YKf4zdTAri-Vd1igApk3rFMs4J1STJ7BQa6aoGz6Sa1HISu1Wa_CgDaWV-FoPM_ZNUE3pMMWVxDkKJUVhUapJHtSVelA017Rgz8_sfFwoDiMjpo6vu-2SplJoJNVI4_3MC4W-8vq-8ImO65owsyhfVLacIlmy5PPyydMzBTpssna1btnmpEE_ww5QezzR8sun8uubvSVTIvTykPZEZAJCrl2dAmCYWc-Ujqc89LqQoakm0rTME2y54zb-QZCglAUIAPuDiQrJggUu6ss8KoNy1W2luQbU2fdK4CtkG1hMTyIkPh6Mr4PdGXl5mRw31Dt8AA9FNQJn3qWMO3dFluZItpPLCNpmZwAs6LM6eoSZa63_ejpIp7K2zVdvSYoBIQrNzsPTmsWursLkkvchybzZPVbjtF3urdQlGutA-oCCUvNSMrcY-ct6Nsq-AB3Q3noA
+pk.adada.kz	FALSE	/	FALSE	0	companyOpenedDate	1752674534266
+id.adata.kz	FALSE	/	FALSE	0	redirect_url	https%3A%2F%2Fpk.adata.kz%2Fcompany%2F040940002421%2Fmass-media
+.adata.kz	TRUE	/	TRUE	1752761578	token_create_time	2025-07-16+19%3A12%3A57
+.adata.kz	TRUE	/	TRUE	1752761578	access_token	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiZTc0MjY1ZmRlOWE5OTBjOGEyOWY2YTYyYzUwNDE5MjRkMzU0OTQzODRjZWE5YzUxY2Y2Y2YyZDAxMmRjY2Q5ZTZjYTQzMzA2M2ViOTc2MDciLCJpYXQiOjE3NTI2NzUxNzcsIm5iZiI6MTc1MjY3NTE3NywiZXhwIjoxNzUyNzYxNTc3LCJzdWIiOiIyMTA3MzQiLCJzY29wZXMiOltdfQ.mD4UfqJ5Cy-GOOb4rQuRy1ojzK3GFff-fvv-GH3IIcR1tg8MoweGDrTgLxqKWuDqN7EBgD300NXycp_BbwKhzAdRik19Of1x6j3lkwmSh_qXJy2noqI9xjA42Nj8Jm3qPSg2N35BbAZAQyNH6MuhK34PgY_tJLSrSNqEpA4NnyjHvF3e4DUu4CrerQFZixFJI5l4JNlk8oAI5fmdo1xYHlcpAAxhavdK5jm3Btbus4hRSQM2cMxyElhWDwsFe1T0-gGOHU6lxvoPpGLed3J7zcpIATCRxK89reTO4wzcoJyL956HHZ0JRB8wSzAuzPspjxRVs-hHDcsjurZKMC8dWPcbP38ohWogpPtvh620TTSdCUvRa7u0qQZdaa3arrbBvFesl8DNcUpLbRfd5GV4M7qXsXqD6MTYe3zX7yuXk5ZlAsZybcVoGSeOefvV9eDtKQuVtuq8UEvGpe0dYzV81G2FyLwDQ0QkDhAykAzf9_VjDcJ26mIY2t9r7uL2q_OGP6C8TffvCW0u-vmiEGQ90pjHQVh9U1l-l5w6Q77laXCD7RheCHCTTlXklZzEqKAUUIW5gRA5wWTGFu0fAJM2v9haNUpJMD6DkxKJwUt8eDIku1xhiHpbpy-LeAoQqdLP8f5aCivwZAIrJFGcHJUC3cHa75_KQm0uK4x9-QUH3qM
+.adata.kz	TRUE	/	TRUE	1752761578	refresh_token	def50200ef35bff0d4284823d228fa352c13cd8e0bee72035516739b3e41979c7cc4374a0bd8158f60759a07ba476faa8ceddcee36e4d81bd1192cfe15a2fe55f3b30ce4ac1fa2ff4b7384af7a1f79ae659089097756bab5ed9cf46d619185c3ff8f7dccf8ea8722478c8c3fbc6963310b2806ff90225f8c99cbb6837fadd608c4828c7da092941c0d0d3bcf28e9d5d40bc1eb9c644082d959666d21f5a50fff6ea6923365e4c1b982406d6692ef3d38f8ac21eee03e25cb461db2942eb60bbe652469bddbf6bd5594fc3bd124561ccdc03307e4be99e783a19ed8fb2e7a1dc1864a6072a2f3fa026aa0e6436bad582ad50b416c2e3249ca880f404d7dfa6b654aa4ce809f4b292c1575ca8c9301d4854c5f5ec2f126b69c7360fb748232ba62c8b825cf06f92c178f0e3d0b59cab24e9bdaba6f4cad93dd5162a951f18693a532e75b05a067528770c74cbcc6a13ea26c8cdf3c9fefa38c7ee940746010f123f5da155bb81e
+id.adata.kz	FALSE	/	FALSE	0	access_token	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiZTc0MjY1ZmRlOWE5OTBjOGEyOWY2YTYyYzUwNDE5MjRkMzU0OTQzODRjZWE5YzUxY2Y2Y2YyZDAxMmRjY2Q5ZTZjYTQzMzA2M2ViOTc2MDciLCJpYXQiOjE3NTI2NzUxNzcsIm5iZiI6MTc1MjY3NTE3NywiZXhwIjoxNzUyNzYxNTc3LCJzdWIiOiIyMTA3MzQiLCJzY29wZXMiOltdfQ.mD4UfqJ5Cy-GOOb4rQuRy1ojzK3GFff-fvv-GH3IIcR1tg8MoweGDrTgLxqKWuDqN7EBgD300NXycp_BbwKhzAdRik19Of1x6j3lkwmSh_qXJy2noqI9xjA42Nj8Jm3qPSg2N35BbAZAQyNH6MuhK34PgY_tJLSrSNqEpA4NnyjHvF3e4DUu4CrerQFZixFJI5l4JNlk8oAI5fmdo1xYHlcpAAxhavdK5jm3Btbus4hRSQM2cMxyElhWDwsFe1T0-gGOHU6lxvoPpGLed3J7zcpIATCRxK89reTO4wzcoJyL956HHZ0JRB8wSzAuzPspjxRVs-hHDcsjurZKMC8dWPcbP38ohWogpPtvh620TTSdCUvRa7u0qQZdaa3arrbBvFesl8DNcUpLbRfd5GV4M7qXsXqD6MTYe3zX7yuXk5ZlAsZybcVoGSeOefvV9eDtKQuVtuq8UEvGpe0dYzV81G2FyLwDQ0QkDhAykAzf9_VjDcJ26mIY2t9r7uL2q_OGP6C8TffvCW0u-vmiEGQ90pjHQVh9U1l-l5w6Q77laXCD7RheCHCTTlXklZzEqKAUUIW5gRA5wWTGFu0fAJM2v9haNUpJMD6DkxKJwUt8eDIku1xhiHpbpy-LeAoQqdLP8f5aCivwZAIrJFGcHJUC3cHa75_KQm0uK4x9-QUH3qM
+.adata.kz	TRUE	/	FALSE	1752761577	accessToken	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiZTc0MjY1ZmRlOWE5OTBjOGEyOWY2YTYyYzUwNDE5MjRkMzU0OTQzODRjZWE5YzUxY2Y2Y2YyZDAxMmRjY2Q5ZTZjYTQzMzA2M2ViOTc2MDciLCJpYXQiOjE3NTI2NzUxNzcsIm5iZiI6MTc1MjY3NTE3NywiZXhwIjoxNzUyNzYxNTc3LCJzdWIiOiIyMTA3MzQiLCJzY29wZXMiOltdfQ.mD4UfqJ5Cy-GOOb4rQuRy1ojzK3GFff-fvv-GH3IIcR1tg8MoweGDrTgLxqKWuDqN7EBgD300NXycp_BbwKhzAdRik19Of1x6j3lkwmSh_qXJy2noqI9xjA42Nj8Jm3qPSg2N35BbAZAQyNH6MuhK34PgY_tJLSrSNqEpA4NnyjHvF3e4DUu4CrerQFZixFJI5l4JNlk8oAI5fmdo1xYHlcpAAxhavdK5jm3Btbus4hRSQM2cMxyElhWDwsFe1T0-gGOHU6lxvoPpGLed3J7zcpIATCRxK89reTO4wzcoJyL956HHZ0JRB8wSzAuzPspjxRVs-hHDcsjurZKMC8dWPcbP38ohWogpPtvh620TTSdCUvRa7u0qQZdaa3arrbBvFesl8DNcUpLbRfd5GV4M7qXsXqD6MTYe3zX7yuXk5ZlAsZybcVoGSeOefvV9eDtKQuVtuq8UEvGpe0dYzV81G2FyLwDQ0QkDhAykAzf9_VjDcJ26mIY2t9r7uL2q_OGP6C8TffvCW0u-vmiEGQ90pjHQVh9U1l-l5w6Q77laXCD7RheCHCTTlXklZzEqKAUUIW5gRA5wWTGFu0fAJM2v9haNUpJMD6DkxKJwUt8eDIku1xhiHpbpy-LeAoQqdLP8f5aCivwZAIrJFGcHJUC3cHa75_KQm0uK4x9-QUH3qM
+.adata.kz	TRUE	/	FALSE	1787235179	_ga_MPNBF8EYCE	GS2.1.s1752674460$o1$g1$t1752675178$j57$l0$h0
+pk.adata.kz	FALSE	/	FALSE	0	companyOpenedDate	1752675196441
+.adata.kz	TRUE	/	FALSE	1787235200	_ga_XBEVQM5GDQ	GS2.1.s1752672531$o82$g1$t1752675200$j35$l0$h0
+pk.adata.kz	FALSE	/	FALSE	0	openedCompanies	%5B%22941240000193%22%2C%22040940002421%22%5D
+jira.adata.kz	FALSE	/	TRUE	0	JSESSIONID	BBFB63F313DD7BA98CFD11BFD3A49C4B
+jira.adata.kz	FALSE	/	TRUE	0	atlassian.xsrf.token	BAC2-67KN-9CTD-GI91_5dd6ad2973e2efe2685afdef268da22653b0fa5a_lin
+appsgenaiserver-pa.clients6.google.com	FALSE	/	TRUE	1753589701	COMPASS	apps-genai=CgAQ1Y3iwwYaZQAJa4lXREWC8vYyL8xlXeWf6l3atKBBCSzOLnIti06C0QPG8J3LJ7Rockyf_8Tl65HW1nnXFRjuHwkuDcUMqLcYfoVO6MM5l83eFjjsdp7O62EEwGgtmpMuqJdt7LKNim80uLdWIAEwAQ
+pk-api.adata.kz	FALSE	/	FALSE	1752739695	pk_api_session	IOjakjjtBmTXqWb2lLm6r9Tc4Mgk6kptexFppY9V
+ma.adtdev.kz	FALSE	/	FALSE	0	access_token	eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIyIiwianRpIjoiMGY3NGY2ZTI2ZmUwZTE2MzAwMzFhMDM5MTVmNjJmOWIzODM0ZWFhMzRmM2NhMzhhYzA4OTcxOTQzZDk5ZmJjMjk4ZGVkMjQyMmNjOTZjNDciLCJpYXQiOjE3NTI3MjgzNjYuNDI1NDgyLCJuYmYiOjE3NTI3MjgzNjYuNDI1NDg2LCJleHAiOjE3NTI3MzU1NjYuNDAwNjc1LCJzdWIiOiI3NSIsInNjb3BlcyI6W119.0OkURVnvOcLQsbilk5bRq-CXj1b_Y-cRcOeC4ICs9c3HKRyqC81GzztwTAiRCerOTevXCqe9kjgiH0ZqlwYmJZ4F3ajSLYlB-dWgaZj_fTDmSfIucjZEFI4i7JopInl3Y584cYo2kzXcOVFV5xxCXIu9NUCDwmoStxkMrhXx58G9YSwsCvvPZ3Qip6TodngL-ZOTUd3eKTxwXOFLDbUZxOeSGm7Uls7slsTWFa6OBuCxjrG6uPEqHkZ5wU0QDY9wYKjA4YyZ40hMDDIwVlbphrZLiL1h-dxeK_MBWfN08wMxQDeonPtw_Ois9sTyA4gI_q3iLiXPHG9gScA_XrpAIOWcPapRJWnB419Ck5x-y0bw0bqCM5SxHmlFbHM8VU7a6xKR28TjjIt2iCSOHxigGbsXKlmsWtjxmfkufHdNliBGP3lqteXQmL6DCRf3LEViDqcEaS02KIvLQapsK_1dltpnNDKIact6qg5aVpM0ywrWiMrWivEb7FjSg8y9JEpGg20G_aWpVxadbQ0gKL0XAJlod7QZBpfIptYaTLgWLQP7PAkF6GkS6DWelJJpJbOkqh4FQiqhmVM0BGQ1pbnscfqJ9eRDbsILrt2eIweutWJPby8GZm1ilrzsgkYHzDJqJverWzqvS3_eSQt-vm9ndk7NZ79LMXgsdQeDyhqvC7g
+ma.adtdev.kz	FALSE	/	FALSE	0	refresh_token	def5020099d06c2c8751ed26ac019dd24088a914496d575af6c0e2a1039515eb9025b7db2e20ccdb4663e453181d6b817e7c5a549b09a8a7d59fc0e3da0c149cecb816f7477f446c2aa869416a894d3dd1595b6e4c137ad82b433ad23bf4aa687be5bfd5f14f89c5c9a49ae6949ec2cb9054c04c2ea435fea5682259312b0a99c9241d8fed432369dfb8b422fee5d66e0aadad475a5e020946964026e5fc4856c011603b8b2c1d0efe16fb6ce9bdf7cbcf12b268a30ba5249ca29ced8f724f816587796e3a8bcf000f2b4b76c48e436cd920804dbca9eef5000a89c09ff4d95097a414a0570232d1fd1b2be1d4dbda5d3c2f45268c11ee58e04bb9e167c1fa27c16431871c8825b2fc1967f1039150809577f2df8319bd596b1fced055f526972a94931e3b6b2eebf1351212238cb30355f3f0316e93d7934eed7407edc43222010ab0ef57d5efb853c74ce0df5e04caa5990415cdef031d678ce8bb927381c32d94
+ma.adtdev.kz	FALSE	/	FALSE	0	expires_in	7200
+ma.adtdev.kz	FALSE	/	FALSE	0	role	admin
+ma.adtdev.kz	FALSE	/	FALSE	1753937949	email	stepan%40test.com
+ma.adtdev.kz	FALSE	/	FALSE	1753937949	password	Adata123
+.support.google.com	TRUE	/	FALSE	1787288403	_ga	GA1.3.213870756.1751258188
+.support.google.com	TRUE	/	FALSE	1752814803	_gid	GA1.3.204609595.1752728403
+.support.google.com	TRUE	/	FALSE	1787288404	_ga_H30R9PNQFN	GS2.1.s1752728402$o4$g0$t1752728404$j58$l0$h0
+.youtube.com	TRUE	/	TRUE	1768286839	__Secure-ROLLOUT_TOKEN	CMnT6fXwwPqIgAEQssTZuuaajgMY-fK-i6bDjgM%3D
+.google.com	TRUE	/	TRUE	1768546321	NID	525=TNdLCI7TvQgJANndWdz48uoaLIA39WD3sfSj04X7bbQHGEZQOXx2HGiLK4OAyhPnEnDjaj2abAp32foiAEWZE98asRiH0BV_BV1KrxhddIerIGFbeF14FDJmibB9d3QriZjF1f4YjPyx-6Es6VZHEMmOrnovqpUAgQEaqf49YLU42gznd84yCXL78AZkpBzM-fspo5ToIn5jeumSfUyKx_23uBVrrKf5_Qgz9iM3LSvMqSDMRpmVcrwQYx6vp9cX4l4oKzTd_3noB-XycZYrf8FJMFlM8_2Qz8V_sQ0TGOfny_10mJ6IMF7bmxluWQTQfdKiQJQf4z-yWSt_ZfjQjvkcH_RH-pFpA88HsTnyvWwvv94NrUx-1mkWwhrVo2jJ59HFz40FFrpg2CPGEo_vUMU_AcVXoKtkVjvfeThQU9tvNDNiE2DRYw4KdYt2LkS4LVczIoZH676A7_VEEDwLp5lUtMvBA0gyDmC-JSY5JL3c5CWyK_ECRHAnZCEg6MVp6Ai-mFmgNoCSnAbzBDENcwKehIYgTwk8OKrNHVGckAdr4q_jVr6QH3MaxQp-urTKB05bjWnpWLy_GUEOoQ4WJzAoiKllVp9iA7iHnMHeeXyKazW2pg_xQOYZDR-B7uKmrqp2pZxXdfUlE2I9fDvomgdTnc1n4ewD4Buw6JMy8PiLORFYkviPrqEJAvlXopwDmaH_kLyywVs2kNumN7EKDarZsWTl3AUPhAtKh4GzsGMTbzYv
+.chromewebstore.google.com	TRUE	/	FALSE	1787297438	_ga_C2WJL5J9RY	GS2.1.s1752737434$o1$g0$t1752737438$j56$l0$h0
+.editthiscookie.com	TRUE	/	FALSE	1787297441	__utma	165587563.1536304802.1752737441.1752737441.1752737441.1
+.editthiscookie.com	TRUE	/	FALSE	0	__utmc	165587563
+.editthiscookie.com	TRUE	/	FALSE	1768505441	__utmz	165587563.1752737441.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)
+.editthiscookie.com	TRUE	/	FALSE	1752738041	__utmt	1
+.editthiscookie.com	TRUE	/	FALSE	1752739241	__utmb	165587563.1.10.1752737441
+.twitter.com	TRUE	/	TRUE	1752739243	__cf_bm	AvCci9T6LsXF3sFyUzBObLKcup2rK5MTGJbuNdTLayQ-1752737443-1.0.1.1-6oT7k4cE_1uGHNk7xlYqa3E6aX0ZQWGgrZK92UXfK9lPNCQiNJuhLeutJAgD9RZ8j62j_YWd3BOvS2SEoP5cLiyzayruguSkPIY.JNEGrUQ
+.youtube.com	TRUE	/	TRUE	1784273462	__Secure-1PSIDTS	sidts-CjEB5H03P609ixgebFfG-pbNQwbLqE1_MejjSZZbilPnJP71GgYC7vl8rs9zL66A7AfxEAA
+.youtube.com	TRUE	/	TRUE	1784273462	__Secure-3PSIDTS	sidts-CjEB5H03P609ixgebFfG-pbNQwbLqE1_MejjSZZbilPnJP71GgYC7vl8rs9zL66A7AfxEAA
+.yandex.ru	TRUE	/	TRUE	1787297499	bh	EkAiTm90KUE7QnJhbmQiO3Y9IjgiLCAiQ2hyb21pdW0iO3Y9IjEzOCIsICJHb29nbGUgQ2hyb21lIjt2PSIxMzgiGgN4ODYiDTEzOC4wLjcyMDQuOTIqAj8wOgciTGludXgiQgU2LjEuMEoCNjRSWCJOb3QpQTtCcmFuZCI7dj0iOC4wLjAuMCIsIkNocm9taXVtIjt2PSIxMzguMC43MjA0LjkyIiwiR29vZ2xlIENocm9tZSI7dj0iMTM4LjAuNzIwNC45MiJg283iwwZqGdzK6YgO8qy3pQv7+vDnDev//fYPitTNhwg=
+.google.com	TRUE	/	TRUE	1784273743	__Secure-1PSIDTS	sidts-CjEB5H03P0bxXI0_1jDKw8ssMuAcaz0W0r8TbRkCEABbcOJQufI7PDbMXYQurxIRuQTNEAA
+.google.com	TRUE	/	TRUE	1784273743	__Secure-3PSIDTS	sidts-CjEB5H03P0bxXI0_1jDKw8ssMuAcaz0W0r8TbRkCEABbcOJQufI7PDbMXYQurxIRuQTNEAA
+.youtube.com	TRUE	/	FALSE	1784273869	SIDCC	AKEyXzVX46fqyg8BtIMEYNyIca4Hi7RO2US-OdRbd4_avCsDq4UU-VGUAqwRX-7AShxK5bD8guo
+.youtube.com	TRUE	/	TRUE	1784273869	__Secure-1PSIDCC	AKEyXzUxCkE4OeN3a2hxmOAW_-ubA5sGAqb6_Aj0Cfg1a58CW8MbIiaKyWUalFbgm0YwnzNHVA
+.youtube.com	TRUE	/	TRUE	1784273869	__Secure-3PSIDCC	AKEyXzUUww4oE49NB0dffbaEVklo4jAFPsRyDZwg16avr21BdYx7zJyUeD5WGdCDL2-4WGqzVg
+.google.com	TRUE	/	TRUE	1765789274	AEC	AVh_V2hec1DK9cg61TIvk5zfTB2Y7S7YdcCLuzkLW74Ud_Y-sfVdcx9OUmE
+www.google.com	FALSE	/	FALSE	1752738513	DV	Y-j1xaFPFS9k0LiuPDVHP2VxmCF1gdm-g7kjb7seKQEAAEAIMU5ewDV2UAAAANS51Ng5A-OHIgAAAFgvVcgWkPXiEwAAABcvHEcTwwEsBgAAAA
+.chromewebstore.google.com	TRUE	/	FALSE	1787297918	_ga_KHZNC1Q6K0	GS2.1.s1752737406$o2$g1$t1752737918$j57$l0$h0
+.google.com	TRUE	/	FALSE	1784273919	SIDCC	AKEyXzUWzI3GLIPkr63JLTZkuDCLuXVoFeP2I3_-_ab6OWIJNdyqJEzW7l_yq6uuqqsVWG9QTaDR
+.google.com	TRUE	/	TRUE	1784273919	__Secure-1PSIDCC	AKEyXzVw0gF2j8aeJxgKWf9Jb_z85c-N7lDnD8p5JBnWrVmTeEsdt-t_cnr3a4PLtC1lvGv6bKdq
+.google.com	TRUE	/	TRUE	1784273919	__Secure-3PSIDCC	AKEyXzVO_a2v-QzfOYSIEBc4Gq7Z6bev-Wvzzc1VJlIN2_pcfSw2KIbCm1VZFgCf0Zc-EtINoqA
