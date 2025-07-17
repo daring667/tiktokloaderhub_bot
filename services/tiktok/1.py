@@ -74,5 +74,4 @@ async def download_tiktok(client, message):
 
 
 if __name__ == "__main__":
-    print("Starting TikTok Downloader Bot...")
     app.run()
