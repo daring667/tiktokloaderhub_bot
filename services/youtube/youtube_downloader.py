@@ -94,17 +94,17 @@ class YouTubeDownloader:
                     asyncio.create_task(progress(current, total, message, start_time, filename))
 
         opts = {
+            'format': 'bestvideo+bestaudio/best',
+            'outtmpl': filename,
+            'merge_output_format': 'mp4',
+            'noplaylist': True,
+            'quiet': True,
+            'no_warnings': True,
             'http_headers': {
-                'User-Agent': 'Mozilla/5.0',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
             },
-            "cookiefile": "/app/cookies.txt",
-
-            "format": itag,
-            "outtmpl": out_path,
-            "quiet": True,
-            "no_warnings": True,
-            "progress_hooks": [hook]
-        }
+            # можешь ещё добавить cookies, если нужно
+}
 
         with yt_dlp.YoutubeDL(opts) as ydl:
             ydl.download([self.url])
