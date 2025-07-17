@@ -1,7 +1,12 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from services.youtube.youtube_downloader import YouTubeDownloader
-import re, os, time, logging, string, asyncio
+import re
+import os
+import time
+import logging
+import string
+import asyncio
 
 active_downloads = set()
 
@@ -46,7 +51,6 @@ def register(app: Client):
 
             try:
                 downloader = YouTubeDownloader(url)
-                meta = downloader  # Для совместимости с существующим кодом
             except Exception as e:
                 await progress_msg.edit_text(f"❌ Ошибка: {str(e)}")
                 return
@@ -55,6 +59,9 @@ def register(app: Client):
             if should_download_immediately(url):
                 safe_title = sanitize_filename(getattr(downloader, 'title', 'video'))
                 filename = f"downloads/{safe_title}_{int(time.time())}.mp4"
+
+                # Создаем папку downloads если ее нет
+                os.makedirs("downloads", exist_ok=True)
 
                 success = await downloader.download('best', filename)
                 if success:
@@ -73,6 +80,7 @@ def register(app: Client):
             # Для обычных видео
             safe_title = sanitize_filename(getattr(downloader, 'title', 'video'))
             filename = f"downloads/{safe_title}_{int(time.time())}.mp4"
+            os.makedirs("downloads", exist_ok=True)
 
             if len(getattr(downloader, 'streams', [])) == 1 or getattr(downloader, 'length', 0) < 30:
                 stream = downloader.streams[0]
@@ -130,6 +138,7 @@ def register(app: Client):
             downloader = YouTubeDownloader(url)
             safe_title = sanitize_filename(getattr(downloader, 'title', 'video'))
             filename = f"downloads/{safe_title}_{itag}_{int(time.time())}.mp4"
+            os.makedirs("downloads", exist_ok=True)
 
             progress_msg = await callback.message.edit_text("⏬ Начинаем загрузку...")
 
