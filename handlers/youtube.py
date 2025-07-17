@@ -22,42 +22,40 @@ def register(app: Client):
         filename = None
 
         try:
-            print(f"💬 Сообщение от пользователя: {message.text}")
-
             url_match = re.search(r'https?://\S+', message.text)
             if not url_match:
                 return await message.reply("❌ Не смог найти ссылку.")
 
             url = url_match.group(0).strip()
-            print(f"🎯 Передаём ссылку в YouTubeDownloader: {url}")
+            progress_msg = await message.reply("⏳ Обрабатываю ссылку...")
 
             try:
                 meta = YouTubeDownloader(url)
             except ValueError as e:
-                await message.reply(f"❌ yt-dlp не смог распарсить ссылку: {e}")
-                logging.error(f"YT download error: {e}")
+                await progress_msg.edit_text(f"❌ Ошибка: {str(e)}")
                 return
-            try:
-                await message.delete()
-            except Exception as e:
-                print(f"❌ Не удалось удалить сообщение: {e}")
-            # Если короткое видео или всего один формат — качаем сразу
+
+            safe_title = sanitize_filename(meta.title)
+            filename = f"downloads/{safe_title}_{int(time.time())}.mp4"
+
+            await asyncio.sleep(1)  # Задержка между запросами
+
             if len(meta.streams) == 1 or meta.length < 30:
                 stream = meta.streams[0]
-                safe_title = sanitize_filename(meta.title)
-                filename = f"/app/downloads/{safe_title}_{int(time.time())}.mp4"
-                try:
-                    progress_msg = await message.reply("⏬ Начинаем загрузку...")
-                    await meta.download(stream['itag'], filename, message)
-                    await client.send_video(message.chat.id, filename, supports_streaming=True)
-                    await progress_msg.delete()
-                except Exception as e:
-                    await progress_msg.edit_text("❌ Ошибка при загрузке.")
-                    logging.error("YouTube download error", exc_info=True)
-                finally:
-                    if os.path.exists(filename):
-                        os.remove(filename)
-                    active_downloads.discard(user_id)
+                await progress_msg.edit_text("⏬ Начинаем загрузку...")
+
+                success = await meta.download(stream['itag'], filename, progress_msg)
+                if success:
+                    await client.send_video(
+                        message.chat.id,
+                        filename,
+                        caption=f"🎬 {meta.title}",
+                        supports_streaming=True
+                    )
+                else:
+                    await progress_msg.edit_text("❌ Не удалось загрузить видео")
+
+                await progress_msg.delete()
                 return
 
             # Иначе — предлагаем выбор качества
