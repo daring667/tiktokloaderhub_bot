@@ -1,14 +1,31 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from services.youtube.youtube_downloader import YouTubeDownloader
-from yt_dlp.utils import DownloadError as YTDownloadError
-import re, os, time, logging
-import string
+import re, os, time, logging, string, asyncio
+
 active_downloads = set()
+
+
+def extract_url(text: str) -> str | None:
+    """Извлекает URL YouTube из текста сообщения"""
+    youtube_regex = (
+        r'(https?://)?(www\.)?'
+        r'(youtube|youtu|youtube-nocookie)\.(com|be)/'
+        r'(watch\?v=|embed/|v/|.+\?v=)?([^&=%\?]{11})'
+    )
+    match = re.search(youtube_regex, text)
+    return match.group(0) if match else None
+
+
+def should_download_immediately(url: str) -> bool:
+    """Определяет, нужно ли скачивать видео сразу без выбора качества"""
+    return any(x in url for x in ['shorts/', 'youtu.be/'])
+
 
 def sanitize_filename(name: str) -> str:
     allowed_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
     return ''.join(c for c in name if c in allowed_chars)
+
 
 def register(app: Client):
     @app.on_message(filters.regex(r'https?://(www\.)?youtu(be\.com|\.be)/') & (filters.group | filters.private))
@@ -25,40 +42,48 @@ def register(app: Client):
             if not url:
                 return await message.reply("❌ Неверная ссылка")
 
-            progress_msg = await message.reply("⏳ Начинаем загрузку...")
-            downloader = YouTubeDownloader(url)
+            progress_msg = await message.reply("⏳ Обрабатываю видео...")
+
+            try:
+                downloader = YouTubeDownloader(url)
+                meta = downloader  # Для совместимости с существующим кодом
+            except Exception as e:
+                await progress_msg.edit_text(f"❌ Ошибка: {str(e)}")
+                return
 
             # Для коротких видео сразу качаем
             if should_download_immediately(url):
-                filename = f"downloads/video_{int(time.time())}.mp4"
-                success = await downloader.download('best', filename)
+                safe_title = sanitize_filename(getattr(downloader, 'title', 'video'))
+                filename = f"downloads/{safe_title}_{int(time.time())}.mp4"
 
+                success = await downloader.download('best', filename)
                 if success:
                     await client.send_video(
                         message.chat.id,
                         filename,
+                        caption=f"🎬 {getattr(downloader, 'title', 'YouTube видео')}",
                         supports_streaming=True
                     )
                 else:
                     await progress_msg.edit_text("❌ Ошибка загрузки")
 
+                await progress_msg.delete()
                 return
 
-            safe_title = sanitize_filename(meta.title)
+            # Для обычных видео
+            safe_title = sanitize_filename(getattr(downloader, 'title', 'video'))
             filename = f"downloads/{safe_title}_{int(time.time())}.mp4"
 
-            await asyncio.sleep(1)  # Задержка между запросами
-
-            if len(meta.streams) == 1 or meta.length < 30:
-                stream = meta.streams[0]
+            if len(getattr(downloader, 'streams', [])) == 1 or getattr(downloader, 'length', 0) < 30:
+                stream = downloader.streams[0]
                 await progress_msg.edit_text("⏬ Начинаем загрузку...")
 
-                success = await meta.download(stream['itag'], filename, progress_msg)
+                success = await downloader.download(stream['itag'], filename)
                 if success:
                     await client.send_video(
                         message.chat.id,
                         filename,
-                        caption=f"🎬 {meta.title}",
+                        caption=f"🎬 {getattr(downloader, 'title', 'YouTube видео')}",
                         supports_streaming=True
                     )
                 else:
@@ -67,25 +92,24 @@ def register(app: Client):
                 await progress_msg.delete()
                 return
 
-            # Иначе — предлагаем выбор качества
+            # Предлагаем выбор качества
             buttons = [
                 InlineKeyboardButton(
                     f"{s['res']} - {round(s['filesize'] / 1024 / 1024, 1)}MB",
                     callback_data=f"yt|{url}|{s['itag']}"
-                ) for s in meta.streams[:4]
+                ) for s in getattr(downloader, 'streams', [])[:4]
             ]
             markup = InlineKeyboardMarkup.from_column(buttons)
 
-            await message.reply(
-                f"*🎬 {meta.title}*\n⏱ {meta.length} сек.\nВыбери качество:",
+            await progress_msg.edit_text(
+                f"*🎬 {getattr(downloader, 'title', 'YouTube видео')}*\n⏱ {getattr(downloader, 'length', 0)} сек.\nВыбери качество:",
                 reply_markup=markup,
                 parse_mode="markdown"
             )
 
         except Exception as e:
             logging.exception("YouTube handler error")
-            await message.reply("❌ Произошла ошибка при обработке видео.")
-
+            await message.reply(f"❌ Произошла ошибка: {str(e)}")
         finally:
             if filename and os.path.exists(filename):
                 os.remove(filename)
@@ -103,21 +127,26 @@ def register(app: Client):
 
         try:
             _, url, itag = callback.data.split("|")
-            print(f"⬇️ Callback-ссылка: {url}")
+            downloader = YouTubeDownloader(url)
+            safe_title = sanitize_filename(getattr(downloader, 'title', 'video'))
+            filename = f"downloads/{safe_title}_{itag}_{int(time.time())}.mp4"
 
-            meta = YouTubeDownloader(url)
-            safe_title = sanitize_filename(meta.title)
-            filename = f"/app/downloads/yt_{itag}_{int(time.time())}.mp4"
+            progress_msg = await callback.message.edit_text("⏬ Начинаем загрузку...")
 
-            progress_msg = callback.message
-            await progress_msg.edit_text("⏬ Начинаем загрузку...")
-
-            await meta.download(itag, filename, callback.message)
-            await client.send_video(callback.message.chat.id, filename, supports_streaming=True)
-            await progress_msg.delete()
+            success = await downloader.download(itag, filename)
+            if success:
+                await client.send_video(
+                    callback.message.chat.id,
+                    filename,
+                    caption=f"🎬 {getattr(downloader, 'title', 'YouTube видео')}",
+                    supports_streaming=True
+                )
+                await callback.message.delete()
+            else:
+                await progress_msg.edit_text("❌ Ошибка при скачивании видео")
         except Exception as e:
             logging.error("Callback download error", exc_info=True)
-            await callback.message.edit_text("❌ Ошибка при скачивании видео.")
+            await callback.message.edit_text(f"❌ Ошибка: {str(e)}")
         finally:
             if filename and os.path.exists(filename):
                 os.remove(filename)
