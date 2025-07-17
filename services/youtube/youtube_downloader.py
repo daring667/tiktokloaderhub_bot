@@ -96,15 +96,17 @@ class YouTubeDownloader:
         opts = {
             'format': 'bestvideo+bestaudio/best',
             'outtmpl': out_path,
-            'cookiefile': '/path/to/cookies.txt',
+            'cookiefile': './cookies.txt',
             'merge_output_format': 'mp4',
             'noplaylist': True,
             'quiet': True,
             'no_warnings': True,
-            'http_headers': {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
-            },
-            # можешь ещё добавить cookies, если нужно
+            "http_headers": {
+                "User-Agent": "Mozilla/5.0...",
+                "Referer": "https://youtube.com",
+                "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7"
+        }
+
 }
 
         with yt_dlp.YoutubeDL(opts) as ydl:
