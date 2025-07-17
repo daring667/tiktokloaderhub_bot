@@ -38,9 +38,12 @@ def register(app: Client):
             if len(meta.streams) == 1 or meta.length < 30:
                 stream = meta.streams[0]
                 filename = f"yt_{stream['itag']}_{int(time.time())}.mp4"
-                await message.reply("⏬ Начинаем загрузку...")
+                loading_msg = await message.reply("⏬ Начинаем загрузку...")
                 meta.download(stream['itag'], filename, message)
                 await client.send_video(message.chat.id, filename, supports_streaming=True)
+
+                await client.delete_messages(chat_id=message.chat.id, message_ids=[message.id, loading_msg.id])
+
                 return
 
             # Иначе — предлагаем выбор качества
