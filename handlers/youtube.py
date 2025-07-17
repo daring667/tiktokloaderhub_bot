@@ -99,7 +99,7 @@ def register(app: Client):
 
             meta = YouTubeDownloader(url)
             safe_title = sanitize_filename(meta.title)
-            filename = f"/app/downloads/{safe_title}_{int(time.time())}.mp4"
+            filename = f"/app/downloads/yt_{itag}_{int(time.time())}.mp4"
 
             progress_msg = callback.message
             await progress_msg.edit_text("⏬ Начинаем загрузку...")
