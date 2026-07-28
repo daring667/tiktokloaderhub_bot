@@ -2,8 +2,9 @@
 import asyncio
 import pytest
 from unittest.mock import patch, AsyncMock, MagicMock
+from pyrogram.enums import ParseMode
 
-from handlers.youtube import register
+from handlers.youtube import register, format_duration
 from _helpers import FakeApp, make_message, make_client, make_callback
 
 URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
@@ -77,10 +78,57 @@ class TestYoutubeMessageHandler:
             await handler(client, message)
 
         message.reply.assert_awaited_once()
-        _, kwargs = message.reply.await_args
+        args, kwargs = message.reply.await_args
         markup = kwargs["reply_markup"]
         assert len(markup.inline_keyboard) == 2
+        assert "🎬 720p" in markup.inline_keyboard[0][0].text
+        assert "🎬 360p" in markup.inline_keyboard[1][0].text
+        assert kwargs["parse_mode"] == ParseMode.HTML
         client.send_video.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_quality_buttons_put_audio_after_video_regardless_of_size(self):
+        """A small audio track shouldn't jump above bigger video options."""
+        handler, _cb, db = _register()
+        message = make_message(URL)
+        client = make_client()
+
+        streams = [
+            {"itag": "bestaudio", "res": "audio (mp3)", "filesize": 50 * 1024 * 1024, "type": "audio"},
+            {"itag": "18", "res": "360p", "filesize": 10 * 1024 * 1024, "type": "video"},
+        ]
+
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            MockYT.return_value = _make_meta(length=300, streams=streams)
+            await handler(client, message)
+
+        _, kwargs = message.reply.await_args
+        markup = kwargs["reply_markup"]
+        assert "🎬 360p" in markup.inline_keyboard[0][0].text
+        assert "🎵" in markup.inline_keyboard[1][0].text
+
+    @pytest.mark.asyncio
+    async def test_title_with_markdown_special_chars_is_escaped_not_broken(self):
+        """Regression test: an unescaped title with markdown-ish characters
+        used to break Telegram's Markdown parser and show literal asterisks
+        instead of bold text. HTML + escaping avoids that entirely."""
+        handler, _cb, db = _register()
+        message = make_message(URL)
+        client = make_client()
+
+        streams = [
+            {"itag": "22", "res": "720p", "filesize": 40 * 1024 * 1024, "type": "video"},
+            {"itag": "18", "res": "360p", "filesize": 10 * 1024 * 1024, "type": "video"},
+        ]
+
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            MockYT.return_value = _make_meta(length=300, streams=streams, title="Look <ma> *no* hands & fun_stuff")
+            await handler(client, message)
+
+        args, kwargs = message.reply.await_args
+        assert "<ma>" not in args[0]
+        assert "&lt;ma&gt;" in args[0]
+        assert kwargs["parse_mode"] == ParseMode.HTML
 
     @pytest.mark.asyncio
     async def test_oversized_file_rejected_after_download(self, tmp_path):
@@ -199,3 +247,18 @@ class TestYoutubeCallbackHandler:
         args, kwargs = callback.answer.await_args
         assert "истёк" in args[0] or "недействительна" in args[0]
         assert kwargs.get("show_alert") is True
+
+
+class TestFormatDuration:
+    def test_seconds_only(self):
+        assert format_duration(45) == "0:45"
+
+    def test_minutes_and_seconds(self):
+        assert format_duration(229) == "3:49"
+
+    def test_hours(self):
+        assert format_duration(3725) == "1:02:05"
+
+    def test_zero_or_none(self):
+        assert format_duration(0) == "0:00"
+        assert format_duration(None) == "0:00"

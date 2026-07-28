@@ -6,13 +6,22 @@ from services.downloader import extract_url
 from services.utils.sanitize import sanitize_filename
 from handlers.base import DownloadInProgress, download_slot, safe_delete, cleanup_files, user_key_for, report_error
 from yt_dlp.utils import DownloadError as YTDownloadError
-import re, os, time, logging, uuid
+import html, re, os, time, logging, uuid
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DOWNLOADS_DIR = os.path.join(PROJECT_ROOT, "downloads")
 os.makedirs(DOWNLOADS_DIR, exist_ok=True)
 
 MAX_FILE_SIZE = 50 * 1024 * 1024
+
+
+def format_duration(seconds) -> str:
+    seconds = int(seconds or 0)
+    minutes, secs = divmod(seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+    if hours:
+        return f"{hours}:{minutes:02d}:{secs:02d}"
+    return f"{minutes}:{secs:02d}"
 
 active_downloads = set()
 
@@ -159,15 +168,23 @@ async def _handle_youtube_link(client, message, db):
                 await process_and_send_video(client, message, meta, stream['itag'], url, db, message.from_user)
                 return
 
-        # Иначе — предлагаем выбор качества
-        buttons = []
-        for s in meta.streams[:4]:
-            if s.get('type') == 'audio' and meta.length <= 120:
-                continue
+        # Иначе — предлагаем выбор качества.
+        # Видео всегда идёт раньше аудио, независимо от размера файла —
+        # иначе маленькое аудио может внезапно оказаться выше 360p в списке.
+        candidates = [
+            s for s in meta.streams[:4]
+            if not (s.get('type') == 'audio' and meta.length <= 120)
+        ]
+        candidates.sort(key=lambda s: s.get('type') == 'audio')
 
+        buttons = []
+        for s in candidates:
             size = s.get('filesize')
-            size_str = f"{round(size / 1024 / 1024, 1)}MB" if size else "unknown"
-            label = f"{s.get('res')} - {size_str}"
+            size_str = f"{round(size / 1024 / 1024, 1)} МБ" if size else "размер неизвестен"
+            if s.get('type') == 'audio':
+                label = f"🎵 Аудио (mp3) — {size_str}"
+            else:
+                label = f"🎬 {s.get('res')} — {size_str}"
 
             video_id = meta.url.split("v=")[-1] if "v=" in meta.url else None
             cb_data = f"yt|{s['itag']}|{video_id}" if video_id else None
@@ -181,10 +198,11 @@ async def _handle_youtube_link(client, message, db):
             buttons.append(InlineKeyboardButton(label, callback_data=cb_data))
 
         markup = InlineKeyboardMarkup([[b] for b in buttons])
+        title_safe = html.escape(meta.title or "Без названия")
         await message.reply(
-            f"*🎬 {meta.title}*\n⏱ {meta.length} сек.\nВыбери качество:",
+            f"🎬 <b>{title_safe}</b>\n⏱ {format_duration(meta.length)}\nВыбери качество:",
             reply_markup=markup,
-            parse_mode=ParseMode.MARKDOWN
+            parse_mode=ParseMode.HTML
         )
 
     except Exception as e:
