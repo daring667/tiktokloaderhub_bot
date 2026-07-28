@@ -52,6 +52,14 @@ class BotDatabase:
                     type       TEXT,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
+
+                CREATE TABLE IF NOT EXISTS errors (
+                    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                    platform    TEXT NOT NULL,
+                    error_type  TEXT,
+                    message     TEXT,
+                    occurred_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
             """)
             self._conn.commit()
 
@@ -81,6 +89,15 @@ class BotDatabase:
             self._conn.execute(
                 "INSERT INTO downloads (user_id, platform, url) VALUES (?, ?, ?)",
                 (user_id, platform, url),
+            )
+            self._conn.commit()
+
+    def log_error(self, platform: str, error_type: str = "", message: str = "") -> None:
+        """Record a failed download for /stats error-rate reporting."""
+        with self._lock:
+            self._conn.execute(
+                "INSERT INTO errors (platform, error_type, message) VALUES (?, ?, ?)",
+                (platform, error_type, message),
             )
             self._conn.commit()
 
@@ -116,12 +133,33 @@ class BotDatabase:
             "SELECT MIN(first_seen) FROM users"
         ).fetchone()[0]
 
+        # Downloads and errors per platform in the last 24 hours (for error rates)
+        downloads_24h_rows = self._conn.execute(
+            """
+            SELECT platform, COUNT(*) AS cnt FROM downloads
+            WHERE downloaded_at >= datetime('now', '-1 day')
+            GROUP BY platform
+            """
+        ).fetchall()
+        downloads_24h_by_platform = {row["platform"]: row["cnt"] for row in downloads_24h_rows}
+
+        errors_24h_rows = self._conn.execute(
+            """
+            SELECT platform, COUNT(*) AS cnt FROM errors
+            WHERE occurred_at >= datetime('now', '-1 day')
+            GROUP BY platform
+            """
+        ).fetchall()
+        errors_24h_by_platform = {row["platform"]: row["cnt"] for row in errors_24h_rows}
+
         return {
             "total_users": total_users,
             "total_downloads": total_downloads,
             "by_platform": by_platform,
             "active_24h": active_24h,
             "first_seen": first_user,
+            "downloads_24h_by_platform": downloads_24h_by_platform,
+            "errors_24h_by_platform": errors_24h_by_platform,
         }
 
     def save_callback(self, token: str, url: str, itag: str, stream_type: str | None = None) -> None:

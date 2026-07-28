@@ -32,3 +32,13 @@ def _no_admin_by_default(monkeypatch):
     monkeypatch.delenv("ADMIN_ID", raising=False)
     monkeypatch.delenv("OWNER_ID", raising=False)
 
+
+@pytest.fixture(autouse=True)
+def _reset_error_alert_throttle():
+    """report_error() throttles repeat alerts via a module-level dict —
+    clear it between tests so one test's alerts can't suppress another's."""
+    from handlers.base import _error_alert_state
+    _error_alert_state.clear()
+    yield
+    _error_alert_state.clear()
+

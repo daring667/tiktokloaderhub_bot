@@ -1,11 +1,17 @@
 import contextlib
 import html
 import os
+import time
 import traceback
 
 from pyrogram.enums import ParseMode
 
 from services.utils.env import resolve_admin_id
+
+# How often the same (platform, exception type) combo may alert the admin.
+# Reset on process restart — that's fine, a restart is a natural reset point.
+ERROR_REPORT_COOLDOWN = int(os.getenv("ERROR_REPORT_COOLDOWN_SECONDS", "300"))
+_error_alert_state: dict = {}  # (platform, exc_type_name) -> {"last_sent": t, "suppressed": n}
 
 
 class BaseHandler:
@@ -57,14 +63,34 @@ def cleanup_files(*paths):
                 os.remove(path)
 
 
-async def report_error(client, platform: str, url: str, user, exc: Exception):
-    """Best-effort notification to ADMIN_ID/OWNER_ID about a failed download.
+async def report_error(client, platform: str, url: str, user, exc: Exception, db=None):
+    """Records a failed download and, best-effort, alerts ADMIN_ID/OWNER_ID.
+
+    Always logged to `db` (if given) for /stats error-rate reporting. The
+    Telegram alert itself is throttled per (platform, exception type) so a
+    burst of identical failures doesn't flood the admin's chat — the next
+    alert that does go through reports how many were suppressed meanwhile.
 
     Never raises — a broken notification must not break the user-facing flow.
     """
+    if db is not None:
+        with contextlib.suppress(Exception):
+            db.log_error(platform, type(exc).__name__, str(exc))
+
     admin_id = resolve_admin_id()
     if not admin_id:
         return
+
+    key = (platform, type(exc).__name__)
+    now = time.monotonic()
+    state = _error_alert_state.get(key)
+
+    if state is not None and (now - state["last_sent"]) < ERROR_REPORT_COOLDOWN:
+        state["suppressed"] += 1
+        return
+
+    suppressed = state["suppressed"] if state is not None else 0
+    _error_alert_state[key] = {"last_sent": now, "suppressed": 0}
 
     if user is not None and getattr(user, "username", None):
         user_desc = f"@{user.username}"
@@ -87,6 +113,9 @@ async def report_error(client, platform: str, url: str, user, exc: Exception):
     )
     if tb:
         text += f"\n\n<pre>{html.escape(tb)}</pre>"
+    if suppressed:
+        cooldown_min = ERROR_REPORT_COOLDOWN // 60
+        text += f"\n\n<i>(+{suppressed} похожих ошибок подавлено за последние {cooldown_min} мин.)</i>"
 
     with contextlib.suppress(Exception):
         await client.send_message(admin_id, text, parse_mode=ParseMode.HTML)

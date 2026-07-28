@@ -69,7 +69,7 @@ async def _download_and_send(client, message, db):
         except Exception as e:
             logging.error(f"[Instagram] send_video failed: {e}")
             await status_msg.edit_text("❌ Ошибка при отправке Instagram-видео.")
-            await report_error(client, "instagram", url, message.from_user, e)
+            await report_error(client, "instagram", url, message.from_user, e, db)
             return
 
         if db and message.from_user:
@@ -82,14 +82,14 @@ async def _download_and_send(client, message, db):
             await message.reply(f"❌ {e}")
         except Exception:
             pass
-        await report_error(client, "instagram", url, message.from_user, e)
+        await report_error(client, "instagram", url, message.from_user, e, db)
     except Exception as e:
         logging.exception("[Instagram] Упала загрузка")
         try:
             await message.reply("❌ Ошибка при скачивании Instagram-видео.")
         except Exception:
             pass
-        await report_error(client, "instagram", url, message.from_user, e)
+        await report_error(client, "instagram", url, message.from_user, e, db)
     finally:
         await safe_delete(status_msg)
         cleanup_files(result_path, filename)

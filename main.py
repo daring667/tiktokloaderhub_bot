@@ -73,6 +73,17 @@ async def stats_handler(client, message):
     instagram_count = stats["by_platform"].get("instagram", 0)
     first_seen = stats["first_seen"] or "—"
 
+    downloads_24h = stats.get("downloads_24h_by_platform", {})
+    errors_24h = stats.get("errors_24h_by_platform", {})
+
+    def error_rate_line(platform_key: str, label: str) -> str:
+        ok = downloads_24h.get(platform_key, 0)
+        err = errors_24h.get(platform_key, 0)
+        attempts = ok + err
+        if attempts == 0:
+            return f"{label}: нет попыток"
+        return f"{label}: {err} ({round(err / attempts * 100)}%)"
+
     text = (
         "📊 **Статистика бота**\n\n"
         f"👤 Пользователей: **{stats['total_users']}**\n"
@@ -81,7 +92,11 @@ async def stats_handler(client, message):
         f"   ├ YouTube: {youtube_count}\n"
         f"   └ Instagram: {instagram_count}\n"
         f"🕐 Активных за 24ч: **{stats['active_24h']}**\n"
-        f"📅 Бот работает с: {first_seen}"
+        f"📅 Бот работает с: {first_seen}\n\n"
+        f"⚠️ Ошибки за 24ч:\n"
+        f"   ├ {error_rate_line('tiktok', 'TikTok')}\n"
+        f"   ├ {error_rate_line('youtube', 'YouTube')}\n"
+        f"   └ {error_rate_line('instagram', 'Instagram')}"
     )
     await message.reply(text)
 

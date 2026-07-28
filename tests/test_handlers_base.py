@@ -144,3 +144,71 @@ class TestReportError:
         text = client.send_message.await_args.args[1]
         assert "<script>" not in text
         assert "&lt;script&gt;" in text
+
+    @pytest.mark.asyncio
+    async def test_logs_to_db_even_without_admin(self, monkeypatch):
+        monkeypatch.delenv("ADMIN_ID", raising=False)
+        monkeypatch.delenv("OWNER_ID", raising=False)
+        client = MagicMock()
+        client.send_message = AsyncMock()
+        db = MagicMock()
+
+        await report_error(client, "tiktok", "https://tiktok.com/x", None, ValueError("boom"), db)
+
+        db.log_error.assert_called_once_with("tiktok", "ValueError", "boom")
+        client.send_message.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_db_logging_failure_does_not_block_alert(self, monkeypatch):
+        monkeypatch.setenv("ADMIN_ID", "999")
+        client = MagicMock()
+        client.send_message = AsyncMock()
+        db = MagicMock()
+        db.log_error.side_effect = Exception("db locked")
+
+        await report_error(client, "tiktok", "https://tiktok.com/x", None, ValueError("boom"), db)
+
+        client.send_message.assert_awaited_once()  # must not have been skipped
+
+    @pytest.mark.asyncio
+    async def test_repeat_errors_are_throttled(self, monkeypatch):
+        monkeypatch.setenv("ADMIN_ID", "999")
+        client = MagicMock()
+        client.send_message = AsyncMock()
+
+        await report_error(client, "tiktok", "url1", None, ValueError("first"))
+        await report_error(client, "tiktok", "url2", None, ValueError("second"))
+        await report_error(client, "tiktok", "url3", None, ValueError("third"))
+
+        client.send_message.assert_awaited_once()  # only the first got through
+
+    @pytest.mark.asyncio
+    async def test_next_alert_after_cooldown_reports_suppressed_count(self, monkeypatch):
+        monkeypatch.setenv("ADMIN_ID", "999")
+        client = MagicMock()
+        client.send_message = AsyncMock()
+
+        await report_error(client, "tiktok", "url1", None, ValueError("first"))
+        await report_error(client, "tiktok", "url2", None, ValueError("second"))  # suppressed
+
+        import handlers.base as base
+        # simulate the cooldown having elapsed
+        key = ("tiktok", "ValueError")
+        base._error_alert_state[key]["last_sent"] -= base.ERROR_REPORT_COOLDOWN + 1
+
+        await report_error(client, "tiktok", "url3", None, ValueError("third"))
+
+        assert client.send_message.await_count == 2
+        second_text = client.send_message.await_args.args[1]
+        assert "+1" in second_text
+
+    @pytest.mark.asyncio
+    async def test_different_platforms_dont_throttle_each_other(self, monkeypatch):
+        monkeypatch.setenv("ADMIN_ID", "999")
+        client = MagicMock()
+        client.send_message = AsyncMock()
+
+        await report_error(client, "tiktok", "url1", None, ValueError("first"))
+        await report_error(client, "youtube", "url2", None, ValueError("first"))
+
+        assert client.send_message.await_count == 2

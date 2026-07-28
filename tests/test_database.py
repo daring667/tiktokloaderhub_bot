@@ -54,6 +54,8 @@ class TestBotDatabase:
         assert stats["by_platform"] == {}
         assert stats["active_24h"] == 0
         assert stats["first_seen"] is None
+        assert stats["downloads_24h_by_platform"] == {}
+        assert stats["errors_24h_by_platform"] == {}
 
     def test_get_stats_with_data(self, tmp_db):
         tmp_db.register_user(1, "alice", "Alice")
@@ -104,7 +106,30 @@ class TestBotDatabase:
     def test_save_callback_replace(self, tmp_db):
         tmp_db.save_callback("token1", "url1", "137", "video")
         tmp_db.save_callback("token1", "url2", "22", "audio")
-        
+
         cb = tmp_db.get_callback("token1")
         assert cb["url"] == "url2"
         assert cb["itag"] == "22"
+
+    def test_log_error(self, tmp_db):
+        tmp_db.log_error("tiktok", "ValueError", "boom")
+
+        row = tmp_db._conn.execute(
+            "SELECT platform, error_type, message FROM errors"
+        ).fetchone()
+        assert row["platform"] == "tiktok"
+        assert row["error_type"] == "ValueError"
+        assert row["message"] == "boom"
+
+    def test_get_stats_includes_error_rate_data(self, tmp_db):
+        tmp_db.register_user(1, "alice", "Alice")
+        tmp_db.log_download(1, "tiktok", "url1")
+        tmp_db.log_error("tiktok", "ValueError", "parse failed")
+        tmp_db.log_error("tiktok", "ValueError", "parse failed again")
+        tmp_db.log_error("youtube", "TimeoutError", "slow")
+
+        stats = tmp_db.get_stats()
+        assert stats["downloads_24h_by_platform"]["tiktok"] == 1
+        assert stats["errors_24h_by_platform"]["tiktok"] == 2
+        assert stats["errors_24h_by_platform"]["youtube"] == 1
+        assert "instagram" not in stats["errors_24h_by_platform"]

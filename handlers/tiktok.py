@@ -67,22 +67,22 @@ async def _download_and_send(client, message, url, db):
     except ValueError as e:
         try: await msg.edit(f"❌ {e}")
         except Exception: pass
-        await report_error(client, "tiktok", url, message.from_user, e)
+        await report_error(client, "tiktok", url, message.from_user, e, db)
     except asyncio.TimeoutError as e:
         print("[TikTok] Error: read timeout")
         try: await msg.edit("❌ Таймаут: сервер долго отвечает. Попробуй позже.")
         except Exception: pass
-        await report_error(client, "tiktok", url, message.from_user, e)
+        await report_error(client, "tiktok", url, message.from_user, e, db)
     except aiohttp.ClientResponseError as e:
         print(f"[TikTok] HTTP error: {e}")
         try: await msg.edit(f"❌ HTTP ошибка: {e.status}")
         except Exception: pass
-        await report_error(client, "tiktok", url, message.from_user, e)
+        await report_error(client, "tiktok", url, message.from_user, e, db)
     except Exception as e:
         print(f"[TikTok] Unexpected error: {e}")
         try: await msg.edit("❌ Ошибка при скачивании видео.")
         except Exception: pass
-        await report_error(client, "tiktok", url, message.from_user, e)
+        await report_error(client, "tiktok", url, message.from_user, e, db)
     finally:
         await safe_delete(msg)
         cleanup_files(result_path, filename)
