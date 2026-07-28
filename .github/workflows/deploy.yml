@@ -18,7 +18,14 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - run: pytest tests/ -v
+      - name: Run tests
+        env:
+          # tests/test_bot_start.py only checks these are set, not their
+          # validity — dummy values are fine, no real secrets needed here.
+          BOT_TOKEN: dummy
+          API_KEY: dummy
+          API_HASH: dummy
+        run: pytest tests/ -v
 
   deploy:
     needs: test
