@@ -11,6 +11,7 @@ from handlers.youtube import register as register_youtube
 from handlers.instagram import register as register_instagram
 from handlers.tiktok import TikTokHandler
 from services.database import BotDatabase
+from services.utils.env import resolve_admin_id
 
 load_dotenv()
 
@@ -44,7 +45,7 @@ db = BotDatabase()
 
 youtube.app = app  # pass client to handler
 
-ADMIN_ID = int(os.getenv("ADMIN_ID", os.getenv("OWNER_ID", "0")))
+ADMIN_ID = resolve_admin_id()
 
 @app.on_message(filters.command("start") & (filters.private | filters.group))
 async def start_handler(client, message):

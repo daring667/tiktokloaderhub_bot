@@ -5,6 +5,9 @@ import time
 async def progress(current, total, message: Message, start, filename):
     now = time.time()
     diff = now - start
+    if current <= 0 or diff <= 0:
+        # Nothing meaningful to show yet, and avoids dividing by zero below.
+        return
     percentage = current * 100 / total
     speed = current / diff
     elapsed_time = round(diff)

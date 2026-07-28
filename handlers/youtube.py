@@ -4,6 +4,7 @@ from pyrogram.enums import ParseMode
 from services.youtube.youtube_downloader import YouTubeDownloader
 from services.downloader import extract_url
 from services.utils.sanitize import sanitize_filename
+from handlers.base import DownloadInProgress, download_slot, safe_delete, cleanup_files, user_key_for
 from yt_dlp.utils import DownloadError as YTDownloadError
 import re, os, time, logging, uuid
 
@@ -40,6 +41,7 @@ async def process_and_send_video(
             await status_msg.edit_text(f"❌ Ошибка загрузки: {e}")
         except Exception:
             pass
+        cleanup_files(filename)
         return
 
     # Переименуем файл в название видео (если доступно) перед отправкой
@@ -73,16 +75,7 @@ async def process_and_send_video(
             await status_msg.edit_text("❌ Файл больше 50 МБ — Telegram не позволяет ботам отправлять такие файлы.")
         except Exception:
             pass
-        try:
-            if result_path and os.path.exists(result_path):
-                os.remove(result_path)
-        except Exception:
-            pass
-        try:
-            if filename and os.path.exists(filename):
-                os.remove(filename)
-        except Exception:
-            pass
+        cleanup_files(result_path, filename)
         return
 
     # Отправляем соответствующим методом
@@ -97,154 +90,143 @@ async def process_and_send_video(
             await status_msg.edit_text("❌ Ошибка при отправке файла.")
         except Exception:
             pass
+        cleanup_files(result_path, filename)
+        return
 
     # --- analytics ---
     if db and user:
         db.register_user(user.id, user.username, user.first_name)
         db.log_download(user.id, 'youtube', url)
 
-    # Удаляем скачанный файл
-    try:
-        if result_path and os.path.exists(result_path):
-            os.remove(result_path)
-    except Exception:
-        pass
-    try:
-        if filename and os.path.exists(filename):
-            os.remove(filename)
-    except Exception:
-        pass
-
-    # Пытаемся удалить статусное сообщение
-    try:
-        await status_msg.delete()
-    except Exception:
-        pass
+    cleanup_files(result_path, filename)
+    await safe_delete(status_msg)
 
 
 def register(app: Client, db=None):
     @app.on_message(filters.regex(r'https?://(www\.)?youtu(be\.com|\.be)/') & (filters.group | filters.private))
     async def yt_handler(client: Client, message: Message):
-        user_key = message.from_user.id if message.from_user else f"chat:{message.chat.id}"
-
-        if user_key in active_downloads:
-            return await message.reply("⏳ Подожди, идёт другая загрузка.")
-
-        active_downloads.add(user_key)
-
         try:
-            print(f"💬 Сообщение от пользователя: {message.text}")
-
-            url = extract_url(message.text)
-            if not url:
-                return await message.reply("❌ Не смог найти ссылку.")
-
-            print(f"🎯 Передаём ссылку в YouTubeDownloader: {url}")
-
-            try:
-                meta = YouTubeDownloader(url)
-            except ValueError as e:
-                await message.reply(f"❌ yt-dlp не смог распарсить ссылку: {e}")
-                logging.error(f"YT download error: {e}")
-                return
-
-            # Если видео короче или равно 2 минут — скачиваем сразу только в видео-формате
-            if meta.length <= 120:
-                video_stream = next((s for s in meta.streams if s.get('type') == 'video'), None)
-                if not video_stream:
-                    await message.reply("❌ Нет доступного видео-формата для этого короткого видео.")
-                    return
-                
-                if not video_stream.get('filesize') or video_stream.get('filesize') <= 50 * 1024 * 1024:
-                    await process_and_send_video(client, message, meta, video_stream['itag'], url, db, message.from_user)
-                    return
-
-            # Если всего один формат и это видео — качаем сразу
-            if len(meta.streams) == 1 and meta.streams[0].get('type') == 'video':
-                stream = meta.streams[0]
-                if not stream.get('filesize') or stream.get('filesize') <= 50 * 1024 * 1024:
-                    await process_and_send_video(client, message, meta, stream['itag'], url, db, message.from_user)
-                    return
-
-            # Иначе — предлагаем выбор качества
-            buttons = []
-            for s in meta.streams[:4]:
-                if s.get('type') == 'audio' and meta.length <= 120:
-                    continue
-
-                size = s.get('filesize')
-                size_str = f"{round(size / 1024 / 1024, 1)}MB" if size else "unknown"
-                label = f"{s.get('res')} - {size_str}"
-
-                video_id = meta.url.split("v=")[-1] if "v=" in meta.url else None
-                cb_data = f"yt|{s['itag']}|{video_id}" if video_id else None
-
-                if not cb_data or len(cb_data.encode('utf-8')) > 64:
-                    token = uuid.uuid4().hex[:8]
-                    if db:
-                        db.save_callback(token, url, s['itag'], s.get('type'))
-                    cb_data = f"yt|{token}"
-
-                buttons.append(InlineKeyboardButton(label, callback_data=cb_data))
-
-            markup = InlineKeyboardMarkup([[b] for b in buttons])
-            await message.reply(
-                f"*🎬 {meta.title}*\n⏱ {meta.length} сек.\nВыбери качество:",
-                reply_markup=markup,
-                parse_mode=ParseMode.MARKDOWN
-            )
-
-        except Exception as e:
-            logging.exception("YouTube handler error")
-            await message.reply("❌ Произошла ошибка при обработке видео.")
-        finally:
-            active_downloads.discard(user_key)
+            async with download_slot(active_downloads, user_key_for(message)):
+                await _handle_youtube_link(client, message, db)
+        except DownloadInProgress:
+            await message.reply("⏳ Подожди, идёт другая загрузка.")
 
     @app.on_callback_query(filters.regex(r'^yt\|'))
     async def yt_callback(client, callback):
-        user_id = callback.from_user.id
+        try:
+            async with download_slot(active_downloads, callback.from_user.id):
+                await _handle_youtube_callback(client, callback, db)
+        except DownloadInProgress:
+            await callback.answer("⏳ Уже загружается...", show_alert=True)
 
-        if user_id in active_downloads:
-            return await callback.answer("⏳ Уже загружается...", show_alert=True)
 
-        active_downloads.add(user_id)
+async def _handle_youtube_link(client, message, db):
+    try:
+        print(f"💬 Сообщение от пользователя: {message.text}")
+
+        url = extract_url(message.text)
+        if not url:
+            await message.reply("❌ Не смог найти ссылку.")
+            return
+
+        print(f"🎯 Передаём ссылку в YouTubeDownloader: {url}")
 
         try:
-            parts = callback.data.split("|")
-            token = None
-
-            if len(parts) == 3:
-                _, itag, video_id = parts
-                url = f"https://youtube.com/watch?v={video_id}"
-            elif len(parts) == 2:
-                _, token = parts
-                mapping = db.get_callback(token) if db else None
-                if not mapping:
-                    return await callback.answer("❌ Срок действия кнопки истёк или она недействительна.", show_alert=True)
-                url = mapping['url']
-                itag = mapping['itag']
-            else:
-                return await callback.answer("❌ Неверный формат callback-данных.", show_alert=True)
-
             meta = YouTubeDownloader(url)
-            chosen_stream = next((s for s in meta.streams if str(s['itag']) == str(itag)), None)
-            
-            if chosen_stream and chosen_stream.get('filesize') and chosen_stream.get('filesize') > 50 * 1024 * 1024:
-                return await callback.answer("❌ Видео слишком большое (более 50 МБ). Попробуйте выбрать аудио или меньшее разрешение", show_alert=True)
-                
-            is_audio = (chosen_stream and chosen_stream.get('type') == 'audio') or str(itag) == 'bestaudio'
+        except ValueError as e:
+            await message.reply(f"❌ yt-dlp не смог распарсить ссылку: {e}")
+            logging.error(f"YT download error: {e}")
+            return
 
-            # Pass original message to process_and_send_video to keep reply context correct
-            await process_and_send_video(client, callback.message, meta, itag, url, db, callback.from_user, is_audio)
+        # Если видео короче или равно 2 минут — скачиваем сразу только в видео-формате
+        if meta.length <= 120:
+            video_stream = next((s for s in meta.streams if s.get('type') == 'video'), None)
+            if not video_stream:
+                await message.reply("❌ Нет доступного видео-формата для этого короткого видео.")
+                return
 
-            if token and db:
-                db.delete_callback(token)
+            if not video_stream.get('filesize') or video_stream.get('filesize') <= 50 * 1024 * 1024:
+                await process_and_send_video(client, message, meta, video_stream['itag'], url, db, message.from_user)
+                return
 
-        except Exception as e:
-            logging.error("Callback download error", exc_info=e)
-            try:
-                await callback.message.reply("❌ Ошибка при скачивании видео.")
-            except Exception:
-                pass
-        finally:
-            active_downloads.discard(user_id)
+        # Если всего один формат и это видео — качаем сразу
+        if len(meta.streams) == 1 and meta.streams[0].get('type') == 'video':
+            stream = meta.streams[0]
+            if not stream.get('filesize') or stream.get('filesize') <= 50 * 1024 * 1024:
+                await process_and_send_video(client, message, meta, stream['itag'], url, db, message.from_user)
+                return
+
+        # Иначе — предлагаем выбор качества
+        buttons = []
+        for s in meta.streams[:4]:
+            if s.get('type') == 'audio' and meta.length <= 120:
+                continue
+
+            size = s.get('filesize')
+            size_str = f"{round(size / 1024 / 1024, 1)}MB" if size else "unknown"
+            label = f"{s.get('res')} - {size_str}"
+
+            video_id = meta.url.split("v=")[-1] if "v=" in meta.url else None
+            cb_data = f"yt|{s['itag']}|{video_id}" if video_id else None
+
+            if not cb_data or len(cb_data.encode('utf-8')) > 64:
+                token = uuid.uuid4().hex[:8]
+                if db:
+                    db.save_callback(token, url, s['itag'], s.get('type'))
+                cb_data = f"yt|{token}"
+
+            buttons.append(InlineKeyboardButton(label, callback_data=cb_data))
+
+        markup = InlineKeyboardMarkup([[b] for b in buttons])
+        await message.reply(
+            f"*🎬 {meta.title}*\n⏱ {meta.length} сек.\nВыбери качество:",
+            reply_markup=markup,
+            parse_mode=ParseMode.MARKDOWN
+        )
+
+    except Exception as e:
+        logging.exception("YouTube handler error")
+        await message.reply("❌ Произошла ошибка при обработке видео.")
+
+
+async def _handle_youtube_callback(client, callback, db):
+    try:
+        parts = callback.data.split("|")
+        token = None
+
+        if len(parts) == 3:
+            _, itag, video_id = parts
+            url = f"https://youtube.com/watch?v={video_id}"
+        elif len(parts) == 2:
+            _, token = parts
+            mapping = db.get_callback(token) if db else None
+            if not mapping:
+                await callback.answer("❌ Срок действия кнопки истёк или она недействительна.", show_alert=True)
+                return
+            url = mapping['url']
+            itag = mapping['itag']
+        else:
+            await callback.answer("❌ Неверный формат callback-данных.", show_alert=True)
+            return
+
+        meta = YouTubeDownloader(url)
+        chosen_stream = next((s for s in meta.streams if str(s['itag']) == str(itag)), None)
+
+        if chosen_stream and chosen_stream.get('filesize') and chosen_stream.get('filesize') > 50 * 1024 * 1024:
+            await callback.answer("❌ Видео слишком большое (более 50 МБ). Попробуйте выбрать аудио или меньшее разрешение", show_alert=True)
+            return
+
+        is_audio = (chosen_stream and chosen_stream.get('type') == 'audio') or str(itag) == 'bestaudio'
+
+        # Pass original message to process_and_send_video to keep reply context correct
+        await process_and_send_video(client, callback.message, meta, itag, url, db, callback.from_user, is_audio)
+
+        if token and db:
+            db.delete_callback(token)
+
+    except Exception as e:
+        logging.error("Callback download error", exc_info=e)
+        try:
+            await callback.message.reply("❌ Ошибка при скачивании видео.")
+        except Exception:
+            pass
