@@ -1,45 +1,55 @@
-name: 🚀 Deploy TikTok Bot
+name: Test and deploy
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
+  pull_request:
+    branches: [master]
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: 📥 Checkout репозитория
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: 🐍 Установка Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: "3.13"
 
-      - name: 📦 Установка зависимостей
+      - run: pip install -r requirements.txt
+
+      - run: pytest tests/ -v
+
+  deploy:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: [self-hosted, droid]
+    steps:
+      - name: Pull latest code
         run: |
-          pip install -r requirements.txt
+          cd /home/droid/TiktokBot/TT
+          git fetch origin master
+          git reset --hard origin/master
 
-      - name: ✅ Запуск автотестов
-        run: pytest
-
-      - name: 🔐 Передача переменных окружения
+      - name: Install dependencies
         run: |
-          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
-          echo "API_HASH=${{ secrets.API_HASH }}" >> .env
-          echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" >> .env
-          echo "BOT_URL=${{ secrets.BOT_URL }}" >> .env
-          echo "CHANNEL_URL=${{ secrets.CHANNEL_URL }}" >> .env
+          cd /home/droid/TiktokBot/TT
+          ./venv/bin/pip install -q -r requirements.txt
 
-      - name: ⚙️ Подключение по SSH и деплой на VPS
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            cd /home/ubuntu/tiktok-bot
-            git pull
-            systemctl restart tiktokbot
+      - name: Restart bot service
+        run: sudo systemctl restart tiktokbot.service
+
+      - name: Wait for startup
+        run: sleep 5
+
+      - name: Verify service is active
+        run: sudo systemctl is-active tiktokbot.service
+
+      - name: Verify the bot can actually download a video
+        run: |
+          cd /home/droid/TiktokBot/TT
+          ./venv/bin/python healthcheck.py
+
+      - name: Show recent logs on failure
+        if: failure()
+        run: sudo journalctl -u tiktokbot.service -n 50 --no-pager

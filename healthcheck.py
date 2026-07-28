@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from services.downloader import download_video
 
 # Configuration from environment
-TEST_URL = os.getenv("HEALTHCHECK_TEST_URL", "https://www.tiktok.com/@scout2015/video/6718335390845095173")
+TEST_URL = os.getenv("HEALTHCHECK_TEST_URL", "https://www.tiktok.com/@jungkook/video/7655377348442787093")
 OUTPUT_DIR = Path("/tmp/tiktokbot_healthcheck")
 TIMEOUT = int(os.getenv("HEALTHCHECK_TIMEOUT", "180"))
 
