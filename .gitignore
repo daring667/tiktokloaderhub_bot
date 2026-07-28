@@ -19,3 +19,4 @@ logs/
 downloads/
 
 MONITORING_SETUP.md
+deploy/tiktokbot-monitor.env
