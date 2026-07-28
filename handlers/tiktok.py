@@ -8,6 +8,7 @@ from handlers.base import (
     safe_delete,
     cleanup_files,
     user_key_for,
+    report_error,
 )
 import os, uuid, aiohttp, asyncio
 
@@ -66,18 +67,22 @@ async def _download_and_send(client, message, url, db):
     except ValueError as e:
         try: await msg.edit(f"❌ {e}")
         except Exception: pass
-    except asyncio.TimeoutError:
+        await report_error(client, "tiktok", url, message.from_user, e)
+    except asyncio.TimeoutError as e:
         print("[TikTok] Error: read timeout")
         try: await msg.edit("❌ Таймаут: сервер долго отвечает. Попробуй позже.")
         except Exception: pass
+        await report_error(client, "tiktok", url, message.from_user, e)
     except aiohttp.ClientResponseError as e:
         print(f"[TikTok] HTTP error: {e}")
         try: await msg.edit(f"❌ HTTP ошибка: {e.status}")
         except Exception: pass
+        await report_error(client, "tiktok", url, message.from_user, e)
     except Exception as e:
         print(f"[TikTok] Unexpected error: {e}")
         try: await msg.edit("❌ Ошибка при скачивании видео.")
         except Exception: pass
+        await report_error(client, "tiktok", url, message.from_user, e)
     finally:
         await safe_delete(msg)
         cleanup_files(result_path, filename)

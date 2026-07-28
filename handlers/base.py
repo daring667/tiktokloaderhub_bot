@@ -1,5 +1,11 @@
 import contextlib
+import html
 import os
+import traceback
+
+from pyrogram.enums import ParseMode
+
+from services.utils.env import resolve_admin_id
 
 
 class BaseHandler:
@@ -49,3 +55,38 @@ def cleanup_files(*paths):
         if path and os.path.exists(path):
             with contextlib.suppress(Exception):
                 os.remove(path)
+
+
+async def report_error(client, platform: str, url: str, user, exc: Exception):
+    """Best-effort notification to ADMIN_ID/OWNER_ID about a failed download.
+
+    Never raises — a broken notification must not break the user-facing flow.
+    """
+    admin_id = resolve_admin_id()
+    if not admin_id:
+        return
+
+    if user is not None and getattr(user, "username", None):
+        user_desc = f"@{user.username}"
+    elif user is not None:
+        user_desc = str(user.id)
+    else:
+        user_desc = "unknown"
+
+    tb = traceback.format_exc()
+    if tb.strip() == "NoneType: None":
+        tb = ""  # report_error called outside an except block
+    if len(tb) > 2000:
+        tb = tb[-2000:]
+
+    text = (
+        f"⚠️ Ошибка загрузки — {html.escape(platform)}\n"
+        f"Пользователь: {html.escape(user_desc)}\n"
+        f"Ссылка: {html.escape(url or '—')}\n\n"
+        f"<b>{html.escape(type(exc).__name__)}</b>: {html.escape(str(exc))}"
+    )
+    if tb:
+        text += f"\n\n<pre>{html.escape(tb)}</pre>"
+
+    with contextlib.suppress(Exception):
+        await client.send_message(admin_id, text, parse_mode=ParseMode.HTML)

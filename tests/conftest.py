@@ -22,3 +22,13 @@ def tmp_db(tmp_path):
     yield db
     db.close()
 
+
+@pytest.fixture(autouse=True)
+def _no_admin_by_default(monkeypatch):
+    """Handlers call report_error(), which reads ADMIN_ID/OWNER_ID and sends
+    a Telegram message if one is set. Tests shouldn't depend on whatever
+    happens to be in the ambient environment, so default to "no admin" —
+    tests that specifically exercise report_error set these explicitly."""
+    monkeypatch.delenv("ADMIN_ID", raising=False)
+    monkeypatch.delenv("OWNER_ID", raising=False)
+

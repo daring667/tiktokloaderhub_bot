@@ -128,6 +128,23 @@ class TestYoutubeMessageHandler:
         status_msg.delete.assert_not_awaited()  # error must stay visible
 
     @pytest.mark.asyncio
+    async def test_reports_error_to_admin_on_parse_failure(self, monkeypatch):
+        monkeypatch.setenv("ADMIN_ID", "999")
+        handler, _cb, db = _register()
+        message = make_message(URL)
+        client = make_client()
+        client.send_message = AsyncMock()
+
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            MockYT.side_effect = ValueError("yt-dlp broke")
+            await handler(client, message)
+
+        client.send_message.assert_awaited_once()
+        args, _ = client.send_message.await_args
+        assert args[0] == 999
+        assert "yt-dlp broke" in args[1]
+
+    @pytest.mark.asyncio
     async def test_concurrent_download_for_same_user_is_rejected(self):
         handler, _cb, db = _register()
         message1 = make_message(URL, user_id=71)

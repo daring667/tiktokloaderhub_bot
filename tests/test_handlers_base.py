@@ -2,7 +2,7 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 
-from handlers.base import download_slot, DownloadInProgress, safe_delete, cleanup_files, user_key_for
+from handlers.base import download_slot, DownloadInProgress, safe_delete, cleanup_files, user_key_for, report_error
 from _helpers import make_message
 
 
@@ -84,3 +84,63 @@ class TestUserKeyFor:
         msg = make_message("hi", chat_id=111)
         msg.from_user = None
         assert user_key_for(msg) == "chat:111"
+
+
+class TestReportError:
+    @pytest.mark.asyncio
+    async def test_noop_when_no_admin_configured(self, monkeypatch):
+        monkeypatch.delenv("ADMIN_ID", raising=False)
+        monkeypatch.delenv("OWNER_ID", raising=False)
+        client = MagicMock()
+        client.send_message = AsyncMock()
+
+        await report_error(client, "tiktok", "https://tiktok.com/x", None, ValueError("boom"))
+
+        client.send_message.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_sends_message_to_admin_when_configured(self, monkeypatch):
+        monkeypatch.setenv("ADMIN_ID", "999")
+        client = MagicMock()
+        client.send_message = AsyncMock()
+        user = MagicMock(id=42, username="bob")
+
+        await report_error(client, "youtube", "https://youtu.be/x", user, ValueError("parse failed"))
+
+        client.send_message.assert_awaited_once()
+        args, kwargs = client.send_message.await_args
+        assert args[0] == 999
+        assert "youtube" in args[1]
+        assert "@bob" in args[1]
+        assert "parse failed" in args[1]
+
+    @pytest.mark.asyncio
+    async def test_falls_back_to_owner_id(self, monkeypatch):
+        monkeypatch.delenv("ADMIN_ID", raising=False)
+        monkeypatch.setenv("OWNER_ID", "777")
+        client = MagicMock()
+        client.send_message = AsyncMock()
+
+        await report_error(client, "instagram", "https://instagram.com/reel/x", None, ValueError("boom"))
+
+        assert client.send_message.await_args.args[0] == 777
+
+    @pytest.mark.asyncio
+    async def test_never_raises_when_send_message_fails(self, monkeypatch):
+        monkeypatch.setenv("ADMIN_ID", "999")
+        client = MagicMock()
+        client.send_message = AsyncMock(side_effect=Exception("network down"))
+
+        await report_error(client, "tiktok", "https://tiktok.com/x", None, ValueError("boom"))  # must not raise
+
+    @pytest.mark.asyncio
+    async def test_escapes_html_in_error_text(self, monkeypatch):
+        monkeypatch.setenv("ADMIN_ID", "999")
+        client = MagicMock()
+        client.send_message = AsyncMock()
+
+        await report_error(client, "tiktok", "https://tiktok.com/x", None, ValueError("<script>bad</script>"))
+
+        text = client.send_message.await_args.args[1]
+        assert "<script>" not in text
+        assert "&lt;script&gt;" in text

@@ -2,7 +2,7 @@ from pyrogram import Client, filters
 from services.instagram.instagram_downloader import InstagramDownloader
 from services.downloader import extract_url
 from services.utils.sanitize import sanitize_filename
-from handlers.base import DownloadInProgress, download_slot, safe_delete, cleanup_files, user_key_for
+from handlers.base import DownloadInProgress, download_slot, safe_delete, cleanup_files, user_key_for, report_error
 import os, time, uuid, logging
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -69,6 +69,7 @@ async def _download_and_send(client, message, db):
         except Exception as e:
             logging.error(f"[Instagram] send_video failed: {e}")
             await status_msg.edit_text("❌ Ошибка при отправке Instagram-видео.")
+            await report_error(client, "instagram", url, message.from_user, e)
             return
 
         if db and message.from_user:
@@ -81,12 +82,14 @@ async def _download_and_send(client, message, db):
             await message.reply(f"❌ {e}")
         except Exception:
             pass
+        await report_error(client, "instagram", url, message.from_user, e)
     except Exception as e:
         logging.exception("[Instagram] Упала загрузка")
         try:
             await message.reply("❌ Ошибка при скачивании Instagram-видео.")
         except Exception:
             pass
+        await report_error(client, "instagram", url, message.from_user, e)
     finally:
         await safe_delete(status_msg)
         cleanup_files(result_path, filename)

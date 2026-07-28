@@ -4,7 +4,7 @@ from pyrogram.enums import ParseMode
 from services.youtube.youtube_downloader import YouTubeDownloader
 from services.downloader import extract_url
 from services.utils.sanitize import sanitize_filename
-from handlers.base import DownloadInProgress, download_slot, safe_delete, cleanup_files, user_key_for
+from handlers.base import DownloadInProgress, download_slot, safe_delete, cleanup_files, user_key_for, report_error
 from yt_dlp.utils import DownloadError as YTDownloadError
 import re, os, time, logging, uuid
 
@@ -42,6 +42,7 @@ async def process_and_send_video(
         except Exception:
             pass
         cleanup_files(filename)
+        await report_error(client, "youtube", url, user, e)
         return
 
     # Переименуем файл в название видео (если доступно) перед отправкой
@@ -91,6 +92,7 @@ async def process_and_send_video(
         except Exception:
             pass
         cleanup_files(result_path, filename)
+        await report_error(client, "youtube", url, user, e)
         return
 
     # --- analytics ---
@@ -136,6 +138,7 @@ async def _handle_youtube_link(client, message, db):
         except ValueError as e:
             await message.reply(f"❌ yt-dlp не смог распарсить ссылку: {e}")
             logging.error(f"YT download error: {e}")
+            await report_error(client, "youtube", url, message.from_user, e)
             return
 
         # Если видео короче или равно 2 минут — скачиваем сразу только в видео-формате
@@ -187,6 +190,7 @@ async def _handle_youtube_link(client, message, db):
     except Exception as e:
         logging.exception("YouTube handler error")
         await message.reply("❌ Произошла ошибка при обработке видео.")
+        await report_error(client, "youtube", message.text, message.from_user, e)
 
 
 async def _handle_youtube_callback(client, callback, db):
@@ -230,3 +234,4 @@ async def _handle_youtube_callback(client, callback, db):
             await callback.message.reply("❌ Ошибка при скачивании видео.")
         except Exception:
             pass
+        await report_error(client, "youtube", callback.data, callback.from_user, e)

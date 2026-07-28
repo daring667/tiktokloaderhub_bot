@@ -117,6 +117,24 @@ class TestTikTokHandler:
         assert "идёт другая загрузка" in message2.reply.await_args.args[0]
 
     @pytest.mark.asyncio
+    async def test_reports_error_to_admin_on_failure(self, monkeypatch):
+        monkeypatch.setenv("ADMIN_ID", "999")
+        handler, db = _register()
+        message = make_message(URL)
+        client = make_client()
+        client.send_message = AsyncMock()
+
+        with patch("handlers.tiktok.TikTokDownloader") as MockDownloader, \
+             patch("handlers.tiktok.asyncio.sleep", new=AsyncMock()):
+            MockDownloader.return_value.download = AsyncMock(side_effect=ValueError("API broken"))
+            await handler(client, message)
+
+        client.send_message.assert_awaited_once()
+        args, _ = client.send_message.await_args
+        assert args[0] == 999
+        assert "API broken" in args[1]
+
+    @pytest.mark.asyncio
     async def test_different_users_download_concurrently(self):
         handler, db = _register()
         message1 = make_message(URL, user_id=7)
