@@ -1,0 +1,17 @@
+[Unit]
+Description=TikTok Bot Healthcheck Monitor Timer
+After=network-online.target
+Wants=network-online.target
+
+[Timer]
+# Run 2 minutes after boot
+OnBootSec=2min
+
+# Run every 5 minutes after each successful completion
+OnUnitActiveSec=5min
+
+# Always run, even if previous run failed
+AccuracySec=30s
+
+[Install]
+WantedBy=timers.target

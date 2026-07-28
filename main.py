@@ -1,0 +1,97 @@
+import asyncio
+import logging
+import os
+from dotenv import load_dotenv
+
+asyncio.set_event_loop(asyncio.new_event_loop())
+
+from pyrogram import Client, filters
+from handlers import youtube
+from handlers.youtube import register as register_youtube
+from handlers.instagram import register as register_instagram
+from handlers.tiktok import TikTokHandler
+from services.database import BotDatabase
+
+load_dotenv()
+
+LOG_DIR = os.path.join(os.path.dirname(__file__), "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+
+from logging.handlers import RotatingFileHandler
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] %(levelname)s %(message)s",
+    handlers=[
+        RotatingFileHandler(
+            os.path.join(LOG_DIR, "bot.log"),
+            maxBytes=10 * 1024 * 1024,  # 10 MB
+            backupCount=5,
+            encoding="utf-8"
+        ),
+        logging.StreamHandler()
+    ]
+)
+
+app = Client(
+    "tiktok_bot",
+    api_id=int(os.getenv("API_KEY")),
+    api_hash=os.getenv("API_HASH"),
+    bot_token=os.getenv("BOT_TOKEN")
+)
+
+db = BotDatabase()
+
+youtube.app = app  # pass client to handler
+
+ADMIN_ID = int(os.getenv("ADMIN_ID", os.getenv("OWNER_ID", "0")))
+
+@app.on_message(filters.command("start") & (filters.private | filters.group))
+async def start_handler(client, message):
+    # Register user in database
+    if message.from_user:
+        db.register_user(
+            message.from_user.id,
+            message.from_user.username,
+            message.from_user.first_name,
+        )
+    await message.reply(
+        "Привет! Отправь ссылку на TikTok, YouTube или Instagram Reels, и я помогу скачать видео."
+    )
+
+@app.on_message(filters.command("stats") & (filters.private | filters.group))
+async def stats_handler(client, message):
+    user_id = message.from_user.id if message.from_user else None
+    if not user_id or user_id != ADMIN_ID:
+        await message.reply("⛔ Нет доступа.")
+        return
+
+    stats = db.get_stats()
+    tiktok_count = stats["by_platform"].get("tiktok", 0)
+    youtube_count = stats["by_platform"].get("youtube", 0)
+    instagram_count = stats["by_platform"].get("instagram", 0)
+    first_seen = stats["first_seen"] or "—"
+
+    text = (
+        "📊 **Статистика бота**\n\n"
+        f"👤 Пользователей: **{stats['total_users']}**\n"
+        f"📥 Всего скачиваний: **{stats['total_downloads']}**\n"
+        f"   ├ TikTok: {tiktok_count}\n"
+        f"   ├ YouTube: {youtube_count}\n"
+        f"   └ Instagram: {instagram_count}\n"
+        f"🕐 Активных за 24ч: **{stats['active_24h']}**\n"
+        f"📅 Бот работает с: {first_seen}"
+    )
+    await message.reply(text)
+
+if __name__ == "__main__":
+    register_youtube(app, db)
+    register_instagram(app, db)
+    TikTokHandler(app, db).register()
+    print("🚀 Bot started!")
+
+    try:
+        app.run()
+    finally:
+        db.close()
+        print("💾 Database connection closed cleanly.")

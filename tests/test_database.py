@@ -1,0 +1,110 @@
+"""
+Tests for BotDatabase (SQLite analytics).
+"""
+import pytest
+from services.database import BotDatabase
+
+
+class TestBotDatabase:
+    def test_register_new_user(self, tmp_db):
+        tmp_db.register_user(12345, "testuser", "Test")
+        assert tmp_db.get_user_count() == 1
+
+    def test_register_duplicate_user_no_duplication(self, tmp_db):
+        tmp_db.register_user(12345, "user1", "Name1")
+        tmp_db.register_user(12345, "user1", "Name1")
+        assert tmp_db.get_user_count() == 1
+
+    def test_upsert_updates_username(self, tmp_db):
+        tmp_db.register_user(12345, "old_name", "Test")
+        tmp_db.register_user(12345, "new_name", "Test")
+        assert tmp_db.get_user_count() == 1
+
+        row = tmp_db._conn.execute(
+            "SELECT username FROM users WHERE user_id = 12345"
+        ).fetchone()
+        assert row["username"] == "new_name"
+
+    def test_upsert_preserves_existing_when_null(self, tmp_db):
+        """If new username is None, existing username is preserved."""
+        tmp_db.register_user(12345, "original", "Test")
+        tmp_db.register_user(12345, None, "Test")
+
+        row = tmp_db._conn.execute(
+            "SELECT username FROM users WHERE user_id = 12345"
+        ).fetchone()
+        assert row["username"] == "original"
+
+    def test_log_download(self, tmp_db):
+        tmp_db.register_user(1, "user", "U")
+        tmp_db.log_download(1, "tiktok", "https://tiktok.com/video/1")
+        assert tmp_db.get_download_count() == 1
+
+    def test_multiple_downloads(self, tmp_db):
+        tmp_db.register_user(1, "user", "U")
+        tmp_db.log_download(1, "tiktok", "url1")
+        tmp_db.log_download(1, "youtube", "url2")
+        tmp_db.log_download(1, "tiktok", "url3")
+        assert tmp_db.get_download_count() == 3
+
+    def test_get_stats_empty_db(self, tmp_db):
+        stats = tmp_db.get_stats()
+        assert stats["total_users"] == 0
+        assert stats["total_downloads"] == 0
+        assert stats["by_platform"] == {}
+        assert stats["active_24h"] == 0
+        assert stats["first_seen"] is None
+
+    def test_get_stats_with_data(self, tmp_db):
+        tmp_db.register_user(1, "alice", "Alice")
+        tmp_db.register_user(2, "bob", "Bob")
+        tmp_db.log_download(1, "tiktok", "url1")
+        tmp_db.log_download(1, "tiktok", "url2")
+        tmp_db.log_download(2, "youtube", "url3")
+
+        stats = tmp_db.get_stats()
+        assert stats["total_users"] == 2
+        assert stats["total_downloads"] == 3
+        assert stats["by_platform"]["tiktok"] == 2
+        assert stats["by_platform"]["youtube"] == 1
+        assert stats["active_24h"] == 2  # both users downloaded recently
+        assert stats["first_seen"] is not None
+
+    def test_multiple_users(self, tmp_db):
+        for i in range(10):
+            tmp_db.register_user(i, f"user{i}", f"Name{i}")
+        assert tmp_db.get_user_count() == 10
+
+    def test_get_user_count_zero(self, tmp_db):
+        assert tmp_db.get_user_count() == 0
+
+    def test_get_download_count_zero(self, tmp_db):
+        assert tmp_db.get_download_count() == 0
+
+    def test_save_and_get_callback(self, tmp_db):
+        tmp_db.save_callback("token1", "http://example.com/1", "137", "video")
+        
+        cb = tmp_db.get_callback("token1")
+        assert cb is not None
+        assert cb["url"] == "http://example.com/1"
+        assert cb["itag"] == "137"
+        assert cb["type"] == "video"
+
+    def test_get_nonexistent_callback(self, tmp_db):
+        cb = tmp_db.get_callback("invalid")
+        assert cb is None
+
+    def test_delete_callback(self, tmp_db):
+        tmp_db.save_callback("token1", "url", "137", "video")
+        tmp_db.delete_callback("token1")
+        
+        cb = tmp_db.get_callback("token1")
+        assert cb is None
+
+    def test_save_callback_replace(self, tmp_db):
+        tmp_db.save_callback("token1", "url1", "137", "video")
+        tmp_db.save_callback("token1", "url2", "22", "audio")
+        
+        cb = tmp_db.get_callback("token1")
+        assert cb["url"] == "url2"
+        assert cb["itag"] == "22"

@@ -1,0 +1,18 @@
+[Unit]
+Description=Telegram Video Downloader Bot (TikTok/YouTube)
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User={{RUN_USER}}
+WorkingDirectory={{PROJECT_DIR}}
+ExecStart={{PROJECT_DIR}}/venv/bin/python main.py
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=tiktokbot
+
+[Install]
+WantedBy=multi-user.target

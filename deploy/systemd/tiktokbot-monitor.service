@@ -1,0 +1,20 @@
+[Unit]
+Description=TikTok Bot Healthcheck Monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/tiktokbot-monitor.env
+ExecStart=/usr/local/bin/tiktokbot_monitor.py
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=tiktokbot-monitor
+
+# Don't run as root; use service user if available
+User=darling
+Group=darling
+
+# Timeouts
+TimeoutStartSec=300
+TimeoutStopSec=30

@@ -1,0 +1,45 @@
+name: 🚀 Deploy TikTok Bot
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout репозитория
+        uses: actions/checkout@v4
+
+      - name: 🐍 Установка Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: 📦 Установка зависимостей
+        run: |
+          pip install -r requirements.txt
+
+      - name: ✅ Запуск автотестов
+        run: pytest
+
+      - name: 🔐 Передача переменных окружения
+        run: |
+          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
+          echo "API_HASH=${{ secrets.API_HASH }}" >> .env
+          echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" >> .env
+          echo "BOT_URL=${{ secrets.BOT_URL }}" >> .env
+          echo "CHANNEL_URL=${{ secrets.CHANNEL_URL }}" >> .env
+
+      - name: ⚙️ Подключение по SSH и деплой на VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/tiktok-bot
+            git pull
+            systemctl restart tiktokbot
