@@ -12,6 +12,8 @@ Exit codes:
 
 import sys
 import os
+import shutil
+import tempfile
 import traceback
 import time
 from pathlib import Path
@@ -23,20 +25,21 @@ from services.downloader import download_video
 
 # Configuration from environment
 TEST_URL = os.getenv("HEALTHCHECK_TEST_URL", "https://www.tiktok.com/@jungkook/video/7655377348442787093")
-OUTPUT_DIR = Path("/tmp/tiktokbot_healthcheck")
 TIMEOUT = int(os.getenv("HEALTHCHECK_TIMEOUT", "180"))
 
 
 async def main():
     """Run healthcheck."""
+    # A fresh, uniquely-owned directory per run avoids permission clashes when
+    # this script is invoked by different users (e.g. root via the monitor
+    # timer, and a regular user via CI) against a shared /tmp path.
+    output_dir = Path(tempfile.mkdtemp(prefix="tiktokbot_healthcheck_"))
     try:
-        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        
         start = time.time()
-        
+
         # Generate unique filename based on timestamp
         filename = f"healthcheck_{int(time.time())}.mp4"
-        output_path = str(OUTPUT_DIR / filename)
+        output_path = str(output_dir / filename)
         
         print(f"[healthcheck] Starting download from: {TEST_URL}")
         print(f"[healthcheck] Output: {output_path}")
@@ -56,12 +59,6 @@ async def main():
             print("[healthcheck] FAIL: file is empty")
             return 3
         
-        # Clean up test file
-        try:
-            Path(result_path).unlink()
-        except Exception as e:
-            print(f"[healthcheck] Warning: could not delete test file: {e}")
-        
         duration = time.time() - start
         print(f"[healthcheck] OK: downloaded {file_size} bytes in {duration:.1f}s")
         return 0
@@ -70,6 +67,8 @@ async def main():
         print(f"[healthcheck] FAIL: exception: {e}")
         traceback.print_exc()
         return 1
+    finally:
+        shutil.rmtree(output_dir, ignore_errors=True)
 
 
 if __name__ == "__main__":
