@@ -34,6 +34,14 @@ def is_instagram_url(url: str) -> bool:
     return any(x in lower for x in ['instagram.com/reel/', 'instagram.com/p/', 'instagram.com/tv/', 'instagr.am/'])
 
 
+def is_twitter_url(url: str) -> bool:
+    """Check if URL is a Twitter/X status (tweet)."""
+    if not url:
+        return False
+    lower = url.lower()
+    return bool(re.search(r'(twitter\.com|x\.com)/\w+/status/\d+', lower))
+
+
 def extract_urls(text: str) -> list[str]:
     """Extract all URLs from a text message, in order of appearance."""
     if not text:
@@ -84,18 +92,29 @@ async def download_instagram_video(url: str, output_path: str, timeout: int = 18
     return await downloader.download(output_path)
 
 
+async def download_twitter_video(url: str, output_path: str, timeout: int = 180) -> str:
+    """
+    Download Twitter/X video using TwitterDownloader asynchronously.
+    """
+    from services.twitter.twitter_downloader import TwitterDownloader
+    downloader = TwitterDownloader(url)
+    return await downloader.download(output_path)
+
+
 async def download_video(url: str, output_path: str, timeout: int = 180) -> str:
     """
-    Auto-detect and download video from TikTok, YouTube, or Instagram asynchronously.
+    Auto-detect and download video from TikTok, YouTube, Instagram, or Twitter/X asynchronously.
     """
     if not url:
         raise ValueError("Empty URL provided")
-    
+
     if is_tiktok_url(url):
         return await download_tiktok_video(url, output_path, timeout=(5, timeout))
     elif is_youtube_url(url):
         return await download_youtube_video(url, output_path, timeout=timeout)
     elif is_instagram_url(url):
         return await download_instagram_video(url, output_path, timeout=timeout)
+    elif is_twitter_url(url):
+        return await download_twitter_video(url, output_path, timeout=timeout)
     else:
         raise ValueError(f"Unsupported URL: {url}")

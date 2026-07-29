@@ -9,6 +9,7 @@ from pyrogram import Client, filters
 from handlers import youtube
 from handlers.youtube import register as register_youtube
 from handlers.instagram import register as register_instagram
+from handlers.twitter import register as register_twitter
 from handlers.tiktok import TikTokHandler
 from services.database import BotDatabase
 from services.utils.env import resolve_admin_id
@@ -57,7 +58,7 @@ async def start_handler(client, message):
             message.from_user.first_name,
         )
     await message.reply(
-        "Привет! Отправь ссылку на TikTok, YouTube или Instagram Reels, и я помогу скачать видео."
+        "Привет! Отправь ссылку на TikTok, YouTube, Instagram Reels или Twitter/X, и я помогу скачать видео."
     )
 
 @app.on_message(filters.command("stats") & (filters.private | filters.group))
@@ -71,6 +72,7 @@ async def stats_handler(client, message):
     tiktok_count = stats["by_platform"].get("tiktok", 0)
     youtube_count = stats["by_platform"].get("youtube", 0)
     instagram_count = stats["by_platform"].get("instagram", 0)
+    twitter_count = stats["by_platform"].get("twitter", 0)
     first_seen = stats["first_seen"] or "—"
 
     downloads_24h = stats.get("downloads_24h_by_platform", {})
@@ -90,19 +92,22 @@ async def stats_handler(client, message):
         f"📥 Всего скачиваний: **{stats['total_downloads']}**\n"
         f"   ├ TikTok: {tiktok_count}\n"
         f"   ├ YouTube: {youtube_count}\n"
-        f"   └ Instagram: {instagram_count}\n"
+        f"   ├ Instagram: {instagram_count}\n"
+        f"   └ Twitter/X: {twitter_count}\n"
         f"🕐 Активных за 24ч: **{stats['active_24h']}**\n"
         f"📅 Бот работает с: {first_seen}\n\n"
         f"⚠️ Ошибки за 24ч:\n"
         f"   ├ {error_rate_line('tiktok', 'TikTok')}\n"
         f"   ├ {error_rate_line('youtube', 'YouTube')}\n"
-        f"   └ {error_rate_line('instagram', 'Instagram')}"
+        f"   ├ {error_rate_line('instagram', 'Instagram')}\n"
+        f"   └ {error_rate_line('twitter', 'Twitter/X')}"
     )
     await message.reply(text)
 
 if __name__ == "__main__":
     register_youtube(app, db)
     register_instagram(app, db)
+    register_twitter(app, db)
     TikTokHandler(app, db).register()
     print("🚀 Bot started!")
 

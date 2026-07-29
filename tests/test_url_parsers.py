@@ -8,7 +8,7 @@ Integration tests for URL parsers:
 import pytest
 from unittest.mock import MagicMock
 
-from services.downloader import is_tiktok_url, is_youtube_url, is_instagram_url
+from services.downloader import is_tiktok_url, is_youtube_url, is_instagram_url, is_twitter_url
 from services.youtube.youtube_downloader import fix_url
 
 
@@ -73,6 +73,26 @@ class TestIsInstagramUrl:
     ])
     def test_non_instagram_urls(self, url):
         assert is_instagram_url(url) is False
+
+
+class TestIsTwitterUrl:
+    @pytest.mark.parametrize("url", [
+        "https://x.com/NASA/status/2038767984060063896",
+        "https://twitter.com/NASA/status/2038767984060063896",
+        "https://www.twitter.com/user/status/123",
+        "https://mobile.twitter.com/user/status/123",
+    ])
+    def test_valid_twitter_urls(self, url):
+        assert is_twitter_url(url) is True
+
+    @pytest.mark.parametrize("url", [
+        "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "https://x.com/NASA",  # profile page, not a tweet
+        "https://example.com/x.com/status/1",
+        "",
+    ])
+    def test_non_twitter_urls(self, url):
+        assert is_twitter_url(url) is False
 
 
 # ── YouTube URL Normalization (fix_url) ────────────────────────────────

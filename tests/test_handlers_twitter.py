@@ -1,0 +1,174 @@
+"""Tests for handlers/twitter.py: the Telegram-facing Twitter/X flow."""
+import asyncio
+import pytest
+from unittest.mock import patch, AsyncMock, MagicMock
+
+from handlers.twitter import register
+from _helpers import FakeApp, make_message, make_client
+
+URL = "https://x.com/NASA/status/2038767984060063896"
+
+
+def _register():
+    app = FakeApp()
+    db = MagicMock()
+    register(app, db)
+    return app.message_handlers[0], db
+
+
+class TestTwitterHandler:
+    @pytest.mark.asyncio
+    async def test_no_url_replies_error(self):
+        handler, db = _register()
+        message = make_message("no link here")
+        client = make_client()
+
+        await handler(client, message)
+
+        assert "Не найдена ссылка Twitter/X" in message.reply.await_args.args[0]
+        client.send_video.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_successful_download_sends_video_and_logs(self, tmp_path):
+        handler, db = _register()
+        message = make_message(URL)
+        client = make_client()
+        fake_video = tmp_path / "vid.mp4"
+
+        with patch("handlers.twitter.TwitterDownloader") as MockDownloader:
+            instance = MockDownloader.return_value
+            instance.title = "Cool Tweet"
+
+            async def fake_download(filename):
+                fake_video.write_bytes(b"fake")
+                return str(fake_video)
+            instance.download = AsyncMock(side_effect=fake_download)
+
+            await handler(client, message)
+
+        client.send_video.assert_awaited_once()
+        db.log_download.assert_called_once_with(message.from_user.id, "twitter", URL)
+        status_msg = message.reply.return_value
+        status_msg.delete.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_oversized_file_rejected_after_download(self, tmp_path):
+        handler, db = _register()
+        message = make_message(URL)
+        client = make_client()
+        fake_video = tmp_path / "big.mp4"
+        fake_video.write_bytes(b"x")
+
+        with patch("handlers.twitter.TwitterDownloader") as MockDownloader, \
+             patch("handlers.twitter.os.path.getsize", return_value=60 * 1024 * 1024):
+            instance = MockDownloader.return_value
+            instance.title = "Big Video"
+            instance.download = AsyncMock(return_value=str(fake_video))
+
+            await handler(client, message)
+
+        client.send_video.assert_not_called()
+        db.log_download.assert_not_called()
+        status_msg = message.reply.return_value
+        assert "больше 50" in status_msg.edit_text.await_args.args[0]
+
+    @pytest.mark.asyncio
+    async def test_send_failure_does_not_log_analytics(self, tmp_path):
+        handler, db = _register()
+        message = make_message(URL)
+        client = make_client()
+        client.send_video = AsyncMock(side_effect=Exception("network blip"))
+        fake_video = tmp_path / "vid.mp4"
+        fake_video.write_bytes(b"fake")
+
+        with patch("handlers.twitter.TwitterDownloader") as MockDownloader:
+            instance = MockDownloader.return_value
+            instance.title = "Cool Tweet"
+            instance.download = AsyncMock(return_value=str(fake_video))
+
+            await handler(client, message)
+
+        db.log_download.assert_not_called()
+        status_msg = message.reply.return_value
+        assert "Ошибка при отправке" in status_msg.edit_text.await_args.args[0]
+
+    @pytest.mark.asyncio
+    async def test_value_error_from_downloader_shown_to_user(self):
+        handler, db = _register()
+        message = make_message(URL)
+        client = make_client()
+
+        with patch("handlers.twitter.TwitterDownloader") as MockDownloader:
+            MockDownloader.side_effect = ValueError("yt-dlp не смог распарсить ссылку Twitter/X.")
+            await handler(client, message)
+
+        assert "не смог распарсить" in message.reply.await_args.args[0]
+        db.log_download.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_reports_error_to_admin_on_parse_failure(self, monkeypatch):
+        monkeypatch.setenv("ADMIN_ID", "999")
+        handler, db = _register()
+        message = make_message(URL)
+        client = make_client()
+        client.send_message = AsyncMock()
+
+        with patch("handlers.twitter.TwitterDownloader") as MockDownloader:
+            MockDownloader.side_effect = ValueError("yt-dlp не смог распарсить ссылку Twitter/X.")
+            await handler(client, message)
+
+        client.send_message.assert_awaited_once()
+        args, _ = client.send_message.await_args
+        assert args[0] == 999
+        assert "не смог распарсить" in args[1]
+
+    @pytest.mark.asyncio
+    async def test_concurrent_download_for_same_user_is_rejected(self):
+        handler, db = _register()
+        message1 = make_message(URL, user_id=71)
+        message2 = make_message(URL, user_id=71)
+        client = make_client()
+
+        started = asyncio.Event()
+        release = asyncio.Event()
+
+        with patch("handlers.twitter.TwitterDownloader") as MockDownloader:
+            instance = MockDownloader.return_value
+            instance.title = "Video"
+
+            async def slow_download(filename):
+                started.set()
+                await release.wait()
+                return filename
+            instance.download = AsyncMock(side_effect=slow_download)
+
+            task = asyncio.create_task(handler(client, message1))
+            await started.wait()
+
+            await handler(client, message2)
+
+            release.set()
+            await task
+
+        assert "уже идёт другая загрузка" in message2.reply.await_args.args[0]
+
+    @pytest.mark.asyncio
+    async def test_multiple_links_in_one_message_all_downloaded(self):
+        handler, db = _register()
+        url2 = "https://x.com/NASA/status/2038767984060063897"
+        message = make_message(f"{URL} {url2}")
+        client = make_client()
+
+        with patch("handlers.twitter.TwitterDownloader") as MockDownloader:
+            instance = MockDownloader.return_value
+            instance.title = "Video"
+
+            async def fake_download(filename):
+                open(filename, "wb").close()
+                return filename
+            instance.download = AsyncMock(side_effect=fake_download)
+
+            await handler(client, message)
+
+        assert client.send_video.await_count == 2
+        assert db.log_download.call_count == 2
