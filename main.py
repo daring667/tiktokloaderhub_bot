@@ -15,6 +15,7 @@ from handlers.tiktok import TikTokHandler
 from services.database import BotDatabase
 from services.utils.env import resolve_admin_id
 from services.utils.broadcast import broadcast_message
+from services.utils.version import get_version
 
 load_dotenv()
 
@@ -60,8 +61,14 @@ async def start_handler(client, message):
             message.from_user.first_name,
         )
     await message.reply(
-        "Привет! Отправь ссылку на TikTok, YouTube, Instagram Reels или Twitter/X, и я помогу скачать видео."
+        "Привет! Отправь ссылку на TikTok, YouTube, Instagram Reels или Twitter/X — и я помогу скачать видео.\n\n"
+        "Можно кинуть сразу несколько ссылок в одном сообщении (до 5 штук), "
+        "а ссылку на YouTube-плейлист — и я предложу скачать видео по очереди."
     )
+
+@app.on_message(filters.command("version") & (filters.group | filters.private))
+async def version_handler(client, message):
+    await message.reply(f"🤖 Версия бота: v{get_version()}")
 
 @app.on_message(filters.command("stats") & (filters.private | filters.group))
 async def stats_handler(client, message):
@@ -89,7 +96,7 @@ async def stats_handler(client, message):
         return f"{label}: {err} ({round(err / attempts * 100)}%)"
 
     text = (
-        "📊 **Статистика бота**\n\n"
+        f"📊 **Статистика бота** · v{get_version()}\n\n"
         f"👤 Пользователей: **{stats['total_users']}**\n"
         f"📥 Всего скачиваний: **{stats['total_downloads']}**\n"
         f"   ├ TikTok: {tiktok_count}\n"

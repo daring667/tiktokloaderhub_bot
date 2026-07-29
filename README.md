@@ -1,17 +1,25 @@
 # Telegram Video Downloader Bot
 
-Async Telegram bot (Pyrogram) that downloads videos from **TikTok**, **YouTube**, and **Instagram Reels** and sends them straight into the chat.
+Async Telegram bot (Pyrogram) that downloads videos from **TikTok**, **YouTube**, **Instagram Reels**, and **Twitter/X**, and sends them straight into the chat.
+
+Current version: see [`VERSION`](VERSION) / [`CHANGELOG.md`](CHANGELOG.md), or ask the bot itself with `/version`.
 
 ## Features
 
-- **TikTok** — no-watermark downloads via the tikwm.com API
-- **YouTube** — video and Shorts via `yt-dlp`, with a quality picker (inline buttons) for longer videos
+- **TikTok** — no-watermark video downloads via the tikwm.com API, plus **photo slideshows** (sent as a photo album)
+- **YouTube** — video and Shorts via `yt-dlp`, with a quality picker (inline buttons, cancellable) for longer videos
 - **Instagram Reels** — via `yt-dlp`, transcoded to H.264/AAC with `ffmpeg` for broad Telegram client compatibility
+- **Twitter/X** — via `yt-dlp`
+- **Multiple links in one message** — up to 5 processed per message, across all four platforms
+- **YouTube playlists** — downloads the first video, then lets you step through the rest one at a time (`▶️ Следующее видео` / `❌ Хватит`) instead of dumping the whole thing at once
 - **50 MB guard** — checked against Telegram's own bot upload limit both from provider metadata and, as a backstop, against the actual downloaded file size
-- **Per-user download lock** — one in-flight download per user per platform, to avoid pile-ups from spammed links
-- **SQLite analytics** — tracks users and downloads; `/stats` (admin-only) shows totals and 24h activity
+- **Per-user download lock + rate limit** — one in-flight download per user per platform, plus a cooldown (`REQUEST_COOLDOWN_SECONDS`, default 5s) between requests to blunt rapid-fire spam
+- **Admin alerts** — download failures are posted to `ADMIN_ID`/`OWNER_ID` in real time, throttled per (platform, error type) so a burst of identical failures doesn't flood the chat
+- **`/broadcast`** (admin-only) — message every registered user, with a per-message opt-out button and a delivery report (who got it, who didn't)
+- **SQLite analytics** — tracks users, downloads, and errors; `/stats` (admin-only) shows totals, 24h activity, and 24h error rate per platform
 - **Log rotation** — 10 MB per file, 5 backups
 - **Self-healing in production** — systemd service + a timer-driven healthcheck monitor that restarts the bot and posts a Telegram alert on failure (see [`deploy/`](deploy/))
+- **CI/CD** — every push runs the test suite, then deploys and healthchecks on a self-hosted GitHub Actions runner (see [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml))
 
 ## Requirements
 
@@ -35,13 +43,15 @@ cp .env.example .env   # then fill in the values below
 | `API_KEY` | yes | Pyrogram `api_id`, from [my.telegram.org](https://my.telegram.org) |
 | `API_HASH` | yes | Pyrogram `api_hash`, from the same place |
 | `BOT_TOKEN` | yes | From [@BotFather](https://t.me/BotFather) |
-| `ADMIN_ID` | one of these | Telegram user ID allowed to run `/stats` |
+| `ADMIN_ID` | one of these | Telegram user ID allowed to run `/stats` and `/broadcast` |
 | `OWNER_ID` | one of these | Fallback for `ADMIN_ID` if it's unset |
 | `WORKERS` | no | Pyrogram worker count |
 | `CHANNEL_URL`, `BOT_URL` | no | Used in bot copy/links, not by core logic |
+| `REQUEST_COOLDOWN_SECONDS` | no | Per-user cooldown between requests (default `5`) |
+| `ERROR_REPORT_COOLDOWN_SECONDS` | no | Minimum gap between repeat admin error alerts (default `300`) |
 | `COOKIES_B64` | no | Base64 `cookies.txt`, restored on startup by `start.sh`. Only relevant if you run via `start.sh`; the systemd deployment below reads `cookies.txt` directly from disk. |
 
-Note: `ADMIN_ID` is read with `os.getenv("ADMIN_ID", os.getenv("OWNER_ID", "0"))` — the fallback only kicks in when `ADMIN_ID` is completely unset, not when it's set to an empty string.
+Note: `ADMIN_ID` falls back to `OWNER_ID` only when `ADMIN_ID` is completely unset — an empty string does not count as "set" but does skip the fallback (see `services/utils/env.py`).
 
 ### Cookies
 
@@ -65,9 +75,17 @@ sudo bash deploy/setup_monitoring.sh
 
 This installs `tiktokbot.service` (the bot) plus `tiktokbot-monitor.timer` (a 5-minute healthcheck that restarts the bot and pings you on Telegram if it stops actually working — not just if the process dies).
 
-## Analytics & `/stats`
+### CI/CD
 
-`bot_database.db` (SQLite, gitignored) tracks registered users and every successful download per platform. Send `/stats` as the user in `ADMIN_ID`/`OWNER_ID` to see totals, per-platform breakdown, and 24h activity.
+Pushing to `master` runs the test suite on a GitHub-hosted runner, then — only if tests pass — pulls, restarts, and healthchecks the bot on a **self-hosted runner** living on the same box as the bot (needed because the server has no public IP; see `.github/workflows/deploy.yml`).
+
+## Admin commands
+
+Sent by the user in `ADMIN_ID`/`OWNER_ID`:
+
+- `/stats` — user count, downloads and 24h error rate per platform
+- `/broadcast <text>` — message every registered user; each message carries a `🔕 Больше не присылать рассылки` opt-out button, and the bot reports back exactly who received it and who didn't
+- `/version` — also available to everyone, not just the admin
 
 ## Testing
 
@@ -75,24 +93,26 @@ This installs `tiktokbot.service` (the bot) plus `tiktokbot-monitor.timer` (a 5-
 pytest tests/ -v
 ```
 
-Covers the service layer — database, filename sanitizing, URL parsing, and the three downloaders (network calls mocked). The Telegram-facing handlers (`handlers/`, `main.py`) aren't covered yet.
+Covers both the service layer (database, filename sanitizing, URL parsing, the four downloaders with network calls mocked) and the Telegram-facing handlers (locks, rate limiting, multi-link batching, playlists, error reporting, broadcast) using lightweight `pyrogram`-shaped test doubles — see `tests/_helpers.py`.
 
 ## Project structure
 
 ```
-main.py                    entry point, Pyrogram client, /start and /stats
+main.py                    entry point, Pyrogram client, /start, /stats, /broadcast, /version
 handlers/                  one file per platform: Telegram-facing message/callback routing
+handlers/base.py           shared lock/rate-limit/error-reporting/multi-link helpers
 services/                  platform downloaders + shared utils, no Pyrogram dependency
-services/database.py       SQLite analytics
-services/utils/            filename sanitizing, cookies setup, progress bar
-tests/                     pytest suite for the services layer
+services/database.py       SQLite analytics, playlist step-through state, broadcast subscriptions
+services/utils/            filename sanitizing, cookies setup, progress bar, env/version/broadcast helpers
+tests/                     pytest suite for both the services layer and the handlers
 deploy/                    systemd units + healthcheck monitor for production
 archive/                   retired files kept for reference — not used by the running bot
+VERSION / CHANGELOG.md     current version and release history
 ```
 
 See [`archive/README.md`](archive/README.md) for what's parked there and why.
 
 ## Known limitations
 
-- The TikTok/YouTube/Instagram handlers delete the user's original message with the link after a successful download — silently no-ops if the bot lacks delete rights in a group.
-- The `.github/workflows/deploy.yml` CI pipeline predates the current server layout and needs to be rewired (path/user/target host) before it can be trusted again — not yet done.
+- The TikTok/YouTube/Instagram/Twitter handlers delete the user's original message with the link after a successful download — silently no-ops if the bot lacks delete rights in a group.
+- YouTube playlist step-through processes at most 25 videos per playlist (`MAX_PLAYLIST_ITEMS` in `handlers/youtube.py`) — a deliberate cap, not a bug.
