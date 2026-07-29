@@ -143,7 +143,11 @@ def register(app: Client, db=None):
                 any_success = False
                 for url in urls:
                     ok = await _handle_one_youtube_url(client, message, db, url)
-                    any_success = any_success or ok
+                    # A playlist keeps its source message: the step-through
+                    # prompts reply to it, and the user may want the link back
+                    # after picking through the videos.
+                    if ok and not is_playlist_url(url):
+                        any_success = True
 
                 if any_success:
                     await safe_delete(message)

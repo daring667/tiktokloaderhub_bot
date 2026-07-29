@@ -379,6 +379,25 @@ class TestYoutubePlaylist:
         assert any(cd.startswith("yt|plstop|") for cd in callback_datas)
 
     @pytest.mark.asyncio
+    async def test_playlist_keeps_the_source_message(self, tmp_db, tmp_path):
+        """Unlike a single video, a playlist link must survive: the
+        step-through prompts reply to it and the user may want it back."""
+        handler, _cb, db = _register(tmp_db)
+        message = make_message(self.PLAYLIST_URL)
+        client = make_client()
+        video_urls = self._video_urls(3)
+
+        with patch("handlers.youtube.get_playlist_info", return_value=("My Playlist", video_urls, 3)), \
+             patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            meta = _make_meta(length=30)
+            await self._mock_download(tmp_path, meta)
+            MockYT.return_value = meta
+
+            await handler(client, message)
+
+        message.delete.assert_not_called()
+
+    @pytest.mark.asyncio
     async def test_playlist_with_no_videos_shows_error(self, tmp_db):
         handler, _cb, db = _register(tmp_db)
         message = make_message(self.PLAYLIST_URL)
