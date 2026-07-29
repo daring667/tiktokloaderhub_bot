@@ -37,6 +37,8 @@ def make_message(text, user_id=111, username="user", first_name="Test", chat_id=
 
     message.reply = AsyncMock(return_value=reply_msg)
     message.delete = AsyncMock()
+    message.edit_text = AsyncMock()
+    message.edit_reply_markup = AsyncMock()
     return message
 
 

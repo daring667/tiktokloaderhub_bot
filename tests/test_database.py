@@ -208,3 +208,28 @@ class TestBotDatabase:
             assert db.get_broadcast_subscribed_user_ids() == [5]
         finally:
             db.close()
+
+    def test_save_and_get_playlist_state(self, tmp_db):
+        urls = ["https://youtube.com/watch?v=a", "https://youtube.com/watch?v=b"]
+        tmp_db.save_playlist_state("tok1", urls, total_count=5)
+
+        state = tmp_db.get_playlist_state("tok1")
+        assert state == {"video_urls": urls, "index_pos": 0, "total_count": 5}
+
+    def test_get_playlist_state_missing_token(self, tmp_db):
+        assert tmp_db.get_playlist_state("nope") is None
+
+    def test_advance_playlist_state(self, tmp_db):
+        urls = ["https://youtube.com/watch?v=a", "https://youtube.com/watch?v=b"]
+        tmp_db.save_playlist_state("tok1", urls, total_count=2)
+
+        state = tmp_db.advance_playlist_state("tok1")
+        assert state["index_pos"] == 1
+
+        state = tmp_db.advance_playlist_state("tok1")
+        assert state["index_pos"] == 2
+
+    def test_delete_playlist_state(self, tmp_db):
+        tmp_db.save_playlist_state("tok1", ["u1"], total_count=1)
+        tmp_db.delete_playlist_state("tok1")
+        assert tmp_db.get_playlist_state("tok1") is None

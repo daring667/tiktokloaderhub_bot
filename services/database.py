@@ -2,6 +2,7 @@
 SQLite database for user analytics and download tracking.
 Thread-safe: uses check_same_thread=False + threading.Lock for writes.
 """
+import json
 import os
 import sqlite3
 import threading
@@ -59,6 +60,14 @@ class BotDatabase:
                     error_type  TEXT,
                     message     TEXT,
                     occurred_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+
+                CREATE TABLE IF NOT EXISTS playlist_state (
+                    token       TEXT PRIMARY KEY,
+                    video_urls  TEXT NOT NULL,
+                    index_pos   INTEGER NOT NULL DEFAULT 0,
+                    total_count INTEGER,
+                    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
             """)
             self._conn.commit()
@@ -231,6 +240,45 @@ class BotDatabase:
         """Delete a callback token after use."""
         with self._lock:
             self._conn.execute("DELETE FROM callbacks WHERE token = ?", (token,))
+            self._conn.commit()
+
+    def save_playlist_state(self, token: str, video_urls: list, total_count: int) -> None:
+        """Starts a step-through session for a YouTube playlist."""
+        with self._lock:
+            self._conn.execute(
+                "INSERT OR REPLACE INTO playlist_state (token, video_urls, index_pos, total_count) VALUES (?, ?, 0, ?)",
+                (token, json.dumps(video_urls), total_count),
+            )
+            self._conn.commit()
+
+    def get_playlist_state(self, token: str) -> dict | None:
+        """Current position in a playlist step-through session."""
+        row = self._conn.execute(
+            "SELECT video_urls, index_pos, total_count FROM playlist_state WHERE token = ?",
+            (token,),
+        ).fetchone()
+        if not row:
+            return None
+        return {
+            "video_urls": json.loads(row["video_urls"]),
+            "index_pos": row["index_pos"],
+            "total_count": row["total_count"],
+        }
+
+    def advance_playlist_state(self, token: str) -> dict | None:
+        """Moves the session to the next video and returns the new state."""
+        with self._lock:
+            self._conn.execute(
+                "UPDATE playlist_state SET index_pos = index_pos + 1 WHERE token = ?",
+                (token,),
+            )
+            self._conn.commit()
+        return self.get_playlist_state(token)
+
+    def delete_playlist_state(self, token: str) -> None:
+        """Ends a playlist step-through session."""
+        with self._lock:
+            self._conn.execute("DELETE FROM playlist_state WHERE token = ?", (token,))
             self._conn.commit()
 
     def close(self):

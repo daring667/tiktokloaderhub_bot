@@ -33,6 +33,55 @@ def fix_url(url: str) -> str:
     return f"https://youtube.com/watch?v={video_id}"
 
 
+def is_playlist_url(url: str) -> bool:
+    """True for a playlist link (`/playlist?list=...`) — but not for a
+    single video that merely happens to carry a `list=` param because it
+    was opened from within a playlist (`watch?v=X&list=Y`), which should
+    still be treated as one video."""
+    parsed = urlparse(url)
+    query = parse_qs(parsed.query)
+    has_video = bool(query.get("v", [None])[0])
+    has_list = "list" in query or "/playlist" in parsed.path
+    return has_list and not has_video
+
+
+def get_playlist_info(playlist_url: str, limit: int = 25):
+    """Fast (flat, no per-video probing) extraction of a playlist's videos.
+
+    Returns (title, video_urls, total_count) — video_urls is capped at
+    `limit` even if the playlist itself is bigger.
+    """
+    opts = {
+        "quiet": True,
+        "no_warnings": True,
+        "extract_flat": "in_playlist",
+        "geo_bypass": True,
+    }
+    try:
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            info = ydl.extract_info(playlist_url, download=False)
+    except DownloadError as e:
+        raise ValueError("yt-dlp не смог распарсить плейлист.") from e
+    except Exception as e:
+        raise ValueError("Произошла ошибка при обработке плейлиста.") from e
+
+    if not info:
+        raise ValueError("Не удалось получить информацию о плейлисте.")
+
+    entries = info.get("entries") or []
+    if not entries:
+        raise ValueError("Плейлист пуст или недоступен.")
+
+    title = info.get("title") or "Плейлист"
+    total_count = len(entries)
+    video_urls = [
+        f"https://youtube.com/watch?v={e['id']}"
+        for e in entries[:limit]
+        if e.get("id")
+    ]
+    return title, video_urls, total_count
+
+
 class YouTubeDownloader:
 
     def __init__(self, url: str):

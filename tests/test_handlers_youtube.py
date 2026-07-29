@@ -10,9 +10,9 @@ from _helpers import FakeApp, make_message, make_client, make_callback
 URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 
 
-def _register():
+def _register(db=None):
     app = FakeApp()
-    db = MagicMock()
+    db = db if db is not None else MagicMock()
     register(app, db)
     return app.message_handlers[0], app.callback_handlers[0], db
 
@@ -80,9 +80,10 @@ class TestYoutubeMessageHandler:
         message.reply.assert_awaited_once()
         args, kwargs = message.reply.await_args
         markup = kwargs["reply_markup"]
-        assert len(markup.inline_keyboard) == 2
+        assert len(markup.inline_keyboard) == 3  # 2 quality options + cancel
         assert "🎬 720p" in markup.inline_keyboard[0][0].text
         assert "🎬 360p" in markup.inline_keyboard[1][0].text
+        assert markup.inline_keyboard[2][0].callback_data == "yt|cancel"
         assert kwargs["parse_mode"] == ParseMode.HTML
         client.send_video.assert_not_called()
 
@@ -302,6 +303,119 @@ class TestYoutubeCallbackHandler:
             await callback_handler(client, callback)
 
         callback.message.delete.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_cancel_button_dismisses_quality_picker(self):
+        _msg, callback_handler, db = _register()
+        callback = make_callback("yt|cancel")
+
+        await callback_handler(None, callback)
+
+        callback.message.delete.assert_awaited_once()
+        callback.answer.assert_awaited_once()
+
+
+class TestYoutubePlaylist:
+    PLAYLIST_URL = "https://www.youtube.com/playlist?list=PLxyz"
+
+    @staticmethod
+    def _video_urls(n=3):
+        return [f"https://youtube.com/watch?v=v{i}" for i in range(n)]
+
+    @staticmethod
+    async def _mock_download(tmp_path, meta, name="v.mp4"):
+        fake_video = tmp_path / name
+
+        async def fake_download(itag, filename, msg, status_msg):
+            fake_video.write_bytes(b"x")
+            return str(fake_video)
+        meta.download = AsyncMock(side_effect=fake_download)
+
+    @pytest.mark.asyncio
+    async def test_playlist_link_downloads_first_and_offers_next(self, tmp_db, tmp_path):
+        handler, _cb, db = _register(tmp_db)
+        message = make_message(self.PLAYLIST_URL)
+        client = make_client()
+        video_urls = self._video_urls(3)
+
+        with patch("handlers.youtube.get_playlist_info", return_value=("My Playlist", video_urls, 3)), \
+             patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            meta = _make_meta(length=30)
+            await self._mock_download(tmp_path, meta)
+            MockYT.return_value = meta
+
+            await handler(client, message)
+
+        assert client.send_video.await_count == 1
+
+        last_call = message.reply.await_args_list[-1]
+        assert "Скачать следующее" in last_call.args[0]
+        markup = last_call.kwargs["reply_markup"]
+        callback_datas = [b.callback_data for row in markup.inline_keyboard for b in row]
+        assert any(cd.startswith("yt|plnext|") for cd in callback_datas)
+        assert any(cd.startswith("yt|plstop|") for cd in callback_datas)
+
+    @pytest.mark.asyncio
+    async def test_playlist_with_no_videos_shows_error(self, tmp_db):
+        handler, _cb, db = _register(tmp_db)
+        message = make_message(self.PLAYLIST_URL)
+        client = make_client()
+
+        with patch("handlers.youtube.get_playlist_info", side_effect=ValueError("Плейлист пуст или недоступен.")):
+            await handler(client, message)
+
+        assert "пуст" in message.reply.await_args.args[0]
+        client.send_video.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_plnext_downloads_next_video_and_offers_another(self, tmp_db, tmp_path):
+        _msg, callback_handler, db = _register(tmp_db)
+        video_urls = self._video_urls(3)
+        db.save_playlist_state("tok1", video_urls, 3)
+
+        callback = make_callback("yt|plnext|tok1")
+        client = make_client()
+
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            meta = _make_meta(length=30)
+            await self._mock_download(tmp_path, meta)
+            MockYT.return_value = meta
+
+            await callback_handler(client, callback)
+
+        assert client.send_video.await_count == 1
+        callback.message.delete.assert_awaited_once()  # old "next?" prompt removed
+        # one reply for the download status, one more offering video 3
+        assert callback.message.reply.await_count == 2
+        assert db.get_playlist_state("tok1")["index_pos"] == 1
+
+    @pytest.mark.asyncio
+    async def test_plnext_on_last_video_ends_playlist(self, tmp_db):
+        _msg, callback_handler, db = _register(tmp_db)
+        video_urls = self._video_urls(2)
+        db.save_playlist_state("tok1", video_urls, 2)
+        db.advance_playlist_state("tok1")  # now on the last video (index 1)
+
+        callback = make_callback("yt|plnext|tok1")
+        client = make_client()
+
+        await callback_handler(client, callback)
+
+        assert db.get_playlist_state("tok1") is None
+        callback.message.edit_text.assert_awaited_once()
+        assert "закончился" in callback.message.edit_text.await_args.args[0]
+
+    @pytest.mark.asyncio
+    async def test_plstop_deletes_state_and_message(self, tmp_db):
+        _msg, callback_handler, db = _register(tmp_db)
+        db.save_playlist_state("tok1", self._video_urls(3), 3)
+
+        callback = make_callback("yt|plstop|tok1")
+        await callback_handler(None, callback)
+
+        assert db.get_playlist_state("tok1") is None
+        callback.message.delete.assert_awaited_once()
+        callback.answer.assert_awaited_once()
 
 
 class TestFormatDuration:

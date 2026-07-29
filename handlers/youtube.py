@@ -1,7 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from pyrogram.enums import ParseMode
-from services.youtube.youtube_downloader import YouTubeDownloader
+from services.youtube.youtube_downloader import YouTubeDownloader, is_playlist_url, get_playlist_info
 from services.downloader import is_youtube_url
 from services.utils.sanitize import sanitize_filename
 from handlers.base import (
@@ -21,6 +21,7 @@ DOWNLOADS_DIR = os.path.join(PROJECT_ROOT, "downloads")
 os.makedirs(DOWNLOADS_DIR, exist_ok=True)
 
 MAX_FILE_SIZE = 50 * 1024 * 1024
+MAX_PLAYLIST_ITEMS = 25
 
 
 def format_duration(seconds) -> str:
@@ -149,6 +150,27 @@ def register(app: Client, db=None):
 
     @app.on_callback_query(filters.regex(r'^yt\|'))
     async def yt_callback(client, callback):
+        data = callback.data
+
+        if data == "yt|cancel":
+            await safe_delete(callback.message)
+            await callback.answer("Отменено")
+            return
+
+        if data.startswith("yt|plstop|"):
+            token = data.split("|", 2)[2]
+            await _handle_playlist_stop(callback, db, token)
+            return
+
+        if data.startswith("yt|plnext|"):
+            token = data.split("|", 2)[2]
+            try:
+                async with download_slot(active_downloads, callback.from_user.id):
+                    await _handle_playlist_next(client, callback, db, token)
+            except DownloadInProgress:
+                await callback.answer("⏳ Уже загружается...", show_alert=True)
+            return
+
         try:
             async with download_slot(active_downloads, callback.from_user.id):
                 await _handle_youtube_callback(client, callback, db)
@@ -160,6 +182,9 @@ async def _handle_one_youtube_url(client, message, db, url) -> bool:
     """Processes a single YouTube URL found in `message`. Returns True if a
     video was sent or a quality picker was shown, False on failure — the
     caller uses this to decide whether the source message is safe to delete."""
+    if is_playlist_url(url):
+        return await _start_playlist(client, message, db, url)
+
     try:
         print(f"🎯 Передаём ссылку в YouTubeDownloader: {url}")
 
@@ -216,7 +241,9 @@ async def _handle_one_youtube_url(client, message, db, url) -> bool:
 
             buttons.append(InlineKeyboardButton(label, callback_data=cb_data))
 
-        markup = InlineKeyboardMarkup([[b] for b in buttons])
+        markup_rows = [[b] for b in buttons]
+        markup_rows.append([InlineKeyboardButton("❌ Отмена", callback_data="yt|cancel")])
+        markup = InlineKeyboardMarkup(markup_rows)
         title_safe = html.escape(meta.title or "Без названия")
         await message.reply(
             f"🎬 <b>{title_safe}</b>\n⏱ {format_duration(meta.length)}\nВыбери качество:",
@@ -230,6 +257,83 @@ async def _handle_one_youtube_url(client, message, db, url) -> bool:
         await message.reply("❌ Произошла ошибка при обработке видео.")
         await report_error(client, "youtube", url, message.from_user, e, db)
         return False
+
+
+async def _start_playlist(client, message, db, playlist_url) -> bool:
+    """Downloads the first video of a playlist, then offers to step
+    through the rest one at a time rather than downloading it all at once."""
+    try:
+        title, video_urls, total_count = get_playlist_info(playlist_url, limit=MAX_PLAYLIST_ITEMS)
+    except ValueError as e:
+        await message.reply(f"❌ {e}")
+        await report_error(client, "youtube", playlist_url, message.from_user, e, db)
+        return False
+
+    if not video_urls:
+        await message.reply("❌ Не нашёл видео в этом плейлисте.")
+        return False
+
+    if not db:
+        # Without a database there's nowhere to keep step-through state —
+        # fall back to just the first video.
+        return await _handle_one_youtube_url(client, message, db, video_urls[0])
+
+    token = uuid.uuid4().hex[:12]
+    db.save_playlist_state(token, video_urls, total_count)
+
+    title_safe = html.escape(title)
+    await message.reply(f"📃 Плейлист «{title_safe}» — {total_count} видео.\nСкачиваю первое...")
+
+    ok = await _handle_one_youtube_url(client, message, db, video_urls[0])
+    await _offer_next_playlist_video(message, db, token)
+    return ok
+
+
+async def _offer_next_playlist_video(message, db, token):
+    """Sends the "download the next one?" prompt, or cleans up silently
+    if the step-through session has reached the end of the list."""
+    state = db.get_playlist_state(token)
+    if not state:
+        return
+
+    next_index = state["index_pos"] + 1
+    if next_index >= len(state["video_urls"]):
+        db.delete_playlist_state(token)
+        return
+
+    remaining = len(state["video_urls"]) - next_index
+    markup = InlineKeyboardMarkup([[
+        InlineKeyboardButton("▶️ Следующее видео", callback_data=f"yt|plnext|{token}"),
+        InlineKeyboardButton("❌ Хватит", callback_data=f"yt|plstop|{token}"),
+    ]])
+    await message.reply(
+        f"Осталось ещё {remaining} видео из плейлиста. Скачать следующее?",
+        reply_markup=markup,
+    )
+
+
+async def _handle_playlist_stop(callback, db, token):
+    db.delete_playlist_state(token)
+    await safe_delete(callback.message)
+    await callback.answer("Ок, на этом всё.")
+
+
+async def _handle_playlist_next(client, callback, db, token):
+    state = db.advance_playlist_state(token)
+    if not state or state["index_pos"] >= len(state["video_urls"]):
+        db.delete_playlist_state(token)
+        try:
+            await callback.message.edit_text("Плейлист закончился.")
+        except Exception:
+            pass
+        await callback.answer()
+        return
+
+    await callback.answer()
+    next_url = state["video_urls"][state["index_pos"]]
+    await safe_delete(callback.message)
+    await _handle_one_youtube_url(client, callback.message, db, next_url)
+    await _offer_next_playlist_video(callback.message, db, token)
 
 
 async def _handle_youtube_callback(client, callback, db):

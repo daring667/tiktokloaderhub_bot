@@ -148,3 +148,84 @@ class TestYouTubeDownloaderInit:
 
         filesizes = [s["filesize"] or 0 for s in dl.streams]
         assert filesizes == sorted(filesizes, reverse=True)
+
+
+class TestIsPlaylistUrl:
+    def test_pure_playlist_url(self):
+        from services.youtube.youtube_downloader import is_playlist_url
+        assert is_playlist_url("https://www.youtube.com/playlist?list=PLxyz") is True
+
+    def test_video_with_list_param_is_not_a_playlist(self):
+        """A single video opened from within a playlist should still be
+        treated as one video, not the whole playlist."""
+        from services.youtube.youtube_downloader import is_playlist_url
+        assert is_playlist_url("https://www.youtube.com/watch?v=abc123&list=PLxyz") is False
+
+    def test_plain_video_url(self):
+        from services.youtube.youtube_downloader import is_playlist_url
+        assert is_playlist_url("https://www.youtube.com/watch?v=abc123") is False
+
+
+class TestGetPlaylistInfo:
+    @patch("services.youtube.youtube_downloader.yt_dlp.YoutubeDL")
+    def test_returns_title_urls_and_total(self, mock_ydl_class):
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
+        mock_ydl.__exit__ = MagicMock(return_value=False)
+        mock_ydl.extract_info.return_value = {
+            "title": "My Playlist",
+            "entries": [{"id": "aaa"}, {"id": "bbb"}, {"id": "ccc"}],
+        }
+        mock_ydl_class.return_value = mock_ydl
+
+        from services.youtube.youtube_downloader import get_playlist_info
+        title, urls, total = get_playlist_info("https://www.youtube.com/playlist?list=PLxyz")
+
+        assert title == "My Playlist"
+        assert total == 3
+        assert urls == [
+            "https://youtube.com/watch?v=aaa",
+            "https://youtube.com/watch?v=bbb",
+            "https://youtube.com/watch?v=ccc",
+        ]
+
+    @patch("services.youtube.youtube_downloader.yt_dlp.YoutubeDL")
+    def test_caps_urls_at_limit_but_reports_true_total(self, mock_ydl_class):
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
+        mock_ydl.__exit__ = MagicMock(return_value=False)
+        mock_ydl.extract_info.return_value = {
+            "title": "Big Playlist",
+            "entries": [{"id": f"v{i}"} for i in range(10)],
+        }
+        mock_ydl_class.return_value = mock_ydl
+
+        from services.youtube.youtube_downloader import get_playlist_info
+        title, urls, total = get_playlist_info("https://www.youtube.com/playlist?list=PLxyz", limit=3)
+
+        assert total == 10
+        assert len(urls) == 3
+
+    @patch("services.youtube.youtube_downloader.yt_dlp.YoutubeDL")
+    def test_empty_playlist_raises_value_error(self, mock_ydl_class):
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
+        mock_ydl.__exit__ = MagicMock(return_value=False)
+        mock_ydl.extract_info.return_value = {"title": "Empty", "entries": []}
+        mock_ydl_class.return_value = mock_ydl
+
+        from services.youtube.youtube_downloader import get_playlist_info
+        with pytest.raises(ValueError, match="пуст"):
+            get_playlist_info("https://www.youtube.com/playlist?list=PLxyz")
+
+    @patch("services.youtube.youtube_downloader.yt_dlp.YoutubeDL")
+    def test_download_error_raises_value_error(self, mock_ydl_class):
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
+        mock_ydl.__exit__ = MagicMock(return_value=False)
+        mock_ydl.extract_info.side_effect = DownloadError("boom")
+        mock_ydl_class.return_value = mock_ydl
+
+        from services.youtube.youtube_downloader import get_playlist_info
+        with pytest.raises(ValueError, match="не смог распарсить"):
+            get_playlist_info("https://www.youtube.com/playlist?list=PLxyz")
