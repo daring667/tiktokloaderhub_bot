@@ -1,4 +1,5 @@
 from pyrogram import filters
+from pyrogram.types import InputMediaPhoto
 from services.tiktok.tiktok_downloader import TikTokDownloader
 from services.downloader import is_tiktok_url
 from handlers.base import (
@@ -13,7 +14,9 @@ from handlers.base import (
     report_error,
     extract_platform_urls,
 )
-import os, uuid, aiohttp, asyncio
+import os, shutil, uuid, aiohttp, asyncio
+
+MEDIA_GROUP_LIMIT = 10  # Telegram's max items per send_media_group call
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DOWNLOADS_DIR = os.path.join(PROJECT_ROOT, "downloads")
@@ -55,13 +58,23 @@ class TikTokHandler(BaseHandler):
                 await message.reply(rate_limit_message(e))
 
 
+async def _send_slideshow(client, chat_id, image_paths):
+    """TikTok photo posts can have more images than Telegram allows in one
+    media group (10), so send them in chunks."""
+    for i in range(0, len(image_paths), MEDIA_GROUP_LIMIT):
+        chunk = image_paths[i:i + MEDIA_GROUP_LIMIT]
+        await client.send_media_group(chat_id, [InputMediaPhoto(p) for p in chunk])
+
+
 async def _download_and_send(client, message, url, db) -> bool:
-    """Downloads and sends a single TikTok link. Returns True on success.
+    """Downloads and sends a single TikTok link — a video or a photo
+    slideshow, whichever it turns out to be. Returns True on success.
     Does not touch `message` itself — the caller may be processing several
     URLs against the same source message."""
     msg = await message.reply("⏳ Загружаю...")
     filename = os.path.join(DOWNLOADS_DIR, f"{uuid.uuid4()}.mp4")
     result_path = None
+    slideshow_dir = None
     success = False
 
     try:
@@ -69,10 +82,17 @@ async def _download_and_send(client, message, url, db) -> bool:
         await asyncio.sleep(1.1)
 
         downloader = TikTokDownloader(url)
-        result_path = await downloader.download(filename)
+        data = await downloader.probe()
+        is_slideshow = bool(data.get("data", {}).get("images"))
 
-        # Отправляем скачанное видео
-        await client.send_video(message.chat.id, video=result_path)
+        if is_slideshow:
+            slideshow_dir = os.path.join(DOWNLOADS_DIR, f"slideshow_{uuid.uuid4()}")
+            image_paths = await downloader.download_slideshow(slideshow_dir)
+            await _send_slideshow(client, message.chat.id, image_paths)
+        else:
+            result_path = await downloader.download(filename)
+            await client.send_video(message.chat.id, video=result_path)
+
         success = True
 
         # --- analytics ---
@@ -102,5 +122,7 @@ async def _download_and_send(client, message, url, db) -> bool:
     finally:
         await safe_delete(msg)
         cleanup_files(result_path, filename)
+        if slideshow_dir:
+            shutil.rmtree(slideshow_dir, ignore_errors=True)
 
     return success

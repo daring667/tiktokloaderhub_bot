@@ -162,3 +162,105 @@ class TestDownloadTikTokVideo:
         downloader = TikTokDownloader(self.FAKE_URL)
         with pytest.raises(ValueError, match="Видео слишком большое"):
             await downloader.download(str(tmp_path / "too_big.mp4"))
+
+
+class TestTikTokSlideshow:
+    """TikTok photo posts: tikwm returns images[] instead of a video play URL."""
+
+    FAKE_URL = "https://www.tiktok.com/@user/photo/456"
+
+    def _mock_video_response_json(self, play_url="https://v.tikwm.com/video.mp4"):
+        mock_resp = AsyncMock()
+        mock_resp.status = 200
+        mock_resp.json.return_value = {"data": {"play": play_url}}
+        mock_resp.raise_for_status = MagicMock()
+        mock_ctx = AsyncMock()
+        mock_ctx.__aenter__.return_value = mock_resp
+        return mock_ctx
+
+    def _mock_slideshow_response_json(self, image_urls):
+        mock_resp = AsyncMock()
+        mock_resp.status = 200
+        mock_resp.json.return_value = {
+            "data": {"images": image_urls, "play": "https://v.tikwm.com/music.mp3"}
+        }
+        mock_resp.raise_for_status = MagicMock()
+        mock_ctx = AsyncMock()
+        mock_ctx.__aenter__.return_value = mock_resp
+        return mock_ctx
+
+    def _mock_binary_response(self, content=b"fake_bytes"):
+        mock_resp = AsyncMock()
+        mock_resp.status = 200
+        mock_resp.raise_for_status = MagicMock()
+
+        async def iter_chunked(size):
+            yield content
+
+        mock_resp.content.iter_chunked = iter_chunked
+        mock_ctx = AsyncMock()
+        mock_ctx.__aenter__.return_value = mock_resp
+        return mock_ctx
+
+    @pytest.mark.asyncio
+    @patch("aiohttp.ClientSession.get")
+    async def test_download_raises_for_slideshow_post(self, mock_get, tmp_path):
+        """download() is for videos — a slideshow post must raise, not
+        silently download the background music as if it were a video."""
+        from services.tiktok.tiktok_downloader import TikTokDownloader
+        mock_get.return_value = self._mock_slideshow_response_json(
+            ["https://img.example/1.jpg", "https://img.example/2.jpg"]
+        )
+
+        downloader = TikTokDownloader(self.FAKE_URL)
+        with pytest.raises(ValueError, match="слайдшоу"):
+            await downloader.download(str(tmp_path / "video.mp4"))
+
+    @pytest.mark.asyncio
+    @patch("aiohttp.ClientSession.get")
+    async def test_download_slideshow_saves_all_images_in_order(self, mock_get, tmp_path):
+        from services.tiktok.tiktok_downloader import TikTokDownloader
+        api_resp = self._mock_slideshow_response_json([
+            "https://img.example/1.jpg", "https://img.example/2.jpg", "https://img.example/3.jpg",
+        ])
+        mock_get.side_effect = [
+            api_resp,
+            self._mock_binary_response(b"img1"),
+            self._mock_binary_response(b"img2"),
+            self._mock_binary_response(b"img3"),
+        ]
+
+        downloader = TikTokDownloader(self.FAKE_URL)
+        paths = await downloader.download_slideshow(str(tmp_path / "slideshow"))
+
+        assert len(paths) == 3
+        for path, expected in zip(paths, [b"img1", b"img2", b"img3"]):
+            assert os.path.exists(path)
+            with open(path, "rb") as f:
+                assert f.read() == expected
+
+    @pytest.mark.asyncio
+    @patch("aiohttp.ClientSession.get")
+    async def test_download_slideshow_raises_for_video_post(self, mock_get, tmp_path):
+        from services.tiktok.tiktok_downloader import TikTokDownloader
+        mock_get.return_value = self._mock_video_response_json()
+
+        downloader = TikTokDownloader(self.FAKE_URL)
+        with pytest.raises(ValueError, match="не фото-слайдшоу"):
+            await downloader.download_slideshow(str(tmp_path / "slideshow"))
+
+    @pytest.mark.asyncio
+    @patch("aiohttp.ClientSession.get")
+    async def test_probe_is_cached_across_calls(self, mock_get, tmp_path):
+        """probe() should only hit the API once, even if called again by
+        download_slideshow() afterwards."""
+        from services.tiktok.tiktok_downloader import TikTokDownloader
+        api_resp = self._mock_slideshow_response_json(["https://img.example/1.jpg"])
+        mock_get.side_effect = [api_resp, self._mock_binary_response()]
+
+        downloader = TikTokDownloader(self.FAKE_URL)
+        await downloader.probe()
+        await downloader.download_slideshow(str(tmp_path / "slideshow"))
+
+        # 1 API call (cached on the 2nd probe() inside download_slideshow) + 1 image download
+        assert mock_get.call_count == 2

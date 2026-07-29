@@ -41,6 +41,7 @@ class TestTikTokHandler:
             async def fake_download(filename):
                 fake_video.write_bytes(b"fake")
                 return str(fake_video)
+            MockDownloader.return_value.probe = AsyncMock(return_value={"data": {}})
             MockDownloader.return_value.download = AsyncMock(side_effect=fake_download)
 
             await handler(client, message)
@@ -60,6 +61,7 @@ class TestTikTokHandler:
 
         with patch("handlers.tiktok.TikTokDownloader") as MockDownloader, \
              patch("handlers.tiktok.asyncio.sleep", new=AsyncMock()):
+            MockDownloader.return_value.probe = AsyncMock(return_value={"data": {}})
             MockDownloader.return_value.download = AsyncMock(
                 side_effect=ValueError("Видео слишком большое (более 50 МБ).")
             )
@@ -79,6 +81,7 @@ class TestTikTokHandler:
 
         with patch("handlers.tiktok.TikTokDownloader") as MockDownloader, \
              patch("handlers.tiktok.asyncio.sleep", new=AsyncMock()):
+            MockDownloader.return_value.probe = AsyncMock(return_value={"data": {}})
             MockDownloader.return_value.download = AsyncMock(side_effect=RuntimeError("boom"))
             await handler(client, message)
 
@@ -103,6 +106,7 @@ class TestTikTokHandler:
 
         with patch("handlers.tiktok.TikTokDownloader") as MockDownloader, \
              patch("handlers.tiktok.asyncio.sleep", new=AsyncMock()):
+            MockDownloader.return_value.probe = AsyncMock(return_value={"data": {}})
             MockDownloader.return_value.download = AsyncMock(side_effect=slow_download)
 
             task = asyncio.create_task(handler(client, message1))
@@ -126,6 +130,7 @@ class TestTikTokHandler:
 
         with patch("handlers.tiktok.TikTokDownloader") as MockDownloader, \
              patch("handlers.tiktok.asyncio.sleep", new=AsyncMock()):
+            MockDownloader.return_value.probe = AsyncMock(return_value={"data": {}})
             MockDownloader.return_value.download = AsyncMock(side_effect=ValueError("API broken"))
             await handler(client, message)
 
@@ -145,6 +150,7 @@ class TestTikTokHandler:
              patch("handlers.tiktok.asyncio.sleep", new=AsyncMock()):
             async def fake_download(filename):
                 return filename
+            MockDownloader.return_value.probe = AsyncMock(return_value={"data": {}})
             MockDownloader.return_value.download = AsyncMock(side_effect=fake_download)
 
             await asyncio.gather(handler(client, message1), handler(client, message2))
@@ -163,6 +169,7 @@ class TestTikTokHandler:
             async def fake_download(filename):
                 open(filename, "wb").close()
                 return filename
+            MockDownloader.return_value.probe = AsyncMock(return_value={"data": {}})
             MockDownloader.return_value.download = AsyncMock(side_effect=fake_download)
 
             await handler(client, message)
@@ -180,6 +187,7 @@ class TestTikTokHandler:
 
         with patch("handlers.tiktok.TikTokDownloader") as MockDownloader, \
              patch("handlers.tiktok.asyncio.sleep", new=AsyncMock()):
+            MockDownloader.return_value.probe = AsyncMock(return_value={"data": {}})
             MockDownloader.return_value.download = AsyncMock(side_effect=ValueError("boom"))
             await handler(client, message)
 
@@ -198,6 +206,7 @@ class TestTikTokHandler:
             async def fake_download(filename):
                 open(filename, "wb").close()
                 return filename
+            MockDownloader.return_value.probe = AsyncMock(return_value={"data": {}})
             MockDownloader.return_value.download = AsyncMock(side_effect=fake_download)
 
             await handler(client, message)
@@ -218,6 +227,7 @@ class TestTikTokHandler:
             async def fake_download(filename):
                 open(filename, "wb").close()
                 return filename
+            MockDownloader.return_value.probe = AsyncMock(return_value={"data": {}})
             MockDownloader.return_value.download = AsyncMock(side_effect=fake_download)
 
             await handler(client, message1)
@@ -225,3 +235,77 @@ class TestTikTokHandler:
 
         assert client.send_video.await_count == 1
         assert "Подожди ещё" in message2.reply.await_args.args[0]
+
+
+class TestTikTokSlideshow:
+    URL = "https://www.tiktok.com/@user/photo/789"
+
+    @pytest.mark.asyncio
+    async def test_slideshow_sends_media_group_not_video(self, tmp_path):
+        handler, db = _register()
+        message = make_message(self.URL)
+        client = make_client()
+        client.send_media_group = AsyncMock()
+
+        image_paths = [str(tmp_path / f"img{i}.jpg") for i in range(3)]
+        for p in image_paths:
+            open(p, "wb").close()
+
+        with patch("handlers.tiktok.TikTokDownloader") as MockDownloader, \
+             patch("handlers.tiktok.asyncio.sleep", new=AsyncMock()):
+            MockDownloader.return_value.probe = AsyncMock(return_value={"data": {"images": image_paths}})
+            MockDownloader.return_value.download_slideshow = AsyncMock(return_value=image_paths)
+
+            await handler(client, message)
+
+        client.send_video.assert_not_called()
+        client.send_media_group.assert_awaited_once()
+        sent_media = client.send_media_group.await_args.args[1]
+        assert len(sent_media) == 3
+        db.log_download.assert_called_once_with(message.from_user.id, "tiktok", self.URL)
+
+    @pytest.mark.asyncio
+    async def test_slideshow_chunks_more_than_ten_images(self, tmp_path):
+        handler, db = _register()
+        message = make_message(self.URL)
+        client = make_client()
+        client.send_media_group = AsyncMock()
+
+        image_paths = [str(tmp_path / f"img{i}.jpg") for i in range(13)]
+        for p in image_paths:
+            open(p, "wb").close()
+
+        with patch("handlers.tiktok.TikTokDownloader") as MockDownloader, \
+             patch("handlers.tiktok.asyncio.sleep", new=AsyncMock()):
+            MockDownloader.return_value.probe = AsyncMock(return_value={"data": {"images": image_paths}})
+            MockDownloader.return_value.download_slideshow = AsyncMock(return_value=image_paths)
+
+            await handler(client, message)
+
+        assert client.send_media_group.await_count == 2  # 10 + 3
+        first_chunk = client.send_media_group.await_args_list[0].args[1]
+        second_chunk = client.send_media_group.await_args_list[1].args[1]
+        assert len(first_chunk) == 10
+        assert len(second_chunk) == 3
+
+    @pytest.mark.asyncio
+    async def test_slideshow_cleans_up_temp_directory(self, tmp_path):
+        handler, db = _register()
+        message = make_message(self.URL)
+        client = make_client()
+        client.send_media_group = AsyncMock()
+
+        image_paths = [str(tmp_path / f"img{i}.jpg") for i in range(2)]
+        for p in image_paths:
+            open(p, "wb").close()
+
+        with patch("handlers.tiktok.TikTokDownloader") as MockDownloader, \
+             patch("handlers.tiktok.asyncio.sleep", new=AsyncMock()), \
+             patch("handlers.tiktok.shutil.rmtree") as mock_rmtree:
+            MockDownloader.return_value.probe = AsyncMock(return_value={"data": {"images": image_paths}})
+            MockDownloader.return_value.download_slideshow = AsyncMock(return_value=image_paths)
+
+            await handler(client, message)
+
+        mock_rmtree.assert_called_once()
+        assert "slideshow_" in mock_rmtree.call_args.args[0]
