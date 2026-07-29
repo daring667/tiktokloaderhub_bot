@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 asyncio.set_event_loop(asyncio.new_event_loop())
 
 from pyrogram import Client, filters
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from handlers import youtube
 from handlers.youtube import register as register_youtube
 from handlers.instagram import register as register_instagram
@@ -118,15 +119,28 @@ async def broadcast_handler(client, message):
         return
 
     broadcast_text = parts[1].strip()
-    user_ids = db.get_all_user_ids()
+    user_ids = db.get_broadcast_subscribed_user_ids()
 
     status_msg = await message.reply(f"📣 Рассылаю {len(user_ids)} пользователям...")
 
-    sent, failed = await broadcast_message(client, user_ids, broadcast_text)
+    unsub_markup = InlineKeyboardMarkup([[
+        InlineKeyboardButton("🔕 Больше не присылать рассылки", callback_data="broadcast_unsub")
+    ]])
+    sent, failed = await broadcast_message(client, user_ids, broadcast_text, reply_markup=unsub_markup)
 
     await status_msg.edit_text(
         f"📣 Рассылка завершена.\n✅ Отправлено: {sent}\n❌ Не удалось: {failed}"
     )
+
+@app.on_callback_query(filters.regex(r'^broadcast_unsub$'))
+async def broadcast_unsub_handler(client, callback):
+    if callback.from_user:
+        db.set_broadcast_opt_out(callback.from_user.id, True)
+    await callback.answer("Вы отписались от рассылок. Скачивание видео продолжит работать как обычно.", show_alert=True)
+    try:
+        await callback.message.edit_reply_markup(reply_markup=None)
+    except Exception:
+        pass
 
 if __name__ == "__main__":
     register_youtube(app, db)

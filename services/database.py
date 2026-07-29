@@ -63,6 +63,17 @@ class BotDatabase:
             """)
             self._conn.commit()
 
+            # Migration: broadcast_opt_out didn't exist in earlier versions of
+            # this table. SQLite has no "ADD COLUMN IF NOT EXISTS", so just
+            # swallow the error if it's already there.
+            try:
+                cur.execute(
+                    "ALTER TABLE users ADD COLUMN broadcast_opt_out INTEGER NOT NULL DEFAULT 0"
+                )
+                self._conn.commit()
+            except sqlite3.OperationalError:
+                pass
+
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
@@ -105,10 +116,21 @@ class BotDatabase:
         cur = self._conn.execute("SELECT COUNT(*) FROM users")
         return cur.fetchone()[0]
 
-    def get_all_user_ids(self) -> list[int]:
-        """All registered user IDs, for admin broadcasts."""
-        rows = self._conn.execute("SELECT user_id FROM users").fetchall()
+    def get_broadcast_subscribed_user_ids(self) -> list[int]:
+        """Registered user IDs that haven't opted out of broadcasts."""
+        rows = self._conn.execute(
+            "SELECT user_id FROM users WHERE broadcast_opt_out = 0"
+        ).fetchall()
         return [row["user_id"] for row in rows]
+
+    def set_broadcast_opt_out(self, user_id: int, opted_out: bool = True) -> None:
+        """Mark a user as (not) wanting to receive /broadcast messages."""
+        with self._lock:
+            self._conn.execute(
+                "UPDATE users SET broadcast_opt_out = ? WHERE user_id = ?",
+                (1 if opted_out else 0, user_id),
+            )
+            self._conn.commit()
 
     def get_download_count(self) -> int:
         cur = self._conn.execute("SELECT COUNT(*) FROM downloads")

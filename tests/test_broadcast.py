@@ -45,4 +45,14 @@ class TestBroadcastMessage:
 
         await broadcast_message(client, [42], "important update", delay=0)
 
-        client.send_message.assert_awaited_once_with(42, "important update")
+        client.send_message.assert_awaited_once_with(42, "important update", reply_markup=None)
+
+    @pytest.mark.asyncio
+    async def test_passes_reply_markup_through(self):
+        client = MagicMock()
+        client.send_message = AsyncMock()
+        markup = MagicMock(name="markup")
+
+        await broadcast_message(client, [42], "hi", delay=0, reply_markup=markup)
+
+        client.send_message.assert_awaited_once_with(42, "hi", reply_markup=markup)

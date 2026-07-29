@@ -1,6 +1,7 @@
 """
 Tests for BotDatabase (SQLite analytics).
 """
+import sqlite3
 import pytest
 from services.database import BotDatabase
 
@@ -83,13 +84,33 @@ class TestBotDatabase:
     def test_get_download_count_zero(self, tmp_db):
         assert tmp_db.get_download_count() == 0
 
-    def test_get_all_user_ids(self, tmp_db):
+    def test_get_broadcast_subscribed_user_ids(self, tmp_db):
         tmp_db.register_user(1, "alice", "Alice")
         tmp_db.register_user(2, "bob", "Bob")
-        assert sorted(tmp_db.get_all_user_ids()) == [1, 2]
+        assert sorted(tmp_db.get_broadcast_subscribed_user_ids()) == [1, 2]
 
-    def test_get_all_user_ids_empty(self, tmp_db):
-        assert tmp_db.get_all_user_ids() == []
+    def test_get_broadcast_subscribed_user_ids_empty(self, tmp_db):
+        assert tmp_db.get_broadcast_subscribed_user_ids() == []
+
+    def test_opted_out_user_excluded_from_broadcast_list(self, tmp_db):
+        tmp_db.register_user(1, "alice", "Alice")
+        tmp_db.register_user(2, "bob", "Bob")
+
+        tmp_db.set_broadcast_opt_out(1, True)
+
+        assert tmp_db.get_broadcast_subscribed_user_ids() == [2]
+
+    def test_opt_out_can_be_reversed(self, tmp_db):
+        tmp_db.register_user(1, "alice", "Alice")
+        tmp_db.set_broadcast_opt_out(1, True)
+        assert tmp_db.get_broadcast_subscribed_user_ids() == []
+
+        tmp_db.set_broadcast_opt_out(1, False)
+        assert tmp_db.get_broadcast_subscribed_user_ids() == [1]
+
+    def test_new_users_are_subscribed_by_default(self, tmp_db):
+        tmp_db.register_user(1, "alice", "Alice")
+        assert tmp_db.get_broadcast_subscribed_user_ids() == [1]
 
     def test_save_and_get_callback(self, tmp_db):
         tmp_db.save_callback("token1", "http://example.com/1", "137", "video")
@@ -141,3 +162,26 @@ class TestBotDatabase:
         assert stats["errors_24h_by_platform"]["tiktok"] == 2
         assert stats["errors_24h_by_platform"]["youtube"] == 1
         assert "instagram" not in stats["errors_24h_by_platform"]
+
+    def test_migration_adds_broadcast_opt_out_to_pre_existing_db(self, tmp_path):
+        """Simulates opening a database created before broadcast_opt_out
+        existed — the migration must add it without crashing or losing data."""
+        db_path = str(tmp_path / "old_schema.db")
+        conn = sqlite3.connect(db_path)
+        conn.execute("""
+            CREATE TABLE users (
+                user_id    INTEGER PRIMARY KEY,
+                username   TEXT,
+                first_name TEXT,
+                first_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        conn.execute("INSERT INTO users (user_id, username, first_name) VALUES (5, 'old', 'User')")
+        conn.commit()
+        conn.close()
+
+        db = BotDatabase(db_path=db_path)
+        try:
+            assert db.get_broadcast_subscribed_user_ids() == [5]
+        finally:
+            db.close()
