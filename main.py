@@ -126,11 +126,23 @@ async def broadcast_handler(client, message):
     unsub_markup = InlineKeyboardMarkup([[
         InlineKeyboardButton("🔕 Больше не присылать рассылки", callback_data="broadcast_unsub")
     ]])
-    sent, failed = await broadcast_message(client, user_ids, broadcast_text, reply_markup=unsub_markup)
+    results = await broadcast_message(client, user_ids, broadcast_text, reply_markup=unsub_markup)
 
-    await status_msg.edit_text(
-        f"📣 Рассылка завершена.\n✅ Отправлено: {sent}\n❌ Не удалось: {failed}"
-    )
+    names = db.get_user_display_names(user_ids)
+    sent_ids = [uid for uid, ok, _ in results if ok]
+    failed_ids = [uid for uid, ok, _ in results if not ok]
+
+    lines = [
+        "📣 Рассылка завершена.",
+        f"✅ Отправлено: {len(sent_ids)}",
+        f"❌ Не удалось: {len(failed_ids)}",
+    ]
+    if sent_ids:
+        lines.append("\n✅ Получили: " + ", ".join(names.get(uid, str(uid)) for uid in sent_ids))
+    if failed_ids:
+        lines.append("\n❌ Не получили: " + ", ".join(names.get(uid, str(uid)) for uid in failed_ids))
+
+    await status_msg.edit_text("\n".join(lines))
 
 @app.on_callback_query(filters.regex(r'^broadcast_unsub$'))
 async def broadcast_unsub_handler(client, callback):

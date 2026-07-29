@@ -123,6 +123,27 @@ class BotDatabase:
         ).fetchall()
         return [row["user_id"] for row in rows]
 
+    def get_user_display_names(self, user_ids) -> dict:
+        """Maps user_id -> a human-readable label (@username, first name,
+        or the raw ID as a last resort), for showing broadcast results."""
+        user_ids = list(user_ids)
+        if not user_ids:
+            return {}
+        placeholders = ",".join("?" for _ in user_ids)
+        rows = self._conn.execute(
+            f"SELECT user_id, username, first_name FROM users WHERE user_id IN ({placeholders})",
+            user_ids,
+        ).fetchall()
+        labels = {}
+        for row in rows:
+            if row["username"]:
+                labels[row["user_id"]] = f"@{row['username']}"
+            elif row["first_name"]:
+                labels[row["user_id"]] = row["first_name"]
+            else:
+                labels[row["user_id"]] = str(row["user_id"])
+        return labels
+
     def set_broadcast_opt_out(self, user_id: int, opted_out: bool = True) -> None:
         """Mark a user as (not) wanting to receive /broadcast messages."""
         with self._lock:

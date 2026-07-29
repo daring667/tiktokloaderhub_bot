@@ -112,6 +112,29 @@ class TestBotDatabase:
         tmp_db.register_user(1, "alice", "Alice")
         assert tmp_db.get_broadcast_subscribed_user_ids() == [1]
 
+    def test_get_user_display_names_prefers_username(self, tmp_db):
+        tmp_db.register_user(1, "alice_w", "Alice")
+        names = tmp_db.get_user_display_names([1])
+        assert names == {1: "@alice_w"}
+
+    def test_get_user_display_names_falls_back_to_first_name(self, tmp_db):
+        tmp_db.register_user(2, None, "Bob")
+        names = tmp_db.get_user_display_names([2])
+        assert names == {2: "Bob"}
+
+    def test_get_user_display_names_falls_back_to_id(self, tmp_db):
+        tmp_db.register_user(3, None, None)
+        names = tmp_db.get_user_display_names([3])
+        assert names == {3: "3"}
+
+    def test_get_user_display_names_ignores_unknown_ids(self, tmp_db):
+        tmp_db.register_user(1, "alice_w", "Alice")
+        names = tmp_db.get_user_display_names([1, 999])
+        assert names == {1: "@alice_w"}
+
+    def test_get_user_display_names_empty_input(self, tmp_db):
+        assert tmp_db.get_user_display_names([]) == {}
+
     def test_save_and_get_callback(self, tmp_db):
         tmp_db.save_callback("token1", "http://example.com/1", "137", "video")
         

@@ -11,10 +11,10 @@ class TestBroadcastMessage:
         client = MagicMock()
         client.send_message = AsyncMock()
 
-        sent, failed = await broadcast_message(client, [1, 2, 3], "hello", delay=0)
+        results = await broadcast_message(client, [1, 2, 3], "hello", delay=0)
 
-        assert sent == 3
-        assert failed == 0
+        assert [uid for uid, ok, _ in results] == [1, 2, 3]
+        assert all(ok for _, ok, _ in results)
         assert client.send_message.await_count == 3
 
     @pytest.mark.asyncio
@@ -22,10 +22,11 @@ class TestBroadcastMessage:
         client = MagicMock()
         client.send_message = AsyncMock(side_effect=[None, Exception("blocked"), None])
 
-        sent, failed = await broadcast_message(client, [1, 2, 3], "hello", delay=0)
+        results = await broadcast_message(client, [1, 2, 3], "hello", delay=0)
 
-        assert sent == 2
-        assert failed == 1
+        assert results[0] == (1, True, None)
+        assert results[1][0] == 2 and results[1][1] is False and "blocked" in results[1][2]
+        assert results[2] == (3, True, None)
         assert client.send_message.await_count == 3
 
     @pytest.mark.asyncio
@@ -33,9 +34,9 @@ class TestBroadcastMessage:
         client = MagicMock()
         client.send_message = AsyncMock()
 
-        sent, failed = await broadcast_message(client, [], "hello", delay=0)
+        results = await broadcast_message(client, [], "hello", delay=0)
 
-        assert (sent, failed) == (0, 0)
+        assert results == []
         client.send_message.assert_not_called()
 
     @pytest.mark.asyncio
