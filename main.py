@@ -13,6 +13,7 @@ from handlers.twitter import register as register_twitter
 from handlers.tiktok import TikTokHandler
 from services.database import BotDatabase
 from services.utils.env import resolve_admin_id
+from services.utils.broadcast import broadcast_message
 
 load_dotenv()
 
@@ -103,6 +104,29 @@ async def stats_handler(client, message):
         f"   └ {error_rate_line('twitter', 'Twitter/X')}"
     )
     await message.reply(text)
+
+@app.on_message(filters.command("broadcast") & (filters.private | filters.group))
+async def broadcast_handler(client, message):
+    user_id = message.from_user.id if message.from_user else None
+    if not user_id or user_id != ADMIN_ID:
+        await message.reply("⛔ Нет доступа.")
+        return
+
+    parts = message.text.split(None, 1)
+    if len(parts) < 2 or not parts[1].strip():
+        await message.reply("Использование: /broadcast <текст сообщения>")
+        return
+
+    broadcast_text = parts[1].strip()
+    user_ids = db.get_all_user_ids()
+
+    status_msg = await message.reply(f"📣 Рассылаю {len(user_ids)} пользователям...")
+
+    sent, failed = await broadcast_message(client, user_ids, broadcast_text)
+
+    await status_msg.edit_text(
+        f"📣 Рассылка завершена.\n✅ Отправлено: {sent}\n❌ Не удалось: {failed}"
+    )
 
 if __name__ == "__main__":
     register_youtube(app, db)

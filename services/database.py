@@ -105,6 +105,11 @@ class BotDatabase:
         cur = self._conn.execute("SELECT COUNT(*) FROM users")
         return cur.fetchone()[0]
 
+    def get_all_user_ids(self) -> list[int]:
+        """All registered user IDs, for admin broadcasts."""
+        rows = self._conn.execute("SELECT user_id FROM users").fetchall()
+        return [row["user_id"] for row in rows]
+
     def get_download_count(self) -> int:
         cur = self._conn.execute("SELECT COUNT(*) FROM downloads")
         return cur.fetchone()[0]

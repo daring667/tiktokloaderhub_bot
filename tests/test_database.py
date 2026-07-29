@@ -83,6 +83,14 @@ class TestBotDatabase:
     def test_get_download_count_zero(self, tmp_db):
         assert tmp_db.get_download_count() == 0
 
+    def test_get_all_user_ids(self, tmp_db):
+        tmp_db.register_user(1, "alice", "Alice")
+        tmp_db.register_user(2, "bob", "Bob")
+        assert sorted(tmp_db.get_all_user_ids()) == [1, 2]
+
+    def test_get_all_user_ids_empty(self, tmp_db):
+        assert tmp_db.get_all_user_ids() == []
+
     def test_save_and_get_callback(self, tmp_db):
         tmp_db.save_callback("token1", "http://example.com/1", "137", "video")
         
