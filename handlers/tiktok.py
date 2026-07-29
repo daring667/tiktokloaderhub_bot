@@ -4,6 +4,8 @@ from services.downloader import is_tiktok_url
 from handlers.base import (
     BaseHandler,
     DownloadInProgress,
+    RateLimited,
+    rate_limit_message,
     download_slot,
     safe_delete,
     cleanup_files,
@@ -49,6 +51,8 @@ class TikTokHandler(BaseHandler):
                         await safe_delete(message)
             except DownloadInProgress:
                 await message.reply("⏳ Подожди, идёт другая загрузка.")
+            except RateLimited as e:
+                await message.reply(rate_limit_message(e))
 
 
 async def _download_and_send(client, message, url, db) -> bool:

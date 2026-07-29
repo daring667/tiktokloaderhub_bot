@@ -258,6 +258,29 @@ class TestYoutubeMessageHandler:
 
         message.delete.assert_not_called()
 
+    @pytest.mark.asyncio
+    async def test_rapid_second_request_is_rate_limited(self, tmp_path):
+        handler, _cb, db = _register()
+        message1 = make_message(URL, user_id=55)
+        message2 = make_message(URL, user_id=55)
+        client = make_client()
+
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            meta = _make_meta(length=30)
+            fake_video = tmp_path / "v.mp4"
+
+            async def fake_download(itag, filename, msg, status_msg):
+                fake_video.write_bytes(b"x")
+                return str(fake_video)
+            meta.download = AsyncMock(side_effect=fake_download)
+            MockYT.return_value = meta
+
+            await handler(client, message1)
+            await handler(client, message2)
+
+        assert client.send_video.await_count == 1
+        assert "Подожди ещё" in message2.reply.await_args.args[0]
+
 
 class TestYoutubeCallbackHandler:
     @pytest.mark.asyncio

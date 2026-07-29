@@ -1,5 +1,6 @@
 import contextlib
 import html
+import math
 import os
 import time
 import traceback
@@ -26,20 +27,49 @@ class DownloadInProgress(Exception):
     """Raised when the user already has a download running on this platform."""
 
 
+class RateLimited(Exception):
+    """Raised when the user is making requests faster than REQUEST_COOLDOWN_SECONDS apart."""
+
+    def __init__(self, retry_after: float):
+        self.retry_after = retry_after
+        super().__init__(f"rate limited, retry after {retry_after:.1f}s")
+
+
+# Minimum gap between the end of one request and the start of the next, per
+# user — this catches rapid-fire back-to-back spam that download_slot alone
+# doesn't (it only blocks truly *overlapping* requests). Reset on restart.
+REQUEST_COOLDOWN_SECONDS = float(os.getenv("REQUEST_COOLDOWN_SECONDS", "5"))
+_last_finished_at: dict = {}  # key -> monotonic timestamp
+
+
 @contextlib.asynccontextmanager
 async def download_slot(active_downloads: set, key):
     """Reserves `key` in `active_downloads` for the duration of the block.
 
-    Raises DownloadInProgress instead of silently proceeding, so callers
-    decide how to reply to the user.
+    Raises DownloadInProgress if a download for this key is already running,
+    or RateLimited if the previous one for this key finished too recently.
+    Callers decide how to reply to the user in either case.
     """
     if key in active_downloads:
         raise DownloadInProgress()
+
+    last = _last_finished_at.get(key)
+    if last is not None:
+        elapsed = time.monotonic() - last
+        if elapsed < REQUEST_COOLDOWN_SECONDS:
+            raise RateLimited(REQUEST_COOLDOWN_SECONDS - elapsed)
+
     active_downloads.add(key)
     try:
         yield
     finally:
         active_downloads.discard(key)
+        _last_finished_at[key] = time.monotonic()
+
+
+def rate_limit_message(exc: "RateLimited") -> str:
+    """Consistent wording for the RateLimited reply across all handlers."""
+    return f"⏳ Подожди ещё {math.ceil(exc.retry_after)} сек. перед следующей ссылкой."
 
 
 def user_key_for(message):

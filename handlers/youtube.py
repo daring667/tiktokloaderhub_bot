@@ -6,6 +6,8 @@ from services.downloader import is_youtube_url
 from services.utils.sanitize import sanitize_filename
 from handlers.base import (
     DownloadInProgress,
+    RateLimited,
+    rate_limit_message,
     download_slot,
     safe_delete,
     cleanup_files,
@@ -147,6 +149,8 @@ def register(app: Client, db=None):
                     await safe_delete(message)
         except DownloadInProgress:
             await message.reply("⏳ Подожди, идёт другая загрузка.")
+        except RateLimited as e:
+            await message.reply(rate_limit_message(e))
 
     @app.on_callback_query(filters.regex(r'^yt\|'))
     async def yt_callback(client, callback):
@@ -169,6 +173,8 @@ def register(app: Client, db=None):
                     await _handle_playlist_next(client, callback, db, token)
             except DownloadInProgress:
                 await callback.answer("⏳ Уже загружается...", show_alert=True)
+            except RateLimited as e:
+                await callback.answer(rate_limit_message(e), show_alert=True)
             return
 
         try:
@@ -176,6 +182,8 @@ def register(app: Client, db=None):
                 await _handle_youtube_callback(client, callback, db)
         except DownloadInProgress:
             await callback.answer("⏳ Уже загружается...", show_alert=True)
+        except RateLimited as e:
+            await callback.answer(rate_limit_message(e), show_alert=True)
 
 
 async def _handle_one_youtube_url(client, message, db, url) -> bool:

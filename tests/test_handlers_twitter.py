@@ -172,3 +172,25 @@ class TestTwitterHandler:
 
         assert client.send_video.await_count == 2
         assert db.log_download.call_count == 2
+
+    @pytest.mark.asyncio
+    async def test_rapid_second_request_is_rate_limited(self):
+        handler, db = _register()
+        message1 = make_message(URL, user_id=55)
+        message2 = make_message(URL, user_id=55)
+        client = make_client()
+
+        with patch("handlers.twitter.TwitterDownloader") as MockDownloader:
+            instance = MockDownloader.return_value
+            instance.title = "Video"
+
+            async def fake_download(filename):
+                open(filename, "wb").close()
+                return filename
+            instance.download = AsyncMock(side_effect=fake_download)
+
+            await handler(client, message1)
+            await handler(client, message2)
+
+        assert client.send_video.await_count == 1
+        assert "Подожди ещё" in message2.reply.await_args.args[0]

@@ -42,3 +42,13 @@ def _reset_error_alert_throttle():
     yield
     _error_alert_state.clear()
 
+
+@pytest.fixture(autouse=True)
+def _reset_request_cooldown():
+    """download_slot() tracks per-user cooldown via a module-level dict —
+    clear it between tests so one test's requests can't rate-limit another's."""
+    from handlers.base import _last_finished_at
+    _last_finished_at.clear()
+    yield
+    _last_finished_at.clear()
+

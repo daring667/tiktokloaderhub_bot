@@ -5,6 +5,8 @@ from unittest.mock import AsyncMock, MagicMock
 from handlers.base import (
     download_slot,
     DownloadInProgress,
+    RateLimited,
+    rate_limit_message,
     safe_delete,
     cleanup_files,
     user_key_for,
@@ -39,6 +41,60 @@ class TestDownloadSlot:
             async with download_slot(active, "user1"):
                 raise ValueError("boom")
         assert "user1" not in active
+
+    @pytest.mark.asyncio
+    async def test_rate_limited_immediately_after_finishing(self, monkeypatch):
+        import handlers.base as base
+        monkeypatch.setattr(base, "REQUEST_COOLDOWN_SECONDS", 100)
+        active = set()
+
+        async with download_slot(active, "user1"):
+            pass  # first request completes normally, starting the cooldown
+
+        with pytest.raises(RateLimited) as exc_info:
+            async with download_slot(active, "user1"):
+                pass
+        assert exc_info.value.retry_after > 0
+
+    @pytest.mark.asyncio
+    async def test_allowed_again_once_cooldown_elapses(self, monkeypatch):
+        import handlers.base as base
+        monkeypatch.setattr(base, "REQUEST_COOLDOWN_SECONDS", 100)
+        active = set()
+
+        async with download_slot(active, "user1"):
+            pass
+
+        base._last_finished_at["user1"] -= 101  # simulate time passing
+
+        async with download_slot(active, "user1"):
+            pass  # must not raise
+
+    @pytest.mark.asyncio
+    async def test_rate_limit_is_per_key(self, monkeypatch):
+        import handlers.base as base
+        monkeypatch.setattr(base, "REQUEST_COOLDOWN_SECONDS", 100)
+        active = set()
+
+        async with download_slot(active, "user1"):
+            pass
+
+        async with download_slot(active, "user2"):
+            pass  # different user — must not raise
+
+    @pytest.mark.asyncio
+    async def test_zero_cooldown_never_rate_limits(self, monkeypatch):
+        import handlers.base as base
+        monkeypatch.setattr(base, "REQUEST_COOLDOWN_SECONDS", 0)
+        active = set()
+
+        async with download_slot(active, "user1"):
+            pass
+        async with download_slot(active, "user1"):
+            pass  # must not raise
+
+    def test_rate_limit_message_rounds_up(self):
+        assert rate_limit_message(RateLimited(2.1)) == "⏳ Подожди ещё 3 сек. перед следующей ссылкой."
 
     @pytest.mark.asyncio
     async def test_different_keys_dont_block_each_other(self):

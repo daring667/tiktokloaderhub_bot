@@ -205,3 +205,23 @@ class TestTikTokHandler:
         first_reply_text = message.reply.await_args_list[0].args[0]
         assert "Нашёл" in first_reply_text
         assert client.send_video.await_count == MAX_LINKS_PER_MESSAGE
+
+    @pytest.mark.asyncio
+    async def test_rapid_second_request_is_rate_limited(self):
+        handler, db = _register()
+        message1 = make_message(URL, user_id=55)
+        message2 = make_message(URL, user_id=55)
+        client = make_client()
+
+        with patch("handlers.tiktok.TikTokDownloader") as MockDownloader, \
+             patch("handlers.tiktok.asyncio.sleep", new=AsyncMock()):
+            async def fake_download(filename):
+                open(filename, "wb").close()
+                return filename
+            MockDownloader.return_value.download = AsyncMock(side_effect=fake_download)
+
+            await handler(client, message1)
+            await handler(client, message2)  # right after — should be throttled
+
+        assert client.send_video.await_count == 1
+        assert "Подожди ещё" in message2.reply.await_args.args[0]

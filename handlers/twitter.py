@@ -4,6 +4,8 @@ from services.downloader import is_twitter_url
 from services.utils.sanitize import sanitize_filename
 from handlers.base import (
     DownloadInProgress,
+    RateLimited,
+    rate_limit_message,
     download_slot,
     safe_delete,
     cleanup_files,
@@ -38,6 +40,8 @@ def register(app: Client, db=None):
                     await _download_and_send(client, message, db, url)
         except DownloadInProgress:
             await message.reply("⏳ Подожди, уже идёт другая загрузка.")
+        except RateLimited as e:
+            await message.reply(rate_limit_message(e))
 
 
 async def _download_and_send(client, message, db, url):
