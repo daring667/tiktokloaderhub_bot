@@ -1,8 +1,16 @@
 from pyrogram import Client, filters
 from services.instagram.instagram_downloader import InstagramDownloader
-from services.downloader import extract_url
+from services.downloader import is_instagram_url
 from services.utils.sanitize import sanitize_filename
-from handlers.base import DownloadInProgress, download_slot, safe_delete, cleanup_files, user_key_for, report_error
+from handlers.base import (
+    DownloadInProgress,
+    download_slot,
+    safe_delete,
+    cleanup_files,
+    user_key_for,
+    report_error,
+    extract_platform_urls,
+)
 import os, time, uuid, logging
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -16,24 +24,26 @@ MAX_FILE_SIZE = 50 * 1024 * 1024
 def register(app: Client, db=None):
     @app.on_message(filters.regex(r'https?://(www\.)?(instagram\.com/(reel|p|tv)/|instagr\.am/)') & (filters.group | filters.private))
     async def instagram_handler(client, message):
+        urls, total_found = extract_platform_urls(message.text, is_instagram_url)
+        if not urls:
+            return await message.reply("❌ Не найдена ссылка Instagram.")
+
         try:
             async with download_slot(active_downloads, user_key_for(message)):
-                await _download_and_send(client, message, db)
+                if total_found > len(urls):
+                    await message.reply(f"⚠️ Нашёл {total_found} ссылок, обрабатываю первые {len(urls)}.")
+                for url in urls:
+                    await _download_and_send(client, message, db, url)
         except DownloadInProgress:
             await message.reply("⏳ Подожди, уже идет другая загрузка.")
 
 
-async def _download_and_send(client, message, db):
+async def _download_and_send(client, message, db, url):
     result_path = None
     status_msg = None
     filename = os.path.join(DOWNLOADS_DIR, f"{uuid.uuid4()}.mp4")
 
     try:
-        url = extract_url(message.text or "")
-        if not url:
-            await message.reply("❌ Не найдена ссылка Instagram.")
-            return
-
         status_msg = await message.reply("⏳ Загружаю Instagram Reels...")
         downloader = InstagramDownloader(url)
         result_path = await downloader.download(filename)

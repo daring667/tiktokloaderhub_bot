@@ -150,3 +150,58 @@ class TestTikTokHandler:
             await asyncio.gather(handler(client, message1), handler(client, message2))
 
         assert client.send_video.await_count == 2
+
+    @pytest.mark.asyncio
+    async def test_multiple_links_in_one_message_all_downloaded(self):
+        handler, db = _register()
+        url2 = "https://www.tiktok.com/@user/video/456"
+        message = make_message(f"{URL} {url2}")
+        client = make_client()
+
+        with patch("handlers.tiktok.TikTokDownloader") as MockDownloader, \
+             patch("handlers.tiktok.asyncio.sleep", new=AsyncMock()):
+            async def fake_download(filename):
+                open(filename, "wb").close()
+                return filename
+            MockDownloader.return_value.download = AsyncMock(side_effect=fake_download)
+
+            await handler(client, message)
+
+        assert client.send_video.await_count == 2
+        assert db.log_download.call_count == 2
+        message.delete.assert_awaited_once()  # original message deleted once, after the whole batch
+
+    @pytest.mark.asyncio
+    async def test_source_message_kept_if_every_link_fails(self):
+        handler, db = _register()
+        url2 = "https://www.tiktok.com/@user/video/456"
+        message = make_message(f"{URL} {url2}")
+        client = make_client()
+
+        with patch("handlers.tiktok.TikTokDownloader") as MockDownloader, \
+             patch("handlers.tiktok.asyncio.sleep", new=AsyncMock()):
+            MockDownloader.return_value.download = AsyncMock(side_effect=ValueError("boom"))
+            await handler(client, message)
+
+        message.delete.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_too_many_links_are_capped_with_a_warning(self):
+        from handlers.base import MAX_LINKS_PER_MESSAGE
+        handler, db = _register()
+        urls_text = " ".join(f"https://www.tiktok.com/@u/video/{i}" for i in range(MAX_LINKS_PER_MESSAGE + 2))
+        message = make_message(urls_text)
+        client = make_client()
+
+        with patch("handlers.tiktok.TikTokDownloader") as MockDownloader, \
+             patch("handlers.tiktok.asyncio.sleep", new=AsyncMock()):
+            async def fake_download(filename):
+                open(filename, "wb").close()
+                return filename
+            MockDownloader.return_value.download = AsyncMock(side_effect=fake_download)
+
+            await handler(client, message)
+
+        first_reply_text = message.reply.await_args_list[0].args[0]
+        assert "Нашёл" in first_reply_text
+        assert client.send_video.await_count == MAX_LINKS_PER_MESSAGE

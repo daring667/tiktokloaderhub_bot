@@ -2,7 +2,16 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 
-from handlers.base import download_slot, DownloadInProgress, safe_delete, cleanup_files, user_key_for, report_error
+from handlers.base import (
+    download_slot,
+    DownloadInProgress,
+    safe_delete,
+    cleanup_files,
+    user_key_for,
+    report_error,
+    extract_platform_urls,
+    MAX_LINKS_PER_MESSAGE,
+)
 from _helpers import make_message
 
 
@@ -212,3 +221,31 @@ class TestReportError:
         await report_error(client, "youtube", "url2", None, ValueError("first"))
 
         assert client.send_message.await_count == 2
+
+
+class TestExtractPlatformUrls:
+    @staticmethod
+    def _is_tiktok(url):
+        return "tiktok.com" in url
+
+    def test_filters_to_matching_platform_only(self):
+        text = "https://www.tiktok.com/@a/video/1 https://youtu.be/xyz https://vm.tiktok.com/b"
+        urls, total = extract_platform_urls(text, self._is_tiktok)
+        assert urls == ["https://www.tiktok.com/@a/video/1", "https://vm.tiktok.com/b"]
+        assert total == 2
+
+    def test_no_matches_returns_empty(self):
+        urls, total = extract_platform_urls("https://youtu.be/xyz", self._is_tiktok)
+        assert urls == []
+        assert total == 0
+
+    def test_caps_at_max_links_and_reports_true_total(self):
+        links = " ".join(f"https://tiktok.com/@u/video/{i}" for i in range(MAX_LINKS_PER_MESSAGE + 3))
+        urls, total = extract_platform_urls(links, self._is_tiktok)
+        assert len(urls) == MAX_LINKS_PER_MESSAGE
+        assert total == MAX_LINKS_PER_MESSAGE + 3
+
+    def test_empty_text(self):
+        urls, total = extract_platform_urls("", self._is_tiktok)
+        assert urls == []
+        assert total == 0

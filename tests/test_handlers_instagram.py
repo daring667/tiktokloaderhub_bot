@@ -151,3 +151,24 @@ class TestInstagramHandler:
             await task
 
         assert "уже идет другая загрузка" in message2.reply.await_args.args[0]
+
+    @pytest.mark.asyncio
+    async def test_multiple_links_in_one_message_all_downloaded(self):
+        handler, db = _register()
+        url2 = "https://www.instagram.com/reel/XYZ999/"
+        message = make_message(f"{URL} {url2}")
+        client = make_client()
+
+        with patch("handlers.instagram.InstagramDownloader") as MockDownloader:
+            instance = MockDownloader.return_value
+            instance.title = "Reel"
+
+            async def fake_download(filename):
+                open(filename, "wb").close()
+                return filename
+            instance.download = AsyncMock(side_effect=fake_download)
+
+            await handler(client, message)
+
+        assert client.send_video.await_count == 2
+        assert db.log_download.call_count == 2

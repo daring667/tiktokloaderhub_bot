@@ -222,6 +222,41 @@ class TestYoutubeMessageHandler:
 
         assert "идёт другая загрузка" in message2.reply.await_args.args[0]
 
+    @pytest.mark.asyncio
+    async def test_multiple_links_in_one_message_all_downloaded(self):
+        handler, _cb, db = _register()
+        url2 = "https://www.youtube.com/watch?v=abcdefghijk"
+        message = make_message(f"{URL} {url2}")
+        client = make_client()
+
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            meta = _make_meta(length=30)
+
+            async def fake_download(itag, filename, msg, status_msg):
+                open(filename, "wb").close()
+                return filename
+            meta.download = AsyncMock(side_effect=fake_download)
+            MockYT.return_value = meta
+
+            await handler(client, message)
+
+        assert client.send_video.await_count == 2
+        assert db.log_download.call_count == 2
+        message.delete.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_source_message_kept_if_every_link_fails(self):
+        handler, _cb, db = _register()
+        url2 = "https://www.youtube.com/watch?v=abcdefghijk"
+        message = make_message(f"{URL} {url2}")
+        client = make_client()
+
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            MockYT.side_effect = ValueError("boom")
+            await handler(client, message)
+
+        message.delete.assert_not_called()
+
 
 class TestYoutubeCallbackHandler:
     @pytest.mark.asyncio
@@ -247,6 +282,26 @@ class TestYoutubeCallbackHandler:
         args, kwargs = callback.answer.await_args
         assert "истёк" in args[0] or "недействительна" in args[0]
         assert kwargs.get("show_alert") is True
+
+    @pytest.mark.asyncio
+    async def test_successful_download_deletes_quality_picker_message(self, tmp_path):
+        _msg, callback_handler, db = _register()
+        callback = make_callback("yt|18|dQw4w9WgXcQ")
+        client = make_client()
+        fake_video = tmp_path / "v.mp4"
+
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            meta = _make_meta(length=30, streams=[{"itag": "18", "res": "360p", "filesize": 1000, "type": "video"}])
+
+            async def fake_download(itag, filename, msg, status_msg):
+                fake_video.write_bytes(b"x")
+                return str(fake_video)
+            meta.download = AsyncMock(side_effect=fake_download)
+            MockYT.return_value = meta
+
+            await callback_handler(client, callback)
+
+        callback.message.delete.assert_awaited_once()
 
 
 class TestFormatDuration:

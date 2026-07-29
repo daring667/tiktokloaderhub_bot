@@ -34,12 +34,17 @@ def is_instagram_url(url: str) -> bool:
     return any(x in lower for x in ['instagram.com/reel/', 'instagram.com/p/', 'instagram.com/tv/', 'instagr.am/'])
 
 
+def extract_urls(text: str) -> list[str]:
+    """Extract all URLs from a text message, in order of appearance."""
+    if not text:
+        return []
+    return re.findall(r'https?://\S+', text)
+
+
 def extract_url(text: str) -> str | None:
     """Extract the first URL from a text message."""
-    if not text:
-        return None
-    match = re.search(r'https?://\S+', text)
-    return match.group(0) if match else None
+    urls = extract_urls(text)
+    return urls[0] if urls else None
 
 
 async def download_tiktok_video(url: str, output_path: str, timeout: tuple = (5, 120)) -> str:

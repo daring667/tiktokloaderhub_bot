@@ -47,6 +47,21 @@ def user_key_for(message):
     return message.from_user.id if message.from_user else f"chat:{message.chat.id}"
 
 
+MAX_LINKS_PER_MESSAGE = 5
+
+
+def extract_platform_urls(text: str, is_platform_url) -> tuple[list, int]:
+    """All URLs in `text` matching `is_platform_url`, capped at
+    MAX_LINKS_PER_MESSAGE so one message can't queue up an unbounded batch.
+
+    Returns (urls_to_process, total_matching_found) — the second value lets
+    the caller tell the user when some links were dropped by the cap.
+    """
+    from services.downloader import extract_urls
+    matches = [u for u in extract_urls(text or "") if is_platform_url(u)]
+    return matches[:MAX_LINKS_PER_MESSAGE], len(matches)
+
+
 async def safe_delete(message):
     """Best-effort message deletion — never raises."""
     if message is None:

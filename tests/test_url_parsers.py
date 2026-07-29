@@ -117,3 +117,32 @@ class TestTikTokExtractUrl:
     def test_returns_none_for_empty(self):
         from services.downloader import extract_url
         assert extract_url("") is None
+
+
+class TestExtractUrls:
+    def test_extracts_single_url(self):
+        from services.downloader import extract_urls
+        assert extract_urls("Check this https://www.tiktok.com/@user/video/123 nice!") == [
+            "https://www.tiktok.com/@user/video/123"
+        ]
+
+    def test_extracts_multiple_urls_in_order(self):
+        from services.downloader import extract_urls
+        text = "https://vm.tiktok.com/abc https://youtu.be/xyz and https://instagram.com/p/qwe/"
+        assert extract_urls(text) == [
+            "https://vm.tiktok.com/abc",
+            "https://youtu.be/xyz",
+            "https://instagram.com/p/qwe/",
+        ]
+
+    def test_returns_empty_list_for_no_urls(self):
+        from services.downloader import extract_urls
+        assert extract_urls("no links here") == []
+
+    def test_returns_empty_list_for_empty_string(self):
+        from services.downloader import extract_urls
+        assert extract_urls("") == []
+
+    def test_returns_empty_list_for_none(self):
+        from services.downloader import extract_urls
+        assert extract_urls(None) == []

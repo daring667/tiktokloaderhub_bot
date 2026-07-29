@@ -1,6 +1,6 @@
 from pyrogram import filters
 from services.tiktok.tiktok_downloader import TikTokDownloader
-from services.downloader import extract_url
+from services.downloader import is_tiktok_url
 from handlers.base import (
     BaseHandler,
     DownloadInProgress,
@@ -9,6 +9,7 @@ from handlers.base import (
     cleanup_files,
     user_key_for,
     report_error,
+    extract_platform_urls,
 )
 import os, uuid, aiohttp, asyncio
 
@@ -30,21 +31,34 @@ class TikTokHandler(BaseHandler):
         async def handle_tiktok(client, message):
             print(f"[TikTok] Received message from {message.from_user.id if message.from_user else 'unknown'}: {message.text}")
 
-            url = extract_url(message.text or "")
-            if not url:
+            urls, total_found = extract_platform_urls(message.text, is_tiktok_url)
+            if not urls:
                 return await message.reply("❌ Не найдена ссылка.")
 
             try:
                 async with download_slot(active_downloads, user_key_for(message)):
-                    await _download_and_send(client, message, url, db)
+                    if total_found > len(urls):
+                        await message.reply(f"⚠️ Нашёл {total_found} ссылок, обрабатываю первые {len(urls)}.")
+
+                    any_success = False
+                    for url in urls:
+                        ok = await _download_and_send(client, message, url, db)
+                        any_success = any_success or ok
+
+                    if any_success:
+                        await safe_delete(message)
             except DownloadInProgress:
                 await message.reply("⏳ Подожди, идёт другая загрузка.")
 
 
-async def _download_and_send(client, message, url, db):
+async def _download_and_send(client, message, url, db) -> bool:
+    """Downloads and sends a single TikTok link. Returns True on success.
+    Does not touch `message` itself — the caller may be processing several
+    URLs against the same source message."""
     msg = await message.reply("⏳ Загружаю...")
     filename = os.path.join(DOWNLOADS_DIR, f"{uuid.uuid4()}.mp4")
     result_path = None
+    success = False
 
     try:
         # Небольшая пауза (может помочь от спама)
@@ -53,11 +67,9 @@ async def _download_and_send(client, message, url, db):
         downloader = TikTokDownloader(url)
         result_path = await downloader.download(filename)
 
-        # Попробуем удалить оригинальное сообщение со ссылкой
-        await safe_delete(message)
-
         # Отправляем скачанное видео
         await client.send_video(message.chat.id, video=result_path)
+        success = True
 
         # --- analytics ---
         if db and message.from_user:
@@ -86,3 +98,5 @@ async def _download_and_send(client, message, url, db):
     finally:
         await safe_delete(msg)
         cleanup_files(result_path, filename)
+
+    return success

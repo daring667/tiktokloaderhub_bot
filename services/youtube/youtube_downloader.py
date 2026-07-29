@@ -213,16 +213,9 @@ class YouTubeDownloader:
             if last_exc:
                 raise last_exc
 
-            if status_msg:
-                try:
-                    await status_msg.delete()
-                except Exception:
-                    pass
-            if message:
-                try:
-                    await message.delete()
-                except Exception:
-                    pass
+            # Cleanup of status_msg/message is the caller's responsibility
+            # (handlers/youtube.py) — it may be processing several URLs
+            # against the same source message in one batch.
 
             # Определяем реальный путь к скачанному файлу
             if expected_path and os.path.exists(expected_path):

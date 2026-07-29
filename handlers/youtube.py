@@ -2,9 +2,17 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from pyrogram.enums import ParseMode
 from services.youtube.youtube_downloader import YouTubeDownloader
-from services.downloader import extract_url
+from services.downloader import is_youtube_url
 from services.utils.sanitize import sanitize_filename
-from handlers.base import DownloadInProgress, download_slot, safe_delete, cleanup_files, user_key_for, report_error
+from handlers.base import (
+    DownloadInProgress,
+    download_slot,
+    safe_delete,
+    cleanup_files,
+    user_key_for,
+    report_error,
+    extract_platform_urls,
+)
 from yt_dlp.utils import DownloadError as YTDownloadError
 import html, re, os, time, logging, uuid
 
@@ -37,6 +45,8 @@ async def process_and_send_video(
 ):
     """
     Универсальная функция скачивания, переименования, отправки и сохранения в аналитику.
+    Returns True on success, False otherwise. Does not touch `message` itself —
+    the caller may be processing several URLs against the same source message.
     """
     ext = '.mp3' if is_audio else '.mp4'
     filename = os.path.join(DOWNLOADS_DIR, f"{uuid.uuid4()}{ext}")
@@ -52,7 +62,7 @@ async def process_and_send_video(
             pass
         cleanup_files(filename)
         await report_error(client, "youtube", url, user, e, db)
-        return
+        return False
 
     # Переименуем файл в название видео (если доступно) перед отправкой
     try:
@@ -86,7 +96,7 @@ async def process_and_send_video(
         except Exception:
             pass
         cleanup_files(result_path, filename)
-        return
+        return False
 
     # Отправляем соответствующим методом
     try:
@@ -102,7 +112,7 @@ async def process_and_send_video(
             pass
         cleanup_files(result_path, filename)
         await report_error(client, "youtube", url, user, e, db)
-        return
+        return False
 
     # --- analytics ---
     if db and user:
@@ -111,14 +121,29 @@ async def process_and_send_video(
 
     cleanup_files(result_path, filename)
     await safe_delete(status_msg)
+    return True
 
 
 def register(app: Client, db=None):
     @app.on_message(filters.regex(r'https?://(www\.)?youtu(be\.com|\.be)/') & (filters.group | filters.private))
     async def yt_handler(client: Client, message: Message):
+        urls, total_found = extract_platform_urls(message.text, is_youtube_url)
+        if not urls:
+            await message.reply("❌ Не смог найти ссылку.")
+            return
+
         try:
             async with download_slot(active_downloads, user_key_for(message)):
-                await _handle_youtube_link(client, message, db)
+                if total_found > len(urls):
+                    await message.reply(f"⚠️ Нашёл {total_found} ссылок, обрабатываю первые {len(urls)}.")
+
+                any_success = False
+                for url in urls:
+                    ok = await _handle_one_youtube_url(client, message, db, url)
+                    any_success = any_success or ok
+
+                if any_success:
+                    await safe_delete(message)
         except DownloadInProgress:
             await message.reply("⏳ Подожди, идёт другая загрузка.")
 
@@ -131,15 +156,11 @@ def register(app: Client, db=None):
             await callback.answer("⏳ Уже загружается...", show_alert=True)
 
 
-async def _handle_youtube_link(client, message, db):
+async def _handle_one_youtube_url(client, message, db, url) -> bool:
+    """Processes a single YouTube URL found in `message`. Returns True if a
+    video was sent or a quality picker was shown, False on failure — the
+    caller uses this to decide whether the source message is safe to delete."""
     try:
-        print(f"💬 Сообщение от пользователя: {message.text}")
-
-        url = extract_url(message.text)
-        if not url:
-            await message.reply("❌ Не смог найти ссылку.")
-            return
-
         print(f"🎯 Передаём ссылку в YouTubeDownloader: {url}")
 
         try:
@@ -148,25 +169,23 @@ async def _handle_youtube_link(client, message, db):
             await message.reply(f"❌ yt-dlp не смог распарсить ссылку: {e}")
             logging.error(f"YT download error: {e}")
             await report_error(client, "youtube", url, message.from_user, e, db)
-            return
+            return False
 
         # Если видео короче или равно 2 минут — скачиваем сразу только в видео-формате
         if meta.length <= 120:
             video_stream = next((s for s in meta.streams if s.get('type') == 'video'), None)
             if not video_stream:
                 await message.reply("❌ Нет доступного видео-формата для этого короткого видео.")
-                return
+                return False
 
             if not video_stream.get('filesize') or video_stream.get('filesize') <= 50 * 1024 * 1024:
-                await process_and_send_video(client, message, meta, video_stream['itag'], url, db, message.from_user)
-                return
+                return await process_and_send_video(client, message, meta, video_stream['itag'], url, db, message.from_user)
 
         # Если всего один формат и это видео — качаем сразу
         if len(meta.streams) == 1 and meta.streams[0].get('type') == 'video':
             stream = meta.streams[0]
             if not stream.get('filesize') or stream.get('filesize') <= 50 * 1024 * 1024:
-                await process_and_send_video(client, message, meta, stream['itag'], url, db, message.from_user)
-                return
+                return await process_and_send_video(client, message, meta, stream['itag'], url, db, message.from_user)
 
         # Иначе — предлагаем выбор качества.
         # Видео всегда идёт раньше аудио, независимо от размера файла —
@@ -204,11 +223,13 @@ async def _handle_youtube_link(client, message, db):
             reply_markup=markup,
             parse_mode=ParseMode.HTML
         )
+        return True
 
     except Exception as e:
         logging.exception("YouTube handler error")
         await message.reply("❌ Произошла ошибка при обработке видео.")
-        await report_error(client, "youtube", message.text, message.from_user, e, db)
+        await report_error(client, "youtube", url, message.from_user, e, db)
+        return False
 
 
 async def _handle_youtube_callback(client, callback, db):
@@ -241,7 +262,9 @@ async def _handle_youtube_callback(client, callback, db):
         is_audio = (chosen_stream and chosen_stream.get('type') == 'audio') or str(itag) == 'bestaudio'
 
         # Pass original message to process_and_send_video to keep reply context correct
-        await process_and_send_video(client, callback.message, meta, itag, url, db, callback.from_user, is_audio)
+        ok = await process_and_send_video(client, callback.message, meta, itag, url, db, callback.from_user, is_audio)
+        if ok:
+            await safe_delete(callback.message)
 
         if token and db:
             db.delete_callback(token)
