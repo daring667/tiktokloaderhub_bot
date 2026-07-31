@@ -43,21 +43,27 @@ _last_finished_at: dict = {}  # key -> monotonic timestamp
 
 
 @contextlib.asynccontextmanager
-async def download_slot(active_downloads: set, key):
+async def download_slot(active_downloads: set, key, enforce_cooldown: bool = True):
     """Reserves `key` in `active_downloads` for the duration of the block.
 
     Raises DownloadInProgress if a download for this key is already running,
     or RateLimited if the previous one for this key finished too recently.
     Callers decide how to reply to the user in either case.
+
+    `enforce_cooldown=False` skips only the rate limit, not the lock — for
+    explicit button presses inside an already-started session (e.g. "next
+    video" in a playlist), where the user is *meant* to click immediately
+    after the previous download and a cooldown would just be in the way.
     """
     if key in active_downloads:
         raise DownloadInProgress()
 
-    last = _last_finished_at.get(key)
-    if last is not None:
-        elapsed = time.monotonic() - last
-        if elapsed < REQUEST_COOLDOWN_SECONDS:
-            raise RateLimited(REQUEST_COOLDOWN_SECONDS - elapsed)
+    if enforce_cooldown:
+        last = _last_finished_at.get(key)
+        if last is not None:
+            elapsed = time.monotonic() - last
+            if elapsed < REQUEST_COOLDOWN_SECONDS:
+                raise RateLimited(REQUEST_COOLDOWN_SECONDS - elapsed)
 
     active_downloads.add(key)
     try:

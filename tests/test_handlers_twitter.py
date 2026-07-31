@@ -194,3 +194,58 @@ class TestTwitterHandler:
 
         assert client.send_video.await_count == 1
         assert "Подожди ещё" in message2.reply.await_args.args[0]
+
+
+class TestTwitterErrorVisibility:
+    """Regression: the status message used to be deleted unconditionally in
+    `finally`, wiping the error text the handler had just written into it."""
+
+    @pytest.mark.asyncio
+    async def test_oversized_error_is_not_deleted(self, tmp_path):
+        handler, db = _register()
+        message = make_message(URL)
+        client = make_client()
+        fake_video = tmp_path / "big.mp4"
+        fake_video.write_bytes(b"x")
+
+        with patch("handlers.twitter.TwitterDownloader") as MockDownloader, \
+             patch("handlers.twitter.os.path.getsize", return_value=60 * 1024 * 1024):
+            instance = MockDownloader.return_value
+            instance.title = "Big"
+            instance.download = AsyncMock(return_value=str(fake_video))
+            await handler(client, message)
+
+        status_msg = message.reply.return_value
+        assert "больше 50" in status_msg.edit_text.await_args.args[0]
+        status_msg.delete.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_source_message_deleted_on_success(self, tmp_path):
+        handler, db = _register()
+        message = make_message(URL)
+        client = make_client()
+        fake_video = tmp_path / "v.mp4"
+
+        with patch("handlers.twitter.TwitterDownloader") as MockDownloader:
+            instance = MockDownloader.return_value
+            instance.title = "Video"
+
+            async def fake_download(filename):
+                fake_video.write_bytes(b"x")
+                return str(fake_video)
+            instance.download = AsyncMock(side_effect=fake_download)
+            await handler(client, message)
+
+        message.delete.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_source_message_kept_when_download_fails(self):
+        handler, db = _register()
+        message = make_message(URL)
+        client = make_client()
+
+        with patch("handlers.twitter.TwitterDownloader") as MockDownloader:
+            MockDownloader.side_effect = ValueError("boom")
+            await handler(client, message)
+
+        message.delete.assert_not_called()

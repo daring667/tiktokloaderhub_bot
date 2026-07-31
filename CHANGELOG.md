@@ -3,6 +3,34 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.0.1] — 2026-07-31
+
+Bug-fix release: everything here came out of a second full audit of the codebase.
+
+### Fixed
+- **Error messages were deleted before the user could read them.** In the TikTok,
+  Instagram and Twitter handlers the error text was written into the status
+  message, and then `finally` deleted that same message unconditionally — so a
+  failed download looked like the bot had silently ignored the request. The
+  status message is now only cleared on success. Affected every failure mode:
+  the 50 MB limit, API errors, timeouts, HTTP errors.
+- **The playlist "next video" button was rate-limited.** The 5s per-user cooldown
+  applied to a button the user is *meant* to press immediately after the previous
+  download. `download_slot` now takes `enforce_cooldown`, and the button skips the
+  cooldown while still respecting the "no concurrent downloads" lock.
+- **The playlist replied to a message it had already deleted.** The prompt is now
+  removed after the next video has been sent, not before.
+- **The quality picker and the "next video?" prompt appeared at the same time**,
+  about two different videos. The next video is now offered only once the current
+  one is actually finished — including after the user picks a quality, which is
+  tracked by tying the picker to the playlist session.
+- **Instagram and Twitter never deleted the user's source message**, unlike TikTok
+  and YouTube, because their handlers didn't report success back to the caller.
+  All four platforms now behave the same way.
+- **Abandoned callback tokens and playlist sessions accumulated forever** — they
+  were only deleted on the happy path. Stale rows are now swept on startup
+  (`cleanup_stale_state`, 24h by default).
+
 ## [1.0.0] — 2026-07-29
 
 First versioned release — everything below shipped in one continuous push from an

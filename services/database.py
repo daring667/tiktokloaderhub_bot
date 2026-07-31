@@ -72,16 +72,18 @@ class BotDatabase:
             """)
             self._conn.commit()
 
-            # Migration: broadcast_opt_out didn't exist in earlier versions of
-            # this table. SQLite has no "ADD COLUMN IF NOT EXISTS", so just
-            # swallow the error if it's already there.
-            try:
-                cur.execute(
-                    "ALTER TABLE users ADD COLUMN broadcast_opt_out INTEGER NOT NULL DEFAULT 0"
-                )
-                self._conn.commit()
-            except sqlite3.OperationalError:
-                pass
+            # Migrations: these columns didn't exist in earlier versions.
+            # SQLite has no "ADD COLUMN IF NOT EXISTS", so just swallow the
+            # error if they're already there.
+            for migration in (
+                "ALTER TABLE users ADD COLUMN broadcast_opt_out INTEGER NOT NULL DEFAULT 0",
+                "ALTER TABLE callbacks ADD COLUMN playlist_token TEXT",
+            ):
+                try:
+                    cur.execute(migration)
+                    self._conn.commit()
+                except sqlite3.OperationalError:
+                    pass
 
     # ------------------------------------------------------------------
     # Public API
@@ -219,18 +221,26 @@ class BotDatabase:
             "errors_24h_by_platform": errors_24h_by_platform,
         }
 
-    def save_callback(self, token: str, url: str, itag: str, stream_type: str | None = None) -> None:
-        """Save a callback token for YouTube quality selection."""
+    def save_callback(self, token: str, url: str, itag: str, stream_type: str | None = None,
+                      playlist_token: str | None = None) -> None:
+        """Save a callback token for YouTube quality selection.
+
+        `playlist_token` ties this picker back to a playlist step-through
+        session, so the bot knows to offer the next video once the user has
+        finally chosen a quality.
+        """
         with self._lock:
             self._conn.execute(
-                "INSERT OR REPLACE INTO callbacks (token, url, itag, type) VALUES (?, ?, ?, ?)",
-                (token, url, str(itag), stream_type),
+                "INSERT OR REPLACE INTO callbacks (token, url, itag, type, playlist_token) VALUES (?, ?, ?, ?, ?)",
+                (token, url, str(itag), stream_type, playlist_token),
             )
             self._conn.commit()
 
     def get_callback(self, token: str) -> dict | None:
         """Get callback data by token."""
-        cur = self._conn.execute("SELECT url, itag, type FROM callbacks WHERE token = ?", (token,))
+        cur = self._conn.execute(
+            "SELECT url, itag, type, playlist_token FROM callbacks WHERE token = ?", (token,)
+        )
         row = cur.fetchone()
         if row:
             return dict(row)
@@ -280,6 +290,26 @@ class BotDatabase:
         with self._lock:
             self._conn.execute("DELETE FROM playlist_state WHERE token = ?", (token,))
             self._conn.commit()
+
+    def cleanup_stale_state(self, max_age_hours: int = 24) -> dict:
+        """Drops abandoned callback tokens and playlist sessions.
+
+        Both are only deleted on the happy path (button pressed / playlist
+        finished), so without this they accumulate forever. Returns how many
+        rows were removed from each table.
+        """
+        cutoff = f"-{int(max_age_hours)} hours"
+        with self._lock:
+            cur = self._conn.execute(
+                "DELETE FROM callbacks WHERE created_at < datetime('now', ?)", (cutoff,)
+            )
+            callbacks_removed = cur.rowcount
+            cur = self._conn.execute(
+                "DELETE FROM playlist_state WHERE created_at < datetime('now', ?)", (cutoff,)
+            )
+            playlists_removed = cur.rowcount
+            self._conn.commit()
+        return {"callbacks": callbacks_removed, "playlist_state": playlists_removed}
 
     def close(self):
         self._conn.close()

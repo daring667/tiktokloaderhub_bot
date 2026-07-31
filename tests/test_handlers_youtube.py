@@ -473,3 +473,122 @@ class TestFormatDuration:
     def test_zero_or_none(self):
         assert format_duration(0) == "0:00"
         assert format_duration(None) == "0:00"
+
+
+class TestPlaylistInteractionFixes:
+    PLAYLIST_URL = "https://www.youtube.com/playlist?list=PLxyz"
+
+    @staticmethod
+    def _video_urls(n=3):
+        return [f"https://youtube.com/watch?v=v{i}" for i in range(n)]
+
+    @pytest.mark.asyncio
+    async def test_next_button_is_not_rate_limited(self, tmp_db, tmp_path, monkeypatch):
+        """Regression: the cooldown used to reject the "next video" button,
+        which the user is meant to press right after the previous download."""
+        import handlers.base as base
+        monkeypatch.setattr(base, "REQUEST_COOLDOWN_SECONDS", 100)
+
+        _msg, callback_handler, db = _register(tmp_db)
+        db.save_playlist_state("tok1", self._video_urls(3), 3)
+        base._last_finished_at[111] = __import__("time").monotonic()  # just finished one
+
+        callback = make_callback("yt|plnext|tok1")
+        client = make_client()
+        fake_video = tmp_path / "v.mp4"
+
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            meta = _make_meta(length=30)
+
+            async def fake_download(itag, filename, msg, status_msg):
+                fake_video.write_bytes(b"x")
+                return str(fake_video)
+            meta.download = AsyncMock(side_effect=fake_download)
+            MockYT.return_value = meta
+
+            await callback_handler(client, callback)
+
+        answers = [c.args[0] for c in callback.answer.await_args_list if c.args]
+        assert not any("Подожди" in a for a in answers)
+        assert client.send_video.await_count == 1
+
+    @pytest.mark.asyncio
+    async def test_prompt_is_deleted_only_after_replies_are_sent(self, tmp_db, tmp_path):
+        """Regression: the prompt was deleted first, so everything that
+        replied to it was replying to a deleted message."""
+        _msg, callback_handler, db = _register(tmp_db)
+        db.save_playlist_state("tok1", self._video_urls(3), 3)
+
+        callback = make_callback("yt|plnext|tok1")
+        client = make_client()
+        order = []
+
+        callback.message.delete = AsyncMock(side_effect=lambda: order.append("delete"))
+        original_reply = callback.message.reply
+
+        async def tracking_reply(*args, **kwargs):
+            order.append("reply")
+            return await original_reply(*args, **kwargs)
+        callback.message.reply = AsyncMock(side_effect=tracking_reply)
+
+        fake_video = tmp_path / "v.mp4"
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            meta = _make_meta(length=30)
+
+            async def fake_download(itag, filename, msg, status_msg):
+                fake_video.write_bytes(b"x")
+                return str(fake_video)
+            meta.download = AsyncMock(side_effect=fake_download)
+            MockYT.return_value = meta
+
+            await callback_handler(client, callback)
+
+        assert "reply" in order
+        assert order.index("delete") > order.index("reply")
+
+    @pytest.mark.asyncio
+    async def test_no_next_prompt_while_quality_picker_is_open(self, tmp_db):
+        """Regression: a long playlist video showed the quality picker AND
+        the "next video?" prompt at once, about two different videos."""
+        handler, _cb, db = _register(tmp_db)
+        message = make_message(self.PLAYLIST_URL)
+        client = make_client()
+
+        streams = [
+            {"itag": "22", "res": "720p", "filesize": 40 * 1024 * 1024, "type": "video"},
+            {"itag": "18", "res": "360p", "filesize": 10 * 1024 * 1024, "type": "video"},
+        ]
+
+        with patch("handlers.youtube.get_playlist_info", return_value=("PL", self._video_urls(3), 3)), \
+             patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            MockYT.return_value = _make_meta(length=300, streams=streams)
+            await handler(client, message)
+
+        replies = [c.args[0] for c in message.reply.await_args_list if c.args]
+        assert any("Выбери качество" in r for r in replies)
+        assert not any("Скачать следующее" in r for r in replies)
+
+    @pytest.mark.asyncio
+    async def test_next_prompt_appears_after_quality_is_chosen(self, tmp_db, tmp_path):
+        """The prompt deferred above must still arrive once the user picks."""
+        _msg, callback_handler, db = _register(tmp_db)
+        db.save_playlist_state("pl1", self._video_urls(3), 3)
+        db.save_callback("tok", "https://youtube.com/watch?v=v0", "18", "video", playlist_token="pl1")
+
+        callback = make_callback("yt|tok")
+        client = make_client()
+        fake_video = tmp_path / "v.mp4"
+
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            meta = _make_meta(length=300)
+
+            async def fake_download(itag, filename, msg, status_msg):
+                fake_video.write_bytes(b"x")
+                return str(fake_video)
+            meta.download = AsyncMock(side_effect=fake_download)
+            MockYT.return_value = meta
+
+            await callback_handler(client, callback)
+
+        replies = [c.args[0] for c in callback.message.reply.await_args_list if c.args]
+        assert any("Скачать следующее" in r for r in replies)

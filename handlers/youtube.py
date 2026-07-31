@@ -25,6 +25,13 @@ os.makedirs(DOWNLOADS_DIR, exist_ok=True)
 MAX_FILE_SIZE = 50 * 1024 * 1024
 MAX_PLAYLIST_ITEMS = 25
 
+# Outcomes of handling a single URL. A playlist must tell them apart: after
+# SENT it can offer the next video right away, but after PICKER it has to
+# wait for the user to choose a quality first.
+RESULT_SENT = "sent"
+RESULT_PICKER = "picker"
+RESULT_FAILED = "failed"
+
 
 def format_duration(seconds) -> str:
     seconds = int(seconds or 0)
@@ -142,11 +149,11 @@ def register(app: Client, db=None):
 
                 any_success = False
                 for url in urls:
-                    ok = await _handle_one_youtube_url(client, message, db, url)
+                    result = await _handle_one_youtube_url(client, message, db, url)
                     # A playlist keeps its source message: the step-through
                     # prompts reply to it, and the user may want the link back
                     # after picking through the videos.
-                    if ok and not is_playlist_url(url):
+                    if result != RESULT_FAILED and not is_playlist_url(url):
                         any_success = True
 
                 if any_success:
@@ -173,7 +180,9 @@ def register(app: Client, db=None):
         if data.startswith("yt|plnext|"):
             token = data.split("|", 2)[2]
             try:
-                async with download_slot(active_downloads, callback.from_user.id):
+                # No cooldown here: this button is meant to be pressed right
+                # after the previous video finished downloading.
+                async with download_slot(active_downloads, callback.from_user.id, enforce_cooldown=False):
                     await _handle_playlist_next(client, callback, db, token)
             except DownloadInProgress:
                 await callback.answer("⏳ Уже загружается...", show_alert=True)
@@ -190,10 +199,13 @@ def register(app: Client, db=None):
             await callback.answer(rate_limit_message(e), show_alert=True)
 
 
-async def _handle_one_youtube_url(client, message, db, url) -> bool:
-    """Processes a single YouTube URL found in `message`. Returns True if a
-    video was sent or a quality picker was shown, False on failure — the
-    caller uses this to decide whether the source message is safe to delete."""
+async def _handle_one_youtube_url(client, message, db, url, playlist_token=None) -> str:
+    """Processes a single YouTube URL found in `message`.
+
+    Returns RESULT_SENT / RESULT_PICKER / RESULT_FAILED — callers use this
+    both to decide whether the source message is safe to delete, and (for
+    playlists) whether the next video can be offered immediately.
+    """
     if is_playlist_url(url):
         return await _start_playlist(client, message, db, url)
 
@@ -206,23 +218,25 @@ async def _handle_one_youtube_url(client, message, db, url) -> bool:
             await message.reply(f"❌ yt-dlp не смог распарсить ссылку: {e}")
             logging.error(f"YT download error: {e}")
             await report_error(client, "youtube", url, message.from_user, e, db)
-            return False
+            return RESULT_FAILED
 
         # Если видео короче или равно 2 минут — скачиваем сразу только в видео-формате
         if meta.length <= 120:
             video_stream = next((s for s in meta.streams if s.get('type') == 'video'), None)
             if not video_stream:
                 await message.reply("❌ Нет доступного видео-формата для этого короткого видео.")
-                return False
+                return RESULT_FAILED
 
             if not video_stream.get('filesize') or video_stream.get('filesize') <= 50 * 1024 * 1024:
-                return await process_and_send_video(client, message, meta, video_stream['itag'], url, db, message.from_user)
+                ok = await process_and_send_video(client, message, meta, video_stream['itag'], url, db, message.from_user)
+                return RESULT_SENT if ok else RESULT_FAILED
 
         # Если всего один формат и это видео — качаем сразу
         if len(meta.streams) == 1 and meta.streams[0].get('type') == 'video':
             stream = meta.streams[0]
             if not stream.get('filesize') or stream.get('filesize') <= 50 * 1024 * 1024:
-                return await process_and_send_video(client, message, meta, stream['itag'], url, db, message.from_user)
+                ok = await process_and_send_video(client, message, meta, stream['itag'], url, db, message.from_user)
+                return RESULT_SENT if ok else RESULT_FAILED
 
         # Иначе — предлагаем выбор качества.
         # Видео всегда идёт раньше аудио, независимо от размера файла —
@@ -245,10 +259,13 @@ async def _handle_one_youtube_url(client, message, db, url) -> bool:
             video_id = meta.url.split("v=")[-1] if "v=" in meta.url else None
             cb_data = f"yt|{s['itag']}|{video_id}" if video_id else None
 
-            if not cb_data or len(cb_data.encode('utf-8')) > 64:
+            # Inside a playlist the callback must carry the session token, so
+            # go through the database rather than packing it into the inline
+            # data (which is capped at 64 bytes).
+            if playlist_token or not cb_data or len(cb_data.encode('utf-8')) > 64:
                 token = uuid.uuid4().hex[:8]
                 if db:
-                    db.save_callback(token, url, s['itag'], s.get('type'))
+                    db.save_callback(token, url, s['itag'], s.get('type'), playlist_token)
                 cb_data = f"yt|{token}"
 
             buttons.append(InlineKeyboardButton(label, callback_data=cb_data))
@@ -262,16 +279,16 @@ async def _handle_one_youtube_url(client, message, db, url) -> bool:
             reply_markup=markup,
             parse_mode=ParseMode.HTML
         )
-        return True
+        return RESULT_PICKER
 
     except Exception as e:
         logging.exception("YouTube handler error")
         await message.reply("❌ Произошла ошибка при обработке видео.")
         await report_error(client, "youtube", url, message.from_user, e, db)
-        return False
+        return RESULT_FAILED
 
 
-async def _start_playlist(client, message, db, playlist_url) -> bool:
+async def _start_playlist(client, message, db, playlist_url) -> str:
     """Downloads the first video of a playlist, then offers to step
     through the rest one at a time rather than downloading it all at once."""
     try:
@@ -279,11 +296,11 @@ async def _start_playlist(client, message, db, playlist_url) -> bool:
     except ValueError as e:
         await message.reply(f"❌ {e}")
         await report_error(client, "youtube", playlist_url, message.from_user, e, db)
-        return False
+        return RESULT_FAILED
 
     if not video_urls:
         await message.reply("❌ Не нашёл видео в этом плейлисте.")
-        return False
+        return RESULT_FAILED
 
     if not db:
         # Without a database there's nowhere to keep step-through state —
@@ -296,9 +313,12 @@ async def _start_playlist(client, message, db, playlist_url) -> bool:
     title_safe = html.escape(title)
     await message.reply(f"📃 Плейлист «{title_safe}» — {total_count} видео.\nСкачиваю первое...")
 
-    ok = await _handle_one_youtube_url(client, message, db, video_urls[0])
-    await _offer_next_playlist_video(message, db, token)
-    return ok
+    result = await _handle_one_youtube_url(client, message, db, video_urls[0], playlist_token=token)
+    # If a quality picker is on screen, the next-video prompt would compete
+    # with it — offer the next one only once this video is actually done.
+    if result != RESULT_PICKER:
+        await _offer_next_playlist_video(message, db, token)
+    return result
 
 
 async def _offer_next_playlist_video(message, db, token):
@@ -343,15 +363,22 @@ async def _handle_playlist_next(client, callback, db, token):
 
     await callback.answer()
     next_url = state["video_urls"][state["index_pos"]]
-    await safe_delete(callback.message)
-    await _handle_one_youtube_url(client, callback.message, db, next_url)
-    await _offer_next_playlist_video(callback.message, db, token)
+
+    # Keep the prompt around while the next video is being handled: it is the
+    # message everything below replies to. Removing it first left those
+    # replies pointing at a deleted message.
+    prompt = callback.message
+    result = await _handle_one_youtube_url(client, prompt, db, next_url, playlist_token=token)
+    if result != RESULT_PICKER:
+        await _offer_next_playlist_video(prompt, db, token)
+    await safe_delete(prompt)
 
 
 async def _handle_youtube_callback(client, callback, db):
     try:
         parts = callback.data.split("|")
         token = None
+        playlist_token = None
 
         if len(parts) == 3:
             _, itag, video_id = parts
@@ -364,6 +391,7 @@ async def _handle_youtube_callback(client, callback, db):
                 return
             url = mapping['url']
             itag = mapping['itag']
+            playlist_token = mapping.get('playlist_token')
         else:
             await callback.answer("❌ Неверный формат callback-данных.", show_alert=True)
             return
@@ -379,6 +407,12 @@ async def _handle_youtube_callback(client, callback, db):
 
         # Pass original message to process_and_send_video to keep reply context correct
         ok = await process_and_send_video(client, callback.message, meta, itag, url, db, callback.from_user, is_audio)
+
+        # This picker belonged to a playlist — now that the user has finally
+        # chosen a quality, it's time to offer the next video.
+        if ok and playlist_token and db:
+            await _offer_next_playlist_video(callback.message, db, playlist_token)
+
         if ok:
             await safe_delete(callback.message)
 

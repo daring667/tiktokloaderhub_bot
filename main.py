@@ -162,6 +162,12 @@ async def broadcast_unsub_handler(client, callback):
         pass
 
 if __name__ == "__main__":
+    # Abandoned picker tokens and playlist sessions are never cleaned up on
+    # their own, so sweep the stale ones on every start.
+    removed = db.cleanup_stale_state()
+    if removed["callbacks"] or removed["playlist_state"]:
+        print(f"🧹 Removed stale rows: {removed}")
+
     register_youtube(app, db)
     register_instagram(app, db)
     register_twitter(app, db)

@@ -34,17 +34,27 @@ def register(app: Client, db=None):
             async with download_slot(active_downloads, user_key_for(message)):
                 if total_found > len(urls):
                     await message.reply(f"⚠️ Нашёл {total_found} ссылок, обрабатываю первые {len(urls)}.")
+
+                any_success = False
                 for url in urls:
-                    await _download_and_send(client, message, db, url)
+                    ok = await _download_and_send(client, message, db, url)
+                    any_success = any_success or ok
+
+                if any_success:
+                    await safe_delete(message)
         except DownloadInProgress:
             await message.reply("⏳ Подожди, уже идет другая загрузка.")
         except RateLimited as e:
             await message.reply(rate_limit_message(e))
 
 
-async def _download_and_send(client, message, db, url):
+async def _download_and_send(client, message, db, url) -> bool:
+    """Downloads and sends a single Instagram link. Returns True on success.
+    Does not touch `message` itself — the caller may be processing several
+    URLs against the same source message."""
     result_path = None
     status_msg = None
+    success = False
     filename = os.path.join(DOWNLOADS_DIR, f"{uuid.uuid4()}.mp4")
 
     try:
@@ -75,16 +85,21 @@ async def _download_and_send(client, message, db, url):
                 await status_msg.edit_text("❌ Видео больше 50 МБ — Telegram не позволяет ботам отправлять такие файлы.")
             except Exception:
                 pass
-            return
+            return False
 
         try:
             # Send without supports_streaming to avoid player trying to stream
             await client.send_video(message.chat.id, result_path)
         except Exception as e:
             logging.error(f"[Instagram] send_video failed: {e}")
-            await status_msg.edit_text("❌ Ошибка при отправке Instagram-видео.")
+            try:
+                await status_msg.edit_text("❌ Ошибка при отправке Instagram-видео.")
+            except Exception:
+                pass
             await report_error(client, "instagram", url, message.from_user, e, db)
-            return
+            return False
+
+        success = True
 
         if db and message.from_user:
             db.register_user(message.from_user.id, message.from_user.username, message.from_user.first_name)
@@ -105,5 +120,11 @@ async def _download_and_send(client, message, db, url):
             pass
         await report_error(client, "instagram", url, message.from_user, e, db)
     finally:
-        await safe_delete(status_msg)
+        # Only clear the status message on success — on failure it now holds
+        # the error text, and deleting it would leave the user with no
+        # explanation at all.
+        if success:
+            await safe_delete(status_msg)
         cleanup_files(result_path, filename)
+
+    return success

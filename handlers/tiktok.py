@@ -120,7 +120,11 @@ async def _download_and_send(client, message, url, db) -> bool:
         except Exception: pass
         await report_error(client, "tiktok", url, message.from_user, e, db)
     finally:
-        await safe_delete(msg)
+        # Only clear the status message on success — on failure it now holds
+        # the error text, and deleting it would leave the user with no
+        # explanation at all.
+        if success:
+            await safe_delete(msg)
         cleanup_files(result_path, filename)
         if slideshow_dir:
             shutil.rmtree(slideshow_dir, ignore_errors=True)

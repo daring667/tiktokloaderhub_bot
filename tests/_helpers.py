@@ -49,10 +49,12 @@ def make_client():
     return client
 
 
-def make_callback(data, user_id=111):
+def make_callback(data, user_id=111, username="user", first_name="Test"):
     callback = MagicMock()
     callback.data = data
-    callback.from_user = MagicMock(id=user_id)
+    # Real string fields, not bare MagicMocks: handlers pass these straight
+    # into SQLite, which rejects MagicMock values.
+    callback.from_user = MagicMock(id=user_id, username=username, first_name=first_name)
     callback.answer = AsyncMock()
     callback.message = make_message("")
     return callback

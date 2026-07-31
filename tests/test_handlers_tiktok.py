@@ -309,3 +309,44 @@ class TestTikTokSlideshow:
 
         mock_rmtree.assert_called_once()
         assert "slideshow_" in mock_rmtree.call_args.args[0]
+
+
+class TestTikTokErrorVisibility:
+    """Regression: the status message used to be deleted unconditionally in
+    `finally`, wiping the error text the handler had just written into it."""
+
+    @pytest.mark.asyncio
+    async def test_error_message_is_not_deleted(self):
+        handler, db = _register()
+        message = make_message(URL)
+        client = make_client()
+
+        with patch("handlers.tiktok.TikTokDownloader") as MockDownloader, \
+             patch("handlers.tiktok.asyncio.sleep", new=AsyncMock()):
+            MockDownloader.return_value.probe = AsyncMock(return_value={"data": {}})
+            MockDownloader.return_value.download = AsyncMock(
+                side_effect=ValueError("Видео слишком большое (более 50 МБ).")
+            )
+            await handler(client, message)
+
+        status_msg = message.reply.return_value
+        assert "слишком большое" in status_msg.edit.await_args.args[0]
+        status_msg.delete.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_status_message_still_removed_on_success(self, tmp_path):
+        handler, db = _register()
+        message = make_message(URL)
+        client = make_client()
+        fake_video = tmp_path / "v.mp4"
+
+        with patch("handlers.tiktok.TikTokDownloader") as MockDownloader, \
+             patch("handlers.tiktok.asyncio.sleep", new=AsyncMock()):
+            async def fake_download(filename):
+                fake_video.write_bytes(b"x")
+                return str(fake_video)
+            MockDownloader.return_value.probe = AsyncMock(return_value={"data": {}})
+            MockDownloader.return_value.download = AsyncMock(side_effect=fake_download)
+            await handler(client, message)
+
+        message.reply.return_value.delete.assert_awaited_once()

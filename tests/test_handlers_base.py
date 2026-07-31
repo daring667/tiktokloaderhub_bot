@@ -305,3 +305,31 @@ class TestExtractPlatformUrls:
         urls, total = extract_platform_urls("", self._is_tiktok)
         assert urls == []
         assert total == 0
+
+
+class TestCooldownOptOut:
+    """`enforce_cooldown=False` is for explicit button presses inside an
+    already-started session, where waiting makes no sense."""
+
+    @pytest.mark.asyncio
+    async def test_cooldown_can_be_skipped(self, monkeypatch):
+        import handlers.base as base
+        monkeypatch.setattr(base, "REQUEST_COOLDOWN_SECONDS", 100)
+        active = set()
+
+        async with download_slot(active, "user1"):
+            pass
+
+        async with download_slot(active, "user1", enforce_cooldown=False):
+            pass  # must not raise
+
+    @pytest.mark.asyncio
+    async def test_concurrency_lock_still_applies_without_cooldown(self, monkeypatch):
+        import handlers.base as base
+        monkeypatch.setattr(base, "REQUEST_COOLDOWN_SECONDS", 100)
+        active = set()
+
+        async with download_slot(active, "user1", enforce_cooldown=False):
+            with pytest.raises(DownloadInProgress):
+                async with download_slot(active, "user1", enforce_cooldown=False):
+                    pass

@@ -233,3 +233,35 @@ class TestBotDatabase:
         tmp_db.save_playlist_state("tok1", ["u1"], total_count=1)
         tmp_db.delete_playlist_state("tok1")
         assert tmp_db.get_playlist_state("tok1") is None
+
+    def test_cleanup_stale_state_removes_old_rows(self, tmp_db):
+        tmp_db.save_callback("old", "url", "18", "video")
+        tmp_db.save_playlist_state("oldpl", ["u1"], 1)
+        # Backdate both rows past the cutoff
+        tmp_db._conn.execute("UPDATE callbacks SET created_at = datetime('now', '-48 hours')")
+        tmp_db._conn.execute("UPDATE playlist_state SET created_at = datetime('now', '-48 hours')")
+        tmp_db._conn.commit()
+
+        removed = tmp_db.cleanup_stale_state(max_age_hours=24)
+
+        assert removed == {"callbacks": 1, "playlist_state": 1}
+        assert tmp_db.get_callback("old") is None
+        assert tmp_db.get_playlist_state("oldpl") is None
+
+    def test_cleanup_stale_state_keeps_fresh_rows(self, tmp_db):
+        tmp_db.save_callback("fresh", "url", "18", "video")
+        tmp_db.save_playlist_state("freshpl", ["u1"], 1)
+
+        removed = tmp_db.cleanup_stale_state(max_age_hours=24)
+
+        assert removed == {"callbacks": 0, "playlist_state": 0}
+        assert tmp_db.get_callback("fresh") is not None
+        assert tmp_db.get_playlist_state("freshpl") is not None
+
+    def test_callback_carries_playlist_token(self, tmp_db):
+        tmp_db.save_callback("tok", "url", "18", "video", playlist_token="pl1")
+        assert tmp_db.get_callback("tok")["playlist_token"] == "pl1"
+
+    def test_callback_without_playlist_token(self, tmp_db):
+        tmp_db.save_callback("tok", "url", "18", "video")
+        assert tmp_db.get_callback("tok")["playlist_token"] is None
