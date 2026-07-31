@@ -15,8 +15,7 @@ from handlers.base import (
     report_error,
     extract_platform_urls,
 )
-from yt_dlp.utils import DownloadError as YTDownloadError
-import html, re, os, time, logging, uuid
+import html, os, time, logging, uuid
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DOWNLOADS_DIR = os.path.join(PROJECT_ROOT, "downloads")

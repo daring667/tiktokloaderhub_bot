@@ -3,6 +3,29 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.1.1] — 2026-07-31
+
+Cleanup of the loose ends left by the second audit.
+
+### Fixed
+- `progress()` no longer divides by zero when the total size is unknown
+  (`total` of 0 or `None`) — previously only the caller's `if total:` check
+  stood between it and a crash.
+- The TikTok handler now carries the same `filters.group | filters.private`
+  chat filter as the other three, instead of reacting in any chat type.
+
+### Changed
+- `tests/test_bot_start.py` now checks something real — that every handler and
+  service module imports cleanly and exposes its entry point. It used to assert
+  that env vars were set, which CI supplies itself, so it only ever confirmed
+  that CI had run its own step.
+
+### Removed
+- Dead code: unused `elapsed_time`/`estimated_total_time` in `progress_bar.py`,
+  and unused imports (`re` and `YTDownloadError` in `handlers/youtube.py`,
+  `datetime` in `services/database.py`, `asyncio` in `tiktok_downloader.py`).
+- A stray 14 MB `downloads/1` file left over from June.
+
 ## [1.1.0] — 2026-07-31
 
 Hardening for the box the bot actually runs on (a phone with ~2 GB of RAM that

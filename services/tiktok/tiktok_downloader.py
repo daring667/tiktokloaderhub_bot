@@ -1,4 +1,4 @@
-import os, asyncio, aiohttp
+import os, aiohttp
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0",

@@ -5,14 +5,13 @@ import time
 async def progress(current, total, message: Message, start, filename):
     now = time.time()
     diff = now - start
-    if current <= 0 or diff <= 0:
+    if current <= 0 or diff <= 0 or not total:
         # Nothing meaningful to show yet, and avoids dividing by zero below.
+        # `total` can legitimately be 0/None when the size isn't known yet.
         return
     percentage = current * 100 / total
     speed = current / diff
-    elapsed_time = round(diff)
     time_to_completion = round((total - current) / speed)
-    estimated_total_time = elapsed_time + time_to_completion
     progress_str = "[{0}{1}] {2}%".format(
         ''.join(["█" for i in range(math.floor(percentage / 5))]),
         ''.join(["░" for i in range(20 - math.floor(percentage / 5))]),

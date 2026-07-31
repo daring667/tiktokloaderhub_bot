@@ -32,7 +32,10 @@ class TikTokHandler(BaseHandler):
     def register(self):
         db = self.db
 
-        @self.app.on_message(filters.regex(r'https?://(www\.|vm\.|vt\.|m\.)?tiktok\.com/'))
+        @self.app.on_message(
+            filters.regex(r'https?://(www\.|vm\.|vt\.|m\.)?tiktok\.com/')
+            & (filters.group | filters.private)
+        )
         async def handle_tiktok(client, message):
             print(f"[TikTok] Received message from {message.from_user.id if message.from_user else 'unknown'}: {message.text}")
 

@@ -6,7 +6,6 @@ import json
 import os
 import sqlite3
 import threading
-from datetime import datetime
 
 
 DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "bot_database.db")
