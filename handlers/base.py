@@ -1,3 +1,4 @@
+import asyncio
 import contextlib
 import html
 import math
@@ -41,6 +42,20 @@ class RateLimited(Exception):
 REQUEST_COOLDOWN_SECONDS = float(os.getenv("REQUEST_COOLDOWN_SECONDS", "5"))
 _last_finished_at: dict = {}  # key -> monotonic timestamp
 
+# Cap on downloads running at once *across all users*. The per-user lock alone
+# doesn't bound this: N users means N concurrent yt-dlp/ffmpeg processes, which
+# a small box can't take. Extra requests queue up instead of piling on.
+MAX_CONCURRENT_DOWNLOADS = int(os.getenv("MAX_CONCURRENT_DOWNLOADS", "2"))
+_download_semaphore: "asyncio.Semaphore | None" = None
+
+
+def get_download_semaphore() -> asyncio.Semaphore:
+    """Created lazily so it binds to the loop the bot actually runs on."""
+    global _download_semaphore
+    if _download_semaphore is None:
+        _download_semaphore = asyncio.Semaphore(MAX_CONCURRENT_DOWNLOADS)
+    return _download_semaphore
+
 
 @contextlib.asynccontextmanager
 async def download_slot(active_downloads: set, key, enforce_cooldown: bool = True):
@@ -67,7 +82,10 @@ async def download_slot(active_downloads: set, key, enforce_cooldown: bool = Tru
 
     active_downloads.add(key)
     try:
-        yield
+        # Hold the user's slot while queueing, so their own follow-up
+        # requests still bounce off DownloadInProgress rather than stacking.
+        async with get_download_semaphore():
+            yield
     finally:
         active_downloads.discard(key)
         _last_finished_at[key] = time.monotonic()

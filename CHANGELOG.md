@@ -3,6 +3,24 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.1.0] — 2026-07-31
+
+Hardening for the box the bot actually runs on (a phone with ~2 GB of RAM that
+has already seen OOM kills).
+
+### Added
+- **Global concurrency cap** (`MAX_CONCURRENT_DOWNLOADS`, default 2). The
+  per-user lock bounded nothing overall: N users meant N concurrent
+  `yt-dlp`/`ffmpeg` processes. Downloads past the cap now queue instead.
+- **Memory limits on the bot's systemd unit** — `MemoryHigh=600M` throttles it
+  before `MemoryMax=800M` stops it, so the bot (and the ffmpeg children in its
+  cgroup) can't starve the rest of the machine.
+
+### Changed
+- **CI no longer discards server-side edits silently.** `git reset --hard` was
+  wiping any local changes to tracked files on every deploy; the workflow now
+  stashes them first with a timestamped label and prints a warning.
+
 ## [1.0.1] — 2026-07-31
 
 Bug-fix release: everything here came out of a second full audit of the codebase.

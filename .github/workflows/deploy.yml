@@ -36,6 +36,17 @@ jobs:
         run: |
           cd /home/droid/TiktokBot/TT
           git fetch origin master
+
+          # `git reset --hard` below would silently discard any local edits to
+          # tracked files on the server. Park them in a stash first so nothing
+          # is ever lost without a trace — recover with `git stash list/pop`.
+          if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+            STASH_LABEL="ci-autostash-$(date -u +%Y%m%d-%H%M%S)"
+            echo "::warning::Local changes found on the server; stashing them as $STASH_LABEL"
+            git status --short --untracked-files=no
+            git stash push -m "$STASH_LABEL"
+          fi
+
           git reset --hard origin/master
 
       - name: Install dependencies

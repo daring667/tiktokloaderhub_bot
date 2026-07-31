@@ -1,4 +1,5 @@
 """Tests for the shared handler helpers in handlers/base.py."""
+import asyncio
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 
@@ -333,3 +334,53 @@ class TestCooldownOptOut:
             with pytest.raises(DownloadInProgress):
                 async with download_slot(active, "user1", enforce_cooldown=False):
                     pass
+
+
+class TestGlobalConcurrencyLimit:
+    """The per-user lock alone doesn't bound total load: N users would mean
+    N concurrent yt-dlp/ffmpeg processes on a small box."""
+
+    @pytest.mark.asyncio
+    async def test_downloads_beyond_the_limit_wait_their_turn(self, monkeypatch):
+        import handlers.base as base
+        monkeypatch.setattr(base, "MAX_CONCURRENT_DOWNLOADS", 2)
+        monkeypatch.setattr(base, "REQUEST_COOLDOWN_SECONDS", 0)
+        base._download_semaphore = None
+
+        active = set()
+        running = 0
+        peak = 0
+        release = asyncio.Event()
+
+        async def worker(key):
+            nonlocal running, peak
+            async with download_slot(active, key):
+                running += 1
+                peak = max(peak, running)
+                await release.wait()
+                running -= 1
+
+        tasks = [asyncio.create_task(worker(f"user{i}")) for i in range(4)]
+        await asyncio.sleep(0.05)          # let whoever can start, start
+        assert running == 2                 # third and fourth are queued
+        release.set()
+        await asyncio.gather(*tasks)
+
+        assert peak == 2
+
+    @pytest.mark.asyncio
+    async def test_all_queued_downloads_eventually_run(self, monkeypatch):
+        import handlers.base as base
+        monkeypatch.setattr(base, "MAX_CONCURRENT_DOWNLOADS", 1)
+        monkeypatch.setattr(base, "REQUEST_COOLDOWN_SECONDS", 0)
+        base._download_semaphore = None
+
+        active = set()
+        completed = []
+
+        async def worker(key):
+            async with download_slot(active, key):
+                completed.append(key)
+
+        await asyncio.gather(*(worker(f"user{i}") for i in range(3)))
+        assert sorted(completed) == ["user0", "user1", "user2"]

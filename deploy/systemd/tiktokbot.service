@@ -14,5 +14,11 @@ StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=tiktokbot
 
+# Keep the bot (and the ffmpeg/yt-dlp children in its cgroup) from being able
+# to starve the rest of the box — this machine has already seen OOM kills.
+# MemoryHigh throttles first; MemoryMax is the hard ceiling.
+MemoryHigh=600M
+MemoryMax=800M
+
 [Install]
 WantedBy=multi-user.target

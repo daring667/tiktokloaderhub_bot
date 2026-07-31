@@ -14,6 +14,7 @@ Current version: see [`VERSION`](VERSION) / [`CHANGELOG.md`](CHANGELOG.md), or a
 - **YouTube playlists** — downloads the first video, then lets you step through the rest one at a time (`▶️ Следующее видео` / `❌ Хватит`) instead of dumping the whole thing at once
 - **50 MB guard** — checked against Telegram's own bot upload limit both from provider metadata and, as a backstop, against the actual downloaded file size
 - **Per-user download lock + rate limit** — one in-flight download per user per platform, plus a cooldown (`REQUEST_COOLDOWN_SECONDS`, default 5s) between requests to blunt rapid-fire spam
+- **Global concurrency cap** — at most `MAX_CONCURRENT_DOWNLOADS` (default 2) downloads run at once across *all* users; the rest queue, so a busy moment can't spawn one `yt-dlp`/`ffmpeg` per user on a small box
 - **Admin alerts** — download failures are posted to `ADMIN_ID`/`OWNER_ID` in real time, throttled per (platform, error type) so a burst of identical failures doesn't flood the chat
 - **`/broadcast`** (admin-only) — message every registered user, with a per-message opt-out button and a delivery report (who got it, who didn't)
 - **SQLite analytics** — tracks users, downloads, and errors; `/stats` (admin-only) shows totals, 24h activity, and 24h error rate per platform
@@ -48,6 +49,7 @@ cp .env.example .env   # then fill in the values below
 | `WORKERS` | no | Pyrogram worker count |
 | `CHANNEL_URL`, `BOT_URL` | no | Used in bot copy/links, not by core logic |
 | `REQUEST_COOLDOWN_SECONDS` | no | Per-user cooldown between requests (default `5`) |
+| `MAX_CONCURRENT_DOWNLOADS` | no | Downloads running at once across all users (default `2`) |
 | `ERROR_REPORT_COOLDOWN_SECONDS` | no | Minimum gap between repeat admin error alerts (default `300`) |
 | `COOKIES_B64` | no | Base64 `cookies.txt`, restored on startup by `start.sh`. Only relevant if you run via `start.sh`; the systemd deployment below reads `cookies.txt` directly from disk. |
 

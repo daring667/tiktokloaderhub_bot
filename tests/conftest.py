@@ -52,3 +52,13 @@ def _reset_request_cooldown():
     yield
     _last_finished_at.clear()
 
+
+
+@pytest.fixture(autouse=True)
+def _reset_download_semaphore():
+    """The global concurrency semaphore is bound to the loop it was first
+    awaited on — reset it between tests so each gets a fresh one."""
+    import handlers.base as base
+    base._download_semaphore = None
+    yield
+    base._download_semaphore = None
