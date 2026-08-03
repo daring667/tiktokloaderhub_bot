@@ -64,10 +64,10 @@ canvas {
 
 .pad {
   display: grid;
-  grid-template-columns: repeat(3, 58px);
-  grid-template-rows: repeat(2, 52px);
-  gap: 6px;
-  margin-top: 4px;
+  grid-template-columns: repeat(3, 76px);
+  grid-template-rows: repeat(2, 68px);
+  gap: 8px;
+  margin-top: 6px;
   touch-action: none;
 }
 
@@ -78,7 +78,7 @@ canvas {
   background: #1c2128;
   border: 1px solid #30363d;
   color: var(--fg);
-  font-size: 17px;
+  font-size: 22px;
   line-height: 1;
   -webkit-tap-highlight-color: transparent;
   touch-action: none;

@@ -375,7 +375,7 @@ window.__chaosPayload = payload;
 
 function resize() {
   // Leaves room for the header, the HUD and the control pad below the board.
-  const size = Math.min(window.innerWidth - 24, window.innerHeight - 330, 460);
+  const size = Math.min(window.innerWidth - 24, window.innerHeight - 365, 460);
   const dpr = window.devicePixelRatio || 1;
   canvas.style.width = `${size}px`;
   canvas.style.height = `${size}px`;
