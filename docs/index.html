@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>Chaos Chain</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <header>
+    <div class="brand">Chaos&nbsp;Chain</div>
+    <div class="day" id="day">—</div>
+  </header>
+
+  <div class="hud">
+    <span id="apples">🍎 0</span>
+    <span id="score" class="score">0</span>
+    <span id="mods"></span>
+  </div>
+
+  <canvas id="board" width="380" height="380"></canvas>
+
+  <div class="toast" id="toast"></div>
+
+  <p class="hint">Свайп или стрелки. Каждое яблоко меняет правила.</p>
+
+  <div class="over show" id="start">
+    <div class="card">
+      <h2>Chaos&nbsp;Chain</h2>
+      <div class="muted">Каждое съеденное яблоко меняет правила забега.
+        Чем больше хаоса накопилось, тем дороже стоит яблоко.<br><br>
+        7 🍎 — день засчитан.</div>
+      <button id="play" class="primary">Играть</button>
+    </div>
+  </div>
+
+  <div class="over" id="over">
+    <div class="card">
+      <h2 id="over-title">Конец</h2>
+      <div id="over-stats"></div>
+      <button id="send" class="primary">Отправить результат</button>
+      <button id="again" class="ghost">Ещё раз</button>
+    </div>
+  </div>
+
+  <script type="module" src="game.js"></script>
+</body>
+</html>

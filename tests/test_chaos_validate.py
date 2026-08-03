@@ -64,6 +64,38 @@ class TestAcceptsHonestRuns:
         assert result["cleared"] is False
 
 
+class TestTimingFloor:
+    """The floor has to sit at the physically fastest honest run, not at a
+    typical one — a run that got lucky with apple placement is still real."""
+
+    def test_accepts_a_lucky_fast_run(self):
+        # Four stacked speed modifiers put a tick at 72 ms, and an apple can
+        # spawn right in front of the head.
+        result = validate_run(_payload(apples=10, score=200, ms=800), now=NOW)
+        assert result["apples"] == 10
+
+    def test_rejects_a_physically_impossible_run(self):
+        with pytest.raises(RunRejected, match="слишком короткий"):
+            validate_run(_payload(apples=10, score=200, ms=100), now=NOW)
+
+
+class TestRealClientPayloads:
+    """Captured from the actual Mini App running in a browser, to catch a
+    client/server format drift that unit tests written on one side would
+    both agree about and both get wrong."""
+
+    def test_accepts_a_recorded_run(self):
+        raw = ('{"v":1,"day":"2026-08-03","apples":2,"score":22,"ms":2432,'
+               '"events":["c:walls","c:speed"]}')
+        result = validate_run(raw, now=NOW)
+        assert result["score"] == 22
+        assert result["events"] == ["c:walls", "c:speed"]
+
+    def test_accepts_a_recorded_empty_run(self):
+        raw = '{"v":1,"day":"2026-08-03","apples":0,"score":0,"ms":1506,"events":[]}'
+        assert validate_run(raw, now=NOW)["apples"] == 0
+
+
 class TestRejects:
     def test_rejects_malformed_json(self):
         with pytest.raises(RunRejected, match="JSON"):

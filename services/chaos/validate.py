@@ -17,9 +17,13 @@ from services.chaos.seed import day_key
 
 PAYLOAD_VERSION = 1
 
-# A snake cannot cross the board and eat an apple faster than this, even at
-# the highest speed the modifiers allow.
-MIN_MS_PER_APPLE = 800
+# The physical floor for one apple, derived from the client: the snake moves
+# one cell per tick at BASE_TICK_MS = 150 ms, and four stacked "speed"
+# modifiers cut that to 150 / 1.2**4 = 72 ms. An apple can spawn directly in
+# front of the head, so one tick is genuinely the fastest an honest apple can
+# be eaten. Anything nearer the average (~1200 ms observed) would reject real
+# runs that simply got lucky with apple placement.
+MIN_MS_PER_APPLE = 60
 MAX_APPLES = 400
 MAX_SUBMISSIONS_PER_DAY = 20
 
