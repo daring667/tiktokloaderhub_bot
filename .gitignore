@@ -19,3 +19,6 @@ logs/
 downloads/
 
 deploy/tiktokbot-monitor.env
+
+# Архив не публикуется: хранится только локально на сервере
+archive/
