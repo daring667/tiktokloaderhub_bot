@@ -149,10 +149,15 @@ def register(app: Client, db=None):
                 any_success = False
                 for url in urls:
                     result = await _handle_one_youtube_url(client, message, db, url)
-                    # A playlist keeps its source message: the step-through
+                    # The link is removed only once a video has actually
+                    # been delivered. RESULT_PICKER means nothing has been
+                    # downloaded yet: the user can still cancel, or pick a
+                    # quality that turns out to be over the 50 MB limit — and
+                    # then the link they need to retry with would be gone.
+                    # A playlist keeps its source message too: the step-through
                     # prompts reply to it, and the user may want the link back
                     # after picking through the videos.
-                    if result != RESULT_FAILED and not is_playlist_url(url):
+                    if result == RESULT_SENT and not is_playlist_url(url):
                         any_success = True
 
                 if any_success:

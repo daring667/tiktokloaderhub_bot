@@ -3,6 +3,17 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.1.2] — 2026-08-03
+
+### Fixed
+- **A large YouTube video lost its link before it was ever downloaded.** Videos
+  that need a quality picker returned `RESULT_PICKER`, and the handler treated
+  anything that wasnt an outright failure as success — so the users message
+  was deleted while the picker was still on screen. If they then cancelled, or
+  chose a quality over the 50 MB limit, the link they needed to retry with was
+  already gone. The source message is now removed only once a video has
+  actually been sent.
+
 ## [1.1.1] — 2026-07-31
 
 Cleanup of the loose ends left by the second audit.

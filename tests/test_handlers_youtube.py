@@ -246,6 +246,27 @@ class TestYoutubeMessageHandler:
         message.delete.assert_awaited_once()
 
     @pytest.mark.asyncio
+    async def test_source_message_kept_while_quality_picker_is_open(self):
+        """Regression: a large video only gets a quality picker — nothing has
+        been downloaded yet. The link used to be deleted at that point, so a
+        user who cancelled, or who picked a quality above the 50 MB limit, was
+        left with no link to retry with."""
+        handler, _cb, db = _register()
+        message = make_message(URL)
+        client = make_client()
+
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            MockYT.return_value = _make_meta(length=600, streams=[
+                {"itag": "137", "res": "1080p", "filesize": 80 * 1024 * 1024, "type": "video"},
+                {"itag": "18", "res": "360p", "filesize": 40 * 1024 * 1024, "type": "video"},
+            ])
+            await handler(client, message)
+
+        assert message.reply.await_args.kwargs.get("reply_markup") is not None
+        client.send_video.assert_not_called()
+        message.delete.assert_not_called()
+
+    @pytest.mark.asyncio
     async def test_source_message_kept_if_every_link_fails(self):
         handler, _cb, db = _register()
         url2 = "https://www.youtube.com/watch?v=abcdefghijk"
