@@ -12,6 +12,7 @@ from handlers.youtube import register as register_youtube
 from handlers.instagram import register as register_instagram
 from handlers.twitter import register as register_twitter
 from handlers.tiktok import TikTokHandler
+from handlers.chaos import register as register_chaos, run_daily_announcer
 from services.database import BotDatabase
 from services.utils.env import resolve_admin_id
 from services.utils.broadcast import broadcast_message
@@ -172,10 +173,18 @@ if __name__ == "__main__":
     register_instagram(app, db)
     register_twitter(app, db)
     TikTokHandler(app, db).register()
+
+    # Chaos Chain keeps to itself: its own module, its own chaos.db. It reads
+    # the shared database only to honour the existing broadcast opt-out.
+    chaos_store = register_chaos(app, db)
+    # Safe before the loop runs — the task simply starts with it.
+    asyncio.get_event_loop().create_task(run_daily_announcer(app, db, chaos_store))
+
     print("🚀 Bot started!")
 
     try:
         app.run()
     finally:
+        chaos_store.close()
         db.close()
         print("💾 Database connection closed cleanly.")
