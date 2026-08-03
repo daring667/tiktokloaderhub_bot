@@ -57,7 +57,39 @@ canvas {
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
-.hint { color: var(--muted); font-size: 12px; margin: 2px 0 0; text-align: center; }
+/* On-screen controls.
+   Swiping is not dependable inside Telegram: a vertical drag is also the
+   gesture that pulls the Mini App sheet closed. These buttons always work,
+   so the game stays playable even where the swipe is swallowed. */
+
+.pad {
+  display: grid;
+  grid-template-columns: repeat(3, 58px);
+  grid-template-rows: repeat(2, 52px);
+  gap: 6px;
+  margin-top: 4px;
+  touch-action: none;
+}
+
+.pad-btn {
+  margin: 0;
+  padding: 0;
+  border-radius: 12px;
+  background: #1c2128;
+  border: 1px solid #30363d;
+  color: var(--fg);
+  font-size: 17px;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+
+.pad-btn:active { background: #2b3138; border-color: var(--accent); }
+
+.pad-btn[data-dir="up"] { grid-area: 1 / 2; }
+.pad-btn[data-dir="left"] { grid-area: 2 / 1; }
+.pad-btn[data-dir="down"] { grid-area: 2 / 2; }
+.pad-btn[data-dir="right"] { grid-area: 2 / 3; }
 
 /* Event banner ------------------------------------------------------ */
 

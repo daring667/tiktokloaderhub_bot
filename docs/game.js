@@ -299,10 +299,25 @@ window.addEventListener('keydown', (e) => {
   if (move && state && !state.over) { e.preventDefault(); turn(move[0], move[1]); }
 });
 
+// On-screen buttons. Telegram treats a vertical drag as "pull the Mini App
+// closed", so a swipe can never be fully relied on — these always work.
+document.getElementById('pad').addEventListener('pointerdown', (e) => {
+  const dir = e.target.dataset?.dir;
+  if (!dir || !state || state.over) return;
+  e.preventDefault();
+  const moves = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+  turn(...moves[dir]);
+});
+
 let touchStart = null;
 canvas.addEventListener('touchstart', (e) => {
   touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
 }, { passive: true });
+
+// Must be non-passive: swallowing the move is what stops the gesture from
+// reaching Telegram and dragging the sheet down mid-game.
+canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+
 canvas.addEventListener('touchend', (e) => {
   if (!touchStart || !state || state.over) return;
   const dx = e.changedTouches[0].clientX - touchStart.x;
@@ -359,7 +374,8 @@ window.__chaosPayload = payload;
 // --- boot ------------------------------------------------------------
 
 function resize() {
-  const size = Math.min(window.innerWidth - 24, window.innerHeight - 210, 460);
+  // Leaves room for the header, the HUD and the control pad below the board.
+  const size = Math.min(window.innerWidth - 24, window.innerHeight - 330, 460);
   const dpr = window.devicePixelRatio || 1;
   canvas.style.width = `${size}px`;
   canvas.style.height = `${size}px`;
@@ -378,6 +394,9 @@ function start() {
 async function boot() {
   tg?.ready();
   tg?.expand();
+  // Bot API 7.7+. Without it a downward swipe closes the app instead of
+  // steering the snake. Older clients fall back to the buttons below.
+  if (typeof tg?.disableVerticalSwipes === 'function') tg.disableVerticalSwipes();
   today = dayKey();
   daySeed = await seedForDay(today);
   els.day.textContent = today;
