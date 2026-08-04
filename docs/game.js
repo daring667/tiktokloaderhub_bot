@@ -5,6 +5,7 @@ import {
   MAX_PERMANENT_MODIFIERS, PERMANENT, TIMED, RARITY_LABEL,
   dayKey, eventCode, mulberry32, rollEvent, seedForDay,
 } from './chaos.js';
+import { MergeStage, MERGE_TARGET, drawMerge, pickMergeMod } from './merge.js';
 
 const GRID = 18;
 const BASE_TICK_MS = 150;
@@ -33,11 +34,23 @@ const els = {
   day: document.getElementById('day'),
   start: document.getElementById('start'),
   play: document.getElementById('play'),
+  chain: document.getElementById('chain'),
+  chainStats: document.getElementById('chain-stats'),
+  next: document.getElementById('next'),
+  stop: document.getElementById('stop'),
 };
 
 let state = null;
 let today = dayKey();
 let daySeed = 0;
+
+// The chain. Snake is always the first link; clearing it opens the next.
+// `stages` accumulates what gets sent to the bot at the end.
+let phase = 'snake';        // 'snake' | 'merge'
+let merge = null;
+let mergeMod = null;        // the whole day shares one, drawn from the seed
+let mergeStartedAt = 0;
+let stages = [];
 
 function freshState() {
   return {
@@ -275,6 +288,11 @@ function draw() {
 }
 
 function updateHud() {
+  if (phase === 'merge') {
+    els.score.textContent = `${totalScore() + (merge ? merge.score : 0)}`;
+    els.mods.textContent = merge ? `цель ${MERGE_TARGET} · ${merge.best}` : '';
+    return;
+  }
   els.apples.textContent = `🍎 ${state.eaten}`;
   els.score.textContent = `${Math.round(state.score)}`;
   const active = [...state.permanent, ...state.timed.map((t) => t.id)];
@@ -290,23 +308,39 @@ function turn(dx, dy) {
   state.queuedDir = { x: dx, y: dy };
 }
 
+const DIR_NAME = { '0,-1': 'up', '0,1': 'down', '-1,0': 'left', '1,0': 'right' };
+
+/** Routes one directional input to whichever link of the chain is running. */
+function steer(dx, dy) {
+  if (phase === 'merge') {
+    if (!merge || merge.over) return;
+    merge.move(DIR_NAME[`${dx},${dy}`]);
+    drawMerge(ctx, canvas.width, merge);
+    updateHud();
+    if (merge.over || merge.cleared) endMerge();
+    return;
+  }
+  if (!state || state.over) return;
+  turn(dx, dy);
+}
+
 const KEYS = {
   ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0],
   w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0],
 };
 window.addEventListener('keydown', (e) => {
   const move = KEYS[e.key];
-  if (move && state && !state.over) { e.preventDefault(); turn(move[0], move[1]); }
+  if (move) { e.preventDefault(); steer(move[0], move[1]); }
 });
 
 // On-screen buttons. Telegram treats a vertical drag as "pull the Mini App
 // closed", so a swipe can never be fully relied on — these always work.
 document.getElementById('pad').addEventListener('pointerdown', (e) => {
   const dir = e.target.dataset?.dir;
-  if (!dir || !state || state.over) return;
+  if (!dir) return;
   e.preventDefault();
   const moves = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
-  turn(...moves[dir]);
+  steer(...moves[dir]);
 });
 
 let touchStart = null;
@@ -319,12 +353,12 @@ canvas.addEventListener('touchstart', (e) => {
 canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
 
 canvas.addEventListener('touchend', (e) => {
-  if (!touchStart || !state || state.over) return;
+  if (!touchStart) return;
   const dx = e.changedTouches[0].clientX - touchStart.x;
   const dy = e.changedTouches[0].clientY - touchStart.y;
   if (Math.abs(dx) < 18 && Math.abs(dy) < 18) return;
-  if (Math.abs(dx) > Math.abs(dy)) turn(Math.sign(dx), 0);
-  else turn(0, Math.sign(dy));
+  if (Math.abs(dx) > Math.abs(dy)) steer(Math.sign(dx), 0);
+  else steer(0, Math.sign(dy));
   touchStart = null;
 }, { passive: true });
 
@@ -333,22 +367,77 @@ canvas.addEventListener('touchend', (e) => {
 function gameOver() {
   state.over = true;
   const cleared = state.eaten >= APPLES_TO_CLEAR_DAY;
-  els.overTitle.textContent = cleared ? '🏁 День пройден' : '💀 Конец';
-  els.overStats.innerHTML = `
-    <div class="big">${Math.round(state.score)}</div>
-    <div class="muted">очков · 🍎 ${state.eaten} ·
-      ${cleared ? 'день засчитан' : `до зачёта ${APPLES_TO_CLEAR_DAY - state.eaten} 🍎`}</div>`;
-  els.over.classList.add('show');
-}
 
-function payload() {
-  return JSON.stringify({
-    v: 1,
-    day: today,
+  stages.push({
+    g: 'snake',
     apples: state.eaten,
     score: Math.round(state.score),
     ms: Math.round(performance.now() - state.startedAt),
     events: state.chain,
+  });
+
+  if (cleared) {
+    // The chain opens. The snake score is banked either way, so moving on
+    // can only add to the day.
+    els.chainStats.innerHTML = `
+      <div class="big">${Math.round(state.score)}</div>
+      <div class="muted">очков за змейку · 🍎 ${state.eaten}<br><br>
+        Следующее звено — <b>Слияние</b>.<br>
+        Сложи плитку <b>${MERGE_TARGET}</b>, чтобы пройти цепочку.<br>
+        Модификатор дня: <b>${mergeMod.title}</b> — ${mergeMod.text.toLowerCase()}</div>`;
+    els.chain.classList.add('show');
+    return;
+  }
+
+  showFinal('💀 Конец', `до зачёта ${APPLES_TO_CLEAR_DAY - state.eaten} 🍎`);
+}
+
+function startMerge() {
+  // Stop the snake loop outright rather than trusting the caller to have
+  // done it: if it keeps running it repaints the board every frame and the
+  // merge grid is never visible.
+  if (state) state.over = true;
+  phase = 'merge';
+  merge = new MergeStage(mulberry32((daySeed ^ 0x5bf03635) >>> 0), mergeMod);
+  mergeStartedAt = performance.now();
+  els.apples.textContent = `🔗 ${mergeMod.title}`;
+  drawMerge(ctx, canvas.width, merge);
+  updateHud();
+}
+
+function endMerge() {
+  stages.push({
+    g: 'merge',
+    score: merge.score,
+    best: merge.best,
+    moves: merge.moves,
+    ms: Math.round(performance.now() - mergeStartedAt),
+    mod: mergeMod.id,
+    cleared: merge.cleared,
+  });
+  showFinal(
+    merge.cleared ? '🔗 Цепочка пройдена' : '🏁 День засчитан',
+    merge.cleared ? `собрана плитка ${merge.best}` : `слияние: дошёл до ${merge.best}`,
+  );
+}
+
+function showFinal(title, subtitle) {
+  els.overTitle.textContent = title;
+  els.overStats.innerHTML = `
+    <div class="big">${totalScore()}</div>
+    <div class="muted">очков за день · ${subtitle}</div>`;
+  els.over.classList.add('show');
+}
+
+const totalScore = () => stages.reduce((sum, s) => sum + s.score, 0);
+
+function payload() {
+  return JSON.stringify({
+    v: 2,
+    day: today,
+    score: totalScore(),
+    ms: stages.reduce((sum, s) => sum + s.ms, 0),
+    stages,
   });
 }
 
@@ -367,9 +456,37 @@ els.play.addEventListener('click', () => {
   start();
 });
 
-// Test seam: lets an end-to-end check pull the exact payload the bot will
-// receive and run it through services/chaos/validate.py.
-window.__chaosPayload = payload;
+els.next.addEventListener('click', () => {
+  els.chain.classList.remove('show');
+  startMerge();
+});
+
+els.stop.addEventListener('click', () => {
+  // Banking the snake result and walking away is a legitimate choice — the
+  // day is already cleared at this point.
+  els.chain.classList.remove('show');
+  showFinal('🏁 День засчитан', 'цепочка не пройдена');
+});
+
+// Test seam. Reaching the second link takes seven apples of competent play,
+// which an automated check can't do, so it can jump there directly and then
+// run the resulting payload through services/chaos/validate.py.
+window.__chaosTest = {
+  payload,
+  steer,
+  startMerge,
+  phase: () => phase,
+  merge: () => merge,
+  stages: () => stages,
+  bankSnake: (apples, score) => {
+    // Replays the day's chain for `apples` apples, exactly as eating them
+    // would have produced it — otherwise the bot rejects the run.
+    const r = mulberry32(daySeed);
+    const chain = [];
+    for (let i = 0; i < apples; i++) chain.push(eventCode(rollEvent(r, i + 1)));
+    stages.push({ g: 'snake', apples, score, ms: apples * 2000, events: chain });
+  },
+};
 
 // --- boot ------------------------------------------------------------
 
@@ -385,8 +502,12 @@ function resize() {
 window.addEventListener('resize', resize);
 
 function start() {
+  phase = 'snake';
+  merge = null;
+  stages = [];
   state = freshState();
   syncApples();
+  els.apples.textContent = '🍎 0';
   lastTick = performance.now();
   requestAnimationFrame(frame);
 }
@@ -399,6 +520,9 @@ async function boot() {
   if (typeof tg?.disableVerticalSwipes === 'function') tg.disableVerticalSwipes();
   today = dayKey();
   daySeed = await seedForDay(today);
+  // Its own stream, so drawing it can never shift the snake event chain the
+  // bot replays.
+  mergeMod = pickMergeMod(mulberry32((daySeed ^ 0x27d4eb2f) >>> 0));
   els.day.textContent = today;
   els.send.style.display = tg ? '' : 'none';
   resize();

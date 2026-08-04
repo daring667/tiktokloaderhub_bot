@@ -10,7 +10,7 @@ import pytest
 from datetime import datetime, timezone
 
 from services.chaos import seed as seed_mod
-from services.chaos.events import replay_chain
+from services.chaos.events import MERGE_TARGET, merge_mod_for_day, replay_chain
 from services.chaos.validate import (
     MAX_SUBMISSIONS_PER_DAY, RunRejected, validate_run,
 )
@@ -103,7 +103,7 @@ class TestRejects:
 
     def test_rejects_unknown_version(self):
         with pytest.raises(RunRejected, match="версия"):
-            validate_run(_payload(v=2), now=NOW)
+            validate_run(_payload(v=3), now=NOW)
 
     def test_rejects_another_day(self):
         with pytest.raises(RunRejected, match="другому игровому дню"):
@@ -162,3 +162,111 @@ class TestRejects:
     def test_rejects_a_bare_list(self):
         with pytest.raises(RunRejected, match="объект"):
             validate_run([1, 2, 3], now=NOW)
+
+
+def _snake_stage(apples=8, score=100, ms=60000):
+    return {"g": "snake", "apples": apples, "score": score, "ms": ms,
+            "events": replay_chain(TODAY, apples)}
+
+
+def _merge_stage(score=400, moves=60, ms=30000, best=128, cleared=None, mod=None):
+    return {"g": "merge", "score": score, "moves": moves, "ms": ms, "best": best,
+            "cleared": best >= MERGE_TARGET if cleared is None else cleared,
+            "mod": mod or merge_mod_for_day(TODAY)}
+
+
+def _chain(*stages):
+    stages = list(stages)
+    return {"v": 2, "day": TODAY,
+            "score": sum(s["score"] for s in stages),
+            "ms": sum(s["ms"] for s in stages),
+            "stages": stages}
+
+
+class TestChain:
+    """v2 payloads: one entry per link of the chain."""
+
+    def test_accepts_snake_only(self):
+        result = validate_run(_chain(_snake_stage()), now=NOW)
+        assert result["apples"] == 8
+        assert result["chain_completed"] is False
+
+    def test_accepts_a_completed_chain(self):
+        result = validate_run(_chain(_snake_stage(), _merge_stage()), now=NOW)
+        assert result["chain_completed"] is True
+        assert result["score"] == 500
+        assert [s["g"] for s in result["stages"]] == ["snake", "merge"]
+
+    def test_unfinished_merge_still_clears_the_day(self):
+        """Reaching the second link means snake was already cleared, so the
+        streak must not depend on finishing it."""
+        result = validate_run(
+            _chain(_snake_stage(apples=9), _merge_stage(best=64)), now=NOW)
+        assert result["cleared"] is True
+        assert result["chain_completed"] is False
+
+    def test_rejects_a_chain_that_skips_snake(self):
+        with pytest.raises(RunRejected, match="начинаться со змейки"):
+            validate_run(_chain(_merge_stage()), now=NOW)
+
+    def test_rejects_merge_without_clearing_snake(self):
+        with pytest.raises(RunRejected, match="без зачёта"):
+            validate_run(_chain(_snake_stage(apples=3, score=40),
+                                _merge_stage()), now=NOW)
+
+    def test_rejects_a_total_that_is_not_the_sum(self):
+        payload = _chain(_snake_stage(), _merge_stage())
+        payload["score"] += 1000
+        with pytest.raises(RunRejected, match="сумме звеньев"):
+            validate_run(payload, now=NOW)
+
+    def test_rejects_the_wrong_daily_modifier(self):
+        wrong = "frozen" if merge_mod_for_day(TODAY) != "frozen" else "rotate"
+        with pytest.raises(RunRejected, match="модификатор"):
+            validate_run(_chain(_snake_stage(), _merge_stage(mod=wrong)), now=NOW)
+
+    def test_rejects_a_cleared_flag_that_does_not_match_the_tile(self):
+        with pytest.raises(RunRejected, match="не сходится"):
+            validate_run(
+                _chain(_snake_stage(), _merge_stage(best=64, cleared=True)), now=NOW)
+
+    def test_rejects_impossible_merge_score(self):
+        with pytest.raises(RunRejected, match="очки невозможны для"):
+            validate_run(_chain(_snake_stage(), _merge_stage(score=999999, moves=10)),
+                         now=NOW)
+
+    def test_rejects_merge_played_faster_than_a_human_can(self):
+        with pytest.raises(RunRejected, match="физически возможно"):
+            validate_run(_chain(_snake_stage(), _merge_stage(moves=200, ms=100)),
+                         now=NOW)
+
+    def test_rejects_an_unknown_link(self):
+        payload = _chain(_snake_stage())
+        payload["stages"].append({"g": "tetris", "score": 0})
+        payload["score"] = 100
+        with pytest.raises(RunRejected, match="неизвестное звено"):
+            validate_run(payload, now=NOW)
+
+    def test_rejects_empty_stages(self):
+        with pytest.raises(RunRejected, match="непустой список"):
+            validate_run({"v": 2, "day": TODAY, "score": 0, "ms": 0, "stages": []},
+                         now=NOW)
+
+    def test_v1_still_accepted_after_the_upgrade(self):
+        """A Mini App left open across a deploy keeps sending v1."""
+        result = validate_run(_payload(), now=NOW)
+        assert result["chain_completed"] is False
+        assert result["stages"][0]["g"] == "snake"
+
+
+class TestRealChainPayload:
+    def test_accepts_a_payload_captured_from_the_browser(self):
+        raw = ('{"v":2,"day":"2026-08-03","score":878,"ms":18007,"stages":['
+               '{"g":"snake","apples":9,"score":126,"ms":18000,"events":%s},'
+               '{"g":"merge","score":752,"best":64,"moves":100,"ms":7000,'
+               '"mod":"rotate","cleared":false}]}')
+        import json as _json
+        raw = raw % _json.dumps(replay_chain("2026-08-03", 9))
+        result = validate_run(raw, now=NOW)
+        assert result["score"] == 878
+        assert result["chain_completed"] is False

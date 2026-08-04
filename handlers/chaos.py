@@ -18,7 +18,7 @@ import os
 from pyrogram import filters
 from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
 
-from services.chaos.events import APPLES_TO_CLEAR_DAY
+from services.chaos.events import APPLES_TO_CLEAR_DAY, MERGE_TARGET
 from services.chaos.seed import day_key, shift_day_key
 from services.chaos.storage import ChaosStorage
 from services.chaos.validate import RunRejected, validate_run
@@ -59,7 +59,10 @@ def _format_top(rows: list, day: str) -> str:
     for i, row in enumerate(rows):
         place = medals[i] if i < len(medals) else f"{i + 1}."
         name = html.escape(row["display_name"] or "Аноним")
-        lines.append(f"{place} {name} — <b>{row['score']}</b> · 🍎 {row['apples']}")
+        chain = " 🔗" if row.get("chain_completed") else ""
+        lines.append(
+            f"{place} {name} — <b>{row['score']}</b> · 🍎 {row['apples']}{chain}"
+        )
     return "\n".join(lines)
 
 
@@ -79,7 +82,8 @@ def register(app, db=None, storage: ChaosStorage | None = None):
             "",
             "Змейка, в которой каждое съеденное яблоко меняет правила.",
             "Чем больше хаоса накопилось, тем дороже стоит яблоко.",
-            f"{APPLES_TO_CLEAR_DAY} 🍎 — день засчитан.",
+            f"{APPLES_TO_CLEAR_DAY} 🍎 — день засчитан, и открывается следующее",
+            f"звено: «Слияние». Собери плитку {MERGE_TARGET} — пройдёшь цепочку 🔗.",
             "",
             f"День: <b>{today}</b>",
         ]
@@ -146,6 +150,9 @@ def register(app, db=None, storage: ChaosStorage | None = None):
         else:
             need = APPLES_TO_CLEAR_DAY - run["apples"]
             lines.append(f"До зачёта не хватило {need} 🍎")
+
+        if run.get("chain_completed"):
+            lines.append("🔗 <b>Цепочка пройдена целиком.</b>")
 
         if previous_best and run["score"] > previous_best["score"]:
             lines.append(f"🔝 Личный рекорд дня побит (было {previous_best['score']})")

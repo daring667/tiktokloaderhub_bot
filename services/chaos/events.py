@@ -138,3 +138,23 @@ def max_plausible_score(apples: int) -> int:
     best_chaos = 1 + CHAOS_BONUS_PER_MODIFIER * MAX_PERMANENT_MODIFIERS
     best_temp = 2.0 * 5.0  # double points and a golden apple at once
     return int(apples * BASE_POINTS_PER_APPLE * best_chaos * best_temp) + 1
+
+
+# ----------------------------------------------------------------------
+# The second link of the chain: "Слияние"
+# ----------------------------------------------------------------------
+# Mirrors MERGE_MODS and pickMergeMod() in docs/merge.js. The whole day
+# shares one modifier, drawn from a stream of its own so that adding it
+# could not shift the snake event chain by a single draw.
+
+MERGE_MODS = ("twoSpawns", "frozen", "rotate")
+MERGE_TARGET = 128
+MERGE_MOD_STREAM_XOR = 0x27D4EB2F
+
+
+def merge_mod_for_day(day_key_value: str) -> str:
+    """Which modifier today's "Слияние" runs with."""
+    rand = mulberry32(
+        (seed_for_day(day_key_value) ^ MERGE_MOD_STREAM_XOR) & 0xFFFFFFFF
+    )
+    return MERGE_MODS[int(rand() * len(MERGE_MODS)) % len(MERGE_MODS)]

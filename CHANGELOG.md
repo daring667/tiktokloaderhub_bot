@@ -3,6 +3,37 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.3.0] — 2026-08-04
+
+The chain that the name promised. Clearing snake no longer ends the day — it
+opens the next link.
+
+### Added
+- **«Слияние»**, the second game: slide tiles, equal ones merge, reach 128 to
+  finish the chain. It reuses the existing pad, which maps onto the four
+  directions exactly, and asks for planning rather than reflexes — a
+  deliberate change of pace after the snake.
+- **A daily modifier for it**, shared by everyone and drawn from the day seed:
+  a second tile every move, a tile that freezes in place for six moves, or a
+  board that rotates every fifth move.
+- Runs that finish the chain are marked 🔗 in `/top`.
+
+### Changed
+- **Payload format v2**, carrying one entry per link. v1 is still accepted:
+  a Mini App left open across a deploy keeps sending it, and rejecting those
+  would look like the game silently eating results.
+- `chaos_runs` gains `stages` and `chain_completed`, added by migration so the
+  runs already recorded survive.
+
+### Notes
+- Clearing the day, and therefore the streak, still means seven apples in the
+  snake. The second link adds score and a 🔗, and can be skipped — raising the
+  bar would have retroactively broken streaks people already earned.
+- The merge board is driven by the player's own moves, so unlike the snake
+  chain there is nothing to replay it against. Its checks are a sanity net —
+  score per move, a floor on human reaction time, and the daily modifier,
+  which the bot re-derives independently.
+
 ## [1.2.0] — 2026-08-03
 
 **Chaos Chain** — a daily game challenge, and the first thing in this bot

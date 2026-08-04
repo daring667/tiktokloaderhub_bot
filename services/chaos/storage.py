@@ -6,6 +6,7 @@ out, deleting `chaos.db` is the whole cleanup, and a mistake here cannot
 corrupt download history. The price is a denormalised copy of the player's
 display name, which is cheap.
 """
+import json
 import os
 import sqlite3
 import threading
@@ -60,6 +61,20 @@ class ChaosStorage:
             """)
             self._conn.commit()
 
+        # These columns arrived with the chain, after rows already existed.
+        # SQLite has no "ADD COLUMN IF NOT EXISTS", so just swallow the error
+        # when they are already there.
+        for statement in (
+            "ALTER TABLE chaos_runs ADD COLUMN stages TEXT",
+            "ALTER TABLE chaos_runs ADD COLUMN chain_completed INTEGER NOT NULL DEFAULT 0",
+        ):
+            with self._lock:
+                try:
+                    self._conn.execute(statement)
+                    self._conn.commit()
+                except sqlite3.OperationalError:
+                    pass
+
     # ------------------------------------------------------------------
     # Runs
     # ------------------------------------------------------------------
@@ -68,10 +83,13 @@ class ChaosStorage:
         with self._lock:
             self._conn.execute(
                 "INSERT INTO chaos_runs "
-                "(user_id, display_name, day_key, apples, score, duration_ms, events) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "(user_id, display_name, day_key, apples, score, duration_ms, "
+                " events, stages, chain_completed) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (user_id, display_name, run["day_key"], run["apples"],
-                 run["score"], run["duration_ms"], ",".join(run["events"])),
+                 run["score"], run["duration_ms"], ",".join(run["events"]),
+                 json.dumps(run.get("stages", []), ensure_ascii=False),
+                 int(bool(run.get("chain_completed")))),
             )
             self._conn.commit()
 
@@ -93,7 +111,8 @@ class ChaosStorage:
         """Best run per player for the day, strongest first."""
         rows = self._conn.execute(
             "SELECT user_id, display_name, MAX(score) AS score, "
-            "       apples, duration_ms "
+            "       apples, duration_ms, "
+            "       MAX(chain_completed) AS chain_completed "
             "FROM chaos_runs WHERE day_key = ? "
             "GROUP BY user_id ORDER BY score DESC LIMIT ?",
             (day_key_value, limit),
