@@ -11,11 +11,12 @@ def store(tmp_path):
     storage.close()
 
 
-def _run(day="2026-08-03", apples=8, score=120):
+def _run(day="2026-08-03", apples=8, score=120, chain=False):
     return {
         "day_key": day, "apples": apples, "score": score,
         "duration_ms": 60000, "events": ["c:speed", "r:portal"],
-        "cleared": apples >= 7,
+        "cleared": apples >= 7, "chain_completed": chain,
+        "stages": [{"g": "snake", "apples": apples, "score": score}],
     }
 
 
@@ -67,6 +68,46 @@ class TestDailyTop:
     def test_ignores_other_days(self, store):
         store.save_run(1, "Аня", _run(day="2026-08-02"))
         assert store.get_daily_top("2026-08-03") == []
+
+
+class TestDailyTopRowIntegrity:
+    """Every field in a leaderboard row has to come from the same run.
+
+    Regression: the query used GROUP BY with MAX(score) and MAX(chain_completed).
+    SQLite only guarantees bare columns come from the max() row when there is
+    exactly one min()/max() in the query — with two, the leaderboard showed a
+    score from one run next to the apple count from another.
+    """
+
+    def test_apples_belong_to_the_best_scoring_run(self, store):
+        store.save_run(1, "Аня", _run(apples=30, score=500, chain=False))
+        store.save_run(1, "Аня", _run(apples=2, score=100, chain=True))
+
+        row = store.get_daily_top("2026-08-03")[0]
+        assert row["score"] == 500
+        assert row["apples"] == 30
+
+    def test_chain_counts_for_the_whole_day(self, store):
+        """Finishing the chain earlier must not be erased by a later,
+        higher-scoring throwaway attempt."""
+        store.save_run(1, "Аня", _run(apples=8, score=100, chain=True))
+        store.save_run(1, "Аня", _run(apples=9, score=900, chain=False))
+
+        row = store.get_daily_top("2026-08-03")[0]
+        assert row["score"] == 900
+        assert row["chain_completed"] == 1
+
+    def test_no_chain_stays_false(self, store):
+        store.save_run(1, "Аня", _run(chain=False))
+        assert store.get_daily_top("2026-08-03")[0]["chain_completed"] == 0
+
+    def test_ties_are_resolved_and_do_not_duplicate_a_player(self, store):
+        store.save_run(1, "Аня", _run(apples=5, score=100))
+        store.save_run(1, "Аня", _run(apples=9, score=100))
+
+        top = store.get_daily_top("2026-08-03")
+        assert len(top) == 1
+        assert top[0]["apples"] == 5   # earliest of the tied runs
 
 
 class TestStreaks:

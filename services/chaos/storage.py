@@ -108,13 +108,28 @@ class ChaosStorage:
         ).fetchone()
 
     def get_daily_top(self, day_key_value: str, limit: int = 10) -> list:
-        """Best run per player for the day, strongest first."""
+        """Best run per player for the day, strongest first.
+
+        Uses a window function rather than GROUP BY with MAX(). SQLite only
+        promises that bare columns come from the max() row when the query has
+        exactly one min()/max(); with two — the score and the chain flag —
+        the rest of the row is undefined, and the leaderboard would show a
+        score from one run beside the apple count from another.
+
+        `chain_completed` is deliberately the whole day, not just the best
+        run: finishing the chain is an achievement of the day, and hiding it
+        because a later throwaway attempt scored higher would be perverse.
+        """
         rows = self._conn.execute(
-            "SELECT user_id, display_name, MAX(score) AS score, "
-            "       apples, duration_ms, "
-            "       MAX(chain_completed) AS chain_completed "
-            "FROM chaos_runs WHERE day_key = ? "
-            "GROUP BY user_id ORDER BY score DESC LIMIT ?",
+            "SELECT user_id, display_name, score, apples, duration_ms, chain_completed "
+            "FROM ("
+            "  SELECT user_id, display_name, score, apples, duration_ms,"
+            "         MAX(chain_completed) OVER (PARTITION BY user_id) AS chain_completed,"
+            "         ROW_NUMBER() OVER ("
+            "           PARTITION BY user_id ORDER BY score DESC, id ASC"
+            "         ) AS rn"
+            "  FROM chaos_runs WHERE day_key = ?"
+            ") WHERE rn = 1 ORDER BY score DESC LIMIT ?",
             (day_key_value, limit),
         ).fetchall()
         return [dict(r) for r in rows]
