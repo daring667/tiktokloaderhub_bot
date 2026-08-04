@@ -52,6 +52,14 @@ let mergeMod = null;        // the whole day shares one, drawn from the seed
 let mergeStartedAt = 0;
 let stages = [];
 
+/** A fresh uint32 for anything that should differ between attempts. */
+function runSeed() {
+  if (window.crypto?.getRandomValues) {
+    return window.crypto.getRandomValues(new Uint32Array(1))[0];
+  }
+  return (Math.random() * 4294967296) >>> 0;
+}
+
 function freshState() {
   return {
     snake: [{ x: 9, y: 9 }, { x: 8, y: 9 }, { x: 7, y: 9 }],
@@ -68,11 +76,17 @@ function freshState() {
     chain: [],
     startedAt: performance.now(),
     over: false,
-    // Two independent streams. The event stream is consumed exactly two
-    // draws per apple, because the bot replays it to validate the run; if
-    // apple and wall placement drew from it too, the chains would diverge.
+    // Two streams, seeded on purpose from different things.
+    //
+    // Events come from the day: everyone must meet the same chain in the
+    // same order, and the bot replays it to check a submitted run. Exactly
+    // two draws per apple — anything else drawing from here would shift it.
+    //
+    // The world — where apples and walls land — is seeded per run. Tying it
+    // to the day meant every attempt repeated the same layout, so the way to
+    // climb the leaderboard was to memorise a route rather than play well.
     eventRand: mulberry32(daySeed),
-    worldRand: mulberry32((daySeed ^ 0x9e3779b9) >>> 0),
+    worldRand: mulberry32(runSeed()),
   };
 }
 
@@ -398,7 +412,10 @@ function startMerge() {
   // merge grid is never visible.
   if (state) state.over = true;
   phase = 'merge';
-  merge = new MergeStage(mulberry32((daySeed ^ 0x5bf03635) >>> 0), mergeMod);
+  // Same split as the snake: the modifier is the day's and is checked by the
+  // bot, but the tile spawns are this attempt's, so replaying the day isn't
+  // a matter of remembering which tile comes next.
+  merge = new MergeStage(mulberry32(runSeed()), mergeMod);
   mergeStartedAt = performance.now();
   els.apples.textContent = `🔗 ${mergeMod.title}`;
   drawMerge(ctx, canvas.width, merge);
@@ -477,6 +494,7 @@ window.__chaosTest = {
   startMerge,
   phase: () => phase,
   merge: () => merge,
+  state: () => state,
   stages: () => stages,
   bankSnake: (apples, score) => {
     // Replays the day's chain for `apples` apples, exactly as eating them
