@@ -65,25 +65,36 @@ export const RARITY_LADDER = [
   [null, { common: 25, rare: 40, epic: 30, legendary: 5 }],
 ];
 
+// Bumped whenever the catalogue below changes. The client sends it with the
+// result so the bot can tell "this player is running a cached copy of an
+// older game" apart from "this chain is forged" — a browser will serve
+// yesterday's JavaScript for a while after a deploy.
+export const CATALOGUE_VERSION = 2;
+
 // ORDER MATTERS. The pick within a rarity is an index into these arrays, so
 // reordering an entry silently changes every future day's chain and breaks
-// validation on the bot.
+// validation on the bot. Append, never insert.
 export const EVENTS = [
   { id: 'speed', rarity: COMMON, kind: PERMANENT, title: 'Разгон', text: 'Скорость +20%' },
   { id: 'walls', rarity: COMMON, kind: PERMANENT, title: 'Стены', text: 'На поле появились три блока' },
   { id: 'invert', rarity: COMMON, kind: TIMED, duration: 10, title: 'Инверсия', text: 'Управление наоборот' },
   { id: 'ghost', rarity: COMMON, kind: PERMANENT, title: 'Призрак', text: 'Яблоко мигает' },
   { id: 'growth', rarity: COMMON, kind: INSTANT, title: 'Отъедание', text: '+2 сегмента к длине' },
+  { id: 'wander', rarity: COMMON, kind: PERMANENT, title: 'Блуждание', text: 'Яблоко не стоит на месте' },
 
   { id: 'portal', rarity: RARE, kind: PERMANENT, title: 'Портал', text: 'Края поля переключились' },
   { id: 'double', rarity: RARE, kind: TIMED, duration: 15, multiplier: 2, title: 'Двойные очки', text: '×2 к очкам' },
   { id: 'mirror', rarity: RARE, kind: PERMANENT, title: 'Зеркало', text: 'Поле отразилось' },
+  { id: 'shed', rarity: RARE, kind: INSTANT, title: 'Линька', text: 'Сбросил половину длины' },
 
   { id: 'dark', rarity: EPIC, kind: PERMANENT, title: 'Темнота', text: 'Видно только вокруг головы' },
   { id: 'golden', rarity: EPIC, kind: INSTANT, multiplier: 5, title: 'Золотое яблоко', text: 'Следующее яблоко ×5' },
   { id: 'twins', rarity: EPIC, kind: PERMANENT, title: 'Двойня', text: 'На поле два яблока' },
+  { id: 'slow', rarity: EPIC, kind: TIMED, duration: 15, title: 'Замедление', text: 'Время загустело' },
 
   { id: 'reverse', rarity: LEGENDARY, kind: TIMED, duration: 20, title: 'Обратный ход', text: 'Хвост стал головой' },
+  { id: 'swarm', rarity: LEGENDARY, kind: TIMED, duration: 15, title: 'Нашествие', text: 'Пять яблок разом' },
+  { id: 'goldrush', rarity: LEGENDARY, kind: TIMED, duration: 20, multiplier: 5, title: 'Золотая лихорадка', text: 'Каждое яблоко ×5' },
 ];
 
 export const EVENTS_BY_RARITY = RARITY_ORDER.reduce((acc, rarity) => {

@@ -6,6 +6,13 @@ numbers so the two can't drift silently.
 """
 from services.chaos.seed import mulberry32, seed_for_day
 
+# Bumped whenever the catalogue changes. The client sends the version it
+# was built with, which lets the bot tell "running a cached copy of an older
+# game" apart from "forged chain" — GitHub Pages serves stale JavaScript for
+# a while after every deploy, and telling an honest player their result looks
+# fake would be the worst possible way to handle that.
+CATALOGUE_VERSION = 2
+
 COMMON = "common"
 RARE = "rare"
 EPIC = "epic"
@@ -39,6 +46,8 @@ RARITY_LADDER = (
 # arrives. Timed modifiers don't count against the cap.
 MAX_PERMANENT_MODIFIERS = 4
 
+# ORDER MATTERS: the pick within a rarity is an index into these tuples,
+# so reordering an entry changes every future day's chain. Append only.
 EVENTS = (
     # --- 🟢 common -----------------------------------------------------
     {"id": "speed",    "rarity": COMMON, "kind": PERMANENT, "title": "Разгон",
@@ -51,6 +60,8 @@ EVENTS = (
      "text": "Яблоко мигает"},
     {"id": "growth",   "rarity": COMMON, "kind": INSTANT, "title": "Отъедание",
      "text": "+2 сегмента к длине"},
+    {"id": "wander",   "rarity": COMMON, "kind": PERMANENT, "title": "Блуждание",
+     "text": "Яблоко не стоит на месте"},
 
     # --- 🔵 rare -------------------------------------------------------
     {"id": "portal",   "rarity": RARE, "kind": PERMANENT, "title": "Портал",
@@ -59,6 +70,8 @@ EVENTS = (
      "multiplier": 2.0, "title": "Двойные очки", "text": "×2 к очкам, 15 секунд"},
     {"id": "mirror",   "rarity": RARE, "kind": PERMANENT, "title": "Зеркало",
      "text": "Поле отразилось по горизонтали"},
+    {"id": "shed",     "rarity": RARE, "kind": INSTANT, "title": "Линька",
+     "text": "Змейка сбросила половину длины"},
 
     # --- 🟣 epic -------------------------------------------------------
     {"id": "dark",     "rarity": EPIC, "kind": PERMANENT, "title": "Темнота",
@@ -67,10 +80,17 @@ EVENTS = (
      "title": "Золотое яблоко", "text": "Следующее яблоко даёт ×5"},
     {"id": "twins",    "rarity": EPIC, "kind": PERMANENT, "title": "Двойня",
      "text": "На поле два яблока"},
+    {"id": "slow",     "rarity": EPIC, "kind": TIMED, "duration": 15,
+     "title": "Замедление", "text": "Время загустело, 15 секунд"},
 
     # --- 🟡 legendary --------------------------------------------------
     {"id": "reverse",  "rarity": LEGENDARY, "kind": TIMED, "duration": 20,
      "title": "Обратный ход", "text": "Хвост стал головой, 20 секунд"},
+    {"id": "swarm",    "rarity": LEGENDARY, "kind": TIMED, "duration": 15,
+     "title": "Нашествие", "text": "Пять яблок разом, 15 секунд"},
+    {"id": "goldrush", "rarity": LEGENDARY, "kind": TIMED, "duration": 20,
+     "multiplier": 5.0, "title": "Золотая лихорадка",
+     "text": "Каждое яблоко ×5, 20 секунд"},
 )
 
 EVENTS_BY_ID = {e["id"]: e for e in EVENTS}

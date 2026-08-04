@@ -93,28 +93,38 @@ canvas {
 
 /* Event banner ------------------------------------------------------ */
 
+/* Sits in the flow above the board and always occupies its line, so an
+   event never covers the field and the layout never jumps. It used to be a
+   card floating over the middle of the play area, which hid the snake at
+   exactly the moment the rules had just changed. */
+
 .toast {
-  position: fixed;
-  left: 50%;
-  top: 14%;
-  transform: translate(-50%, -12px);
-  max-width: 88vw;
-  padding: 10px 16px;
-  border-radius: 12px;
-  background: #1c2128;
-  border: 1px solid #30363d;
-  font-size: 14px;
+  width: 100%;
+  max-width: 460px;
+  height: 24px;
+  line-height: 24px;
+  padding: 0 10px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  font-size: 12.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-align: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  transition: opacity 0.15s ease;
 }
 
-.toast.show { opacity: 1; transform: translate(-50%, 0); }
-.toast.common { border-color: #3fb950; }
-.toast.rare { border-color: #58a6ff; }
-.toast.epic { border-color: #bc8cff; }
-.toast.legendary { border-color: #ffd23f; box-shadow: 0 0 24px rgba(255, 210, 63, 0.35); }
+.toast.show { opacity: 1; }
+.toast.common { color: #7ee787; border-color: rgba(63, 185, 80, 0.45); }
+.toast.rare { color: #8ed6ff; border-color: rgba(88, 166, 255, 0.45); }
+.toast.epic { color: #d2a8ff; border-color: rgba(188, 140, 255, 0.5); }
+.toast.legendary {
+  color: #ffd23f;
+  border-color: rgba(255, 210, 63, 0.7);
+  background: rgba(255, 210, 63, 0.08);
+}
 
 /* Game over --------------------------------------------------------- */
 

@@ -172,4 +172,4 @@ def test_downloader_database_is_untouched(store, tmp_path):
             "SELECT name FROM sqlite_master WHERE type='table'"
         )
     }
-    assert tables == {"chaos_runs", "chaos_streaks", "chaos_meta", "sqlite_sequence"}
+    assert tables == {"chaos_runs", "chaos_streaks", "chaos_meta", "chaos_players", "sqlite_sequence"}

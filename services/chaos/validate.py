@@ -14,6 +14,7 @@ import json
 
 from services.chaos.events import (
     APPLES_TO_CLEAR_DAY,
+    CATALOGUE_VERSION,
     MERGE_TARGET,
     max_plausible_score,
     merge_mod_for_day,
@@ -42,6 +43,17 @@ MAX_SUBMISSIONS_PER_DAY = 20
 
 class RunRejected(Exception):
     """A submitted run failed validation and must not be recorded."""
+
+
+class StaleClient(RunRejected):
+    """The player is running a cached copy of an older build.
+
+    Worth its own type. Their chain will not match, but they did nothing
+    wrong, and answering an honest player with "your event chain doesn't
+    match today's seed" reads as an accusation of cheating. GitHub Pages
+    serves stale JavaScript for a while after every deploy, so this is a
+    routine event, not an exotic one.
+    """
 
 
 def _require_int(payload: dict, field: str, low: int, high: int) -> int:
@@ -110,6 +122,14 @@ def _parse(raw) -> dict:
         raise RunRejected("ожидался объект")
     if payload.get("v") not in SUPPORTED_VERSIONS:
         raise RunRejected(f"неизвестная версия формата: {payload.get('v')!r}")
+
+    # v1 predates the field entirely, so it can only have come from the
+    # first catalogue.
+    catalogue = payload.get("cat", 1)
+    if catalogue != CATALOGUE_VERSION:
+        raise StaleClient(
+            f"игра обновилась (каталог {catalogue} против {CATALOGUE_VERSION})"
+        )
     return payload
 
 

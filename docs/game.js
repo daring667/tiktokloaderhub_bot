@@ -1,21 +1,33 @@
 // Snake, plus the chaos that lands on it after every apple.
 
+// The ?v= on the imports is not decoration. A browser will keep a cached
+// chaos.js while fetching a fresh game.js, and the module then fails outright
+// — "does not provide an export named ..." — leaving a blank screen rather
+// than a merely outdated game. Bump it whenever chaos.js or merge.js changes;
+// keeping it equal to CATALOGUE_VERSION is the easiest way to remember.
 import {
   APPLES_TO_CLEAR_DAY, BASE_POINTS_PER_APPLE, CHAOS_BONUS_PER_MODIFIER,
-  MAX_PERMANENT_MODIFIERS, PERMANENT, TIMED, RARITY_LABEL,
+  MAX_PERMANENT_MODIFIERS, PERMANENT, TIMED, RARITY_LABEL, CATALOGUE_VERSION,
   dayKey, eventCode, mulberry32, rollEvent, seedForDay,
-} from './chaos.js';
-import { MergeStage, MERGE_TARGET, drawMerge, pickMergeMod } from './merge.js';
+} from './chaos.js?v=2';
+import { MergeStage, MERGE_TARGET, drawMerge, pickMergeMod } from './merge.js?v=2';
 
 const GRID = 18;
 const BASE_TICK_MS = 150;
 const SPEED_STEP = 1.2;
+const WANDER_EVERY_MS = 2600;
 
-// The snake holds still for a moment after each event. Some modifiers —
-// mirror, reverse — change where everything appears to be, and without a
-// beat to re-read the board a player heading for an apple near the edge
-// just dies, with no idea why. The pause is also when the banner is read.
-const EVENT_PAUSE_MS = 850;
+// Only these two put everything somewhere else, and only after them does a
+// player need a beat to re-read the board. Pausing on every apple broke the
+// run into stutters at exactly the moments it was going well — worse than the
+// disorientation it was meant to fix.
+const REORIENTING_EVENTS = new Set(['mirror', 'reverse']);
+const EVENT_PAUSE_MS = 550;
+
+// One turn may wait behind the one being applied. A single slot meant two
+// quick taps overwrote each other and the second was silently dropped; a
+// deeper queue would keep turning after the player stopped pressing.
+const MAX_QUEUED_TURNS = 2;
 
 const tg = window.Telegram?.WebApp;
 
@@ -64,13 +76,14 @@ function freshState() {
   return {
     snake: [{ x: 9, y: 9 }, { x: 8, y: 9 }, { x: 7, y: 9 }],
     dir: { x: 1, y: 0 },
-    queuedDir: null,
+    turns: [],              // pending direction changes, oldest first
     apples: [],
     walls: [],
     permanent: [],          // event ids, oldest first
     timed: [],              // { id, until, multiplier }
     golden: false,
     pausedUntil: 0,
+    wanderedAt: 0,
     score: 0,
     eaten: 0,
     chain: [],
@@ -101,7 +114,10 @@ const wraps = () => count('portal') % 2 === 1;
 const mirrored = () => count('mirror') % 2 === 1;
 
 function tickInterval() {
-  return BASE_TICK_MS / speedFactor();
+  // "Замедление" is the one event that helps — which is what makes rolling
+  // an epic feel like a reward rather than another tax.
+  const relief = timedActive('slow') ? 2 : 1;
+  return (BASE_TICK_MS / speedFactor()) * relief;
 }
 
 function chaosMultiplier() {
@@ -124,8 +140,13 @@ function freeCell() {
   return { x: 0, y: 0 };
 }
 
+function appleTarget() {
+  if (timedActive('swarm')) return 5;
+  return has('twins') ? 2 : 1;
+}
+
 function syncApples() {
-  const wanted = has('twins') ? 2 : 1;
+  const wanted = appleTarget();
   while (state.apples.length < wanted) state.apples.push(freeCell());
   while (state.apples.length > wanted) state.apples.pop();
 }
@@ -166,14 +187,21 @@ function applyEvent(event) {
   } else if (event.id === 'growth') {
     const tail = state.snake[state.snake.length - 1];
     state.snake.push({ ...tail }, { ...tail });
+  } else if (event.id === 'shed') {
+    // Never below the starting length, or it stops reading as a snake.
+    state.snake.length = Math.max(3, Math.ceil(state.snake.length / 2));
   } else if (event.id === 'golden') {
     state.golden = true;
   }
+
   showToast(event);
-  state.pausedUntil = performance.now() + EVENT_PAUSE_MS;
-  // A turn queued a moment before the board flipped was aimed at the old
-  // layout; carrying it over would steer somewhere the player never meant.
-  state.queuedDir = null;
+
+  if (REORIENTING_EVENTS.has(event.id)) {
+    state.pausedUntil = performance.now() + EVENT_PAUSE_MS;
+    // A turn queued a moment before the board flipped was aimed at the old
+    // layout; carrying it over would steer somewhere never meant.
+    state.turns.length = 0;
+  }
 }
 
 function expireTimed(now) {
@@ -194,10 +222,9 @@ function showToast(event) {
 // --- the loop --------------------------------------------------------
 
 function step() {
-  if (state.queuedDir) {
-    state.dir = state.queuedDir;
-    state.queuedDir = null;
-  }
+  // One queued turn per tick, so a burst of taps is played back in order
+  // instead of the last one winning.
+  if (state.turns.length) state.dir = state.turns.shift();
 
   const head = state.snake[0];
   let nx = head.x + state.dir.x;
@@ -242,6 +269,16 @@ let lastTick = 0;
 function frame(now) {
   if (state.over) return;
   expireTimed(now);
+
+  // "Нашествие" ends by putting the extra apples away again.
+  if (state.apples.length !== appleTarget()) syncApples();
+
+  // "Блуждание": the apple refuses to wait where you left it.
+  if (has('wander') && now - state.wanderedAt > WANDER_EVERY_MS) {
+    state.wanderedAt = now;
+    state.apples = state.apples.map(() => freeCell());
+  }
+
   if (now < state.pausedUntil) {
     // Frozen mid-run while the player takes in what just changed. Keep
     // lastTick level with now so the snake doesn't lurch forward on resume.
@@ -318,8 +355,18 @@ function updateHud() {
 function turn(dx, dy) {
   if (timedActive('invert')) { dx = -dx; dy = -dy; }
   if (mirrored()) dx = -dx;
-  if (state.dir.x === -dx && state.dir.y === -dy) return;  // no instant U-turn
-  state.queuedDir = { x: dx, y: dy };
+
+  // Validate against the last direction already accepted, not against the
+  // one currently being travelled. Comparing with state.dir threw away the
+  // second half of a two-step turn like right → down → left, which is what
+  // made the pad feel like it was dropping presses.
+  const previous = state.turns.length ? state.turns[state.turns.length - 1] : state.dir;
+  if (previous.x === -dx && previous.y === -dy) return;   // no instant U-turn
+  if (previous.x === dx && previous.y === dy) return;     // already going there
+
+  if (state.turns.length >= MAX_QUEUED_TURNS) return;
+  state.turns.push({ x: dx, y: dy });
+  tg?.HapticFeedback?.impactOccurred?.('light');
 }
 
 const DIR_NAME = { '0,-1': 'up', '0,1': 'down', '-1,0': 'left', '1,0': 'right' };
@@ -451,6 +498,7 @@ const totalScore = () => stages.reduce((sum, s) => sum + s.score, 0);
 function payload() {
   return JSON.stringify({
     v: 2,
+    cat: CATALOGUE_VERSION,
     day: today,
     score: totalScore(),
     ms: stages.reduce((sum, s) => sum + s.ms, 0),
@@ -510,7 +558,13 @@ window.__chaosTest = {
 
 function resize() {
   // Leaves room for the header, the HUD and the control pad below the board.
-  const size = Math.min(window.innerWidth - 24, window.innerHeight - 365, 460);
+  // Header, HUD, the event line and the pad all take their share — but the
+  // result has to stay positive. On a short viewport the subtraction went
+  // negative, the browser threw the invalid width away, and the canvas
+  // silently fell back to its 300x150 default: a board that is no longer
+  // square and no longer matches what the game thinks it is drawing.
+  const available = Math.min(window.innerWidth - 24, window.innerHeight - 398, 460);
+  const size = Math.max(200, available);
   const dpr = window.devicePixelRatio || 1;
   canvas.style.width = `${size}px`;
   canvas.style.height = `${size}px`;

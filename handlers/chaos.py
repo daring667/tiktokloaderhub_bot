@@ -21,7 +21,7 @@ from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
 from services.chaos.events import APPLES_TO_CLEAR_DAY, MERGE_TARGET
 from services.chaos.seed import day_key, shift_day_key
 from services.chaos.storage import ChaosStorage
-from services.chaos.validate import RunRejected, validate_run
+from services.chaos.validate import RunRejected, StaleClient, validate_run
 
 WEBAPP_URL = os.getenv(
     "CHAOS_WEBAPP_URL",
@@ -73,6 +73,8 @@ def register(app, db=None, storage: ChaosStorage | None = None):
 
     @app.on_message(filters.command("chaos") & filters.private)
     async def chaos_handler(client, message):
+        if message.from_user:
+            store.remember_player(message.from_user.id, _display_name(message.from_user))
         today = day_key()
         streak = store.get_streak(message.from_user.id) if message.from_user else None
         best = store.get_personal_best(message.from_user.id, today) if message.from_user else None
@@ -134,12 +136,24 @@ def register(app, db=None, storage: ChaosStorage | None = None):
         try:
             run = validate_run(message.web_app_data.data,
                                submissions_today=submissions)
+        except StaleClient as exc:
+            # Their fault in no way. Say so plainly instead of implying the
+            # result looked forged.
+            logging.info("Chaos run from %s on an old build: %s", user.id, exc)
+            await message.reply(
+                "🔄 Игра обновилась, а у тебя открыта прошлая версия.\n"
+                "Закрой и открой её заново — этот забег, к сожалению, "
+                "засчитать уже нельзя.",
+                reply_markup=_play_keyboard(),
+            )
+            return
         except RunRejected as exc:
             logging.warning("Chaos run rejected from %s: %s", user.id, exc)
             await message.reply(f"❌ Результат не принят: {html.escape(str(exc))}")
             return
 
         previous_best = store.get_personal_best(user.id, today)
+        store.remember_player(user.id, _display_name(user))
         store.save_run(user.id, _display_name(user), run)
 
         lines = [f"Готово: <b>{run['score']}</b> очков · 🍎 {run['apples']}"]
@@ -193,6 +207,27 @@ async def run_daily_announcer(client, db, store: ChaosStorage, get_now=None):
         await asyncio.sleep(ANNOUNCE_POLL_SECONDS)
 
 
+def announcement_audience(db, store: ChaosStorage) -> list:
+    """Who the daily post actually goes to.
+
+    Not everyone in the users table: that includes people who only ever
+    dropped a link in a group where the bot happens to sit, and Telegram will
+    not let a bot open a private chat with someone who never started it — the
+    first announcement failed for four such people with PEER_ID_INVALID, and
+    the HTTP Bot API answers "chat not found" for exactly the same ids, so
+    this is a Telegram rule rather than a quirk of one library.
+
+    The players are the ones who opened the game, which only happens in a
+    private chat. Crossing that with the existing opt-out keeps a single
+    unsubscribe setting.
+    """
+    players = store.get_known_players()
+    if not db:
+        return players
+    subscribed = set(db.get_broadcast_subscribed_user_ids())
+    return [uid for uid in players if uid in subscribed]
+
+
 async def _announce(client, db, store: ChaosStorage, today: str) -> None:
     yesterday = shift_day_key(today, -1)
     top = store.get_daily_top(yesterday, limit=1)
@@ -204,10 +239,7 @@ async def _announce(client, db, store: ChaosStorage, today: str) -> None:
     lines.append("\nНажми /chaos, чтобы играть.")
     text = "\n".join(lines)
 
-    # Reuse the downloader's opt-out list so nobody gets two separate
-    # unsubscribe settings to manage.
-    user_ids = db.get_broadcast_subscribed_user_ids() if db else []
-    for user_id in user_ids:
+    for user_id in announcement_audience(db, store):
         try:
             await client.send_message(user_id, text)
         except Exception as exc:

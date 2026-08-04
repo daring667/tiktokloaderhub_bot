@@ -5,8 +5,10 @@ import pytest
 from unittest.mock import AsyncMock, MagicMock
 
 import handlers.chaos as chaos
-from handlers.chaos import register, run_daily_announcer, _announce
-from services.chaos.events import replay_chain
+from handlers.chaos import (
+    register, run_daily_announcer, _announce, announcement_audience,
+)
+from services.chaos.events import CATALOGUE_VERSION, replay_chain
 from services.chaos.seed import day_key, shift_day_key
 from services.chaos.storage import ChaosStorage
 from _helpers import FakeApp, make_message
@@ -39,7 +41,8 @@ def _run_message(apples=8, score=100, ms=60000, day=None):
     message = make_message("")
     message.web_app_data = MagicMock()
     message.web_app_data.data = json.dumps({
-        "v": 1, "day": day, "apples": apples, "score": score, "ms": ms,
+        "v": 1, "cat": CATALOGUE_VERSION, "day": day,
+        "apples": apples, "score": score, "ms": ms,
         "events": replay_chain(day, apples),
     })
     return message
@@ -179,40 +182,58 @@ class TestResultSubmission:
         assert "рекорд" in message.reply.await_args.args[0]
 
 
+class TestAnnouncementAudience:
+    """Who gets the post, and why it is not simply everyone.
+
+    The first real announcement failed for four people with PEER_ID_INVALID.
+    They had reached the users table by dropping a link in a group the bot
+    sits in, and Telegram does not let a bot open a private chat with someone
+    who never started it — the HTTP Bot API returns "chat not found" for the
+    same ids, so no change of transport helps. Only people who opened the
+    game, which is private-chat only, can actually be reached.
+    """
+
+    def _db(self, subscribed):
+        db = MagicMock()
+        db.get_broadcast_subscribed_user_ids.return_value = list(subscribed)
+        return db
+
+    def test_only_people_who_opened_the_game(self, store):
+        store.remember_player(1, "Аня")
+        store.remember_player(2, "Боря")
+        # 3 never opened it — a group-only user
+        assert announcement_audience(self._db([1, 2, 3]), store) == [1, 2]
+
+    def test_opting_out_still_wins(self, store):
+        store.remember_player(1, "Аня")
+        store.remember_player(2, "Боря")
+        assert announcement_audience(self._db([1]), store) == [1]
+
+    def test_nobody_has_played_yet(self, store):
+        assert announcement_audience(self._db([1, 2, 3]), store) == []
+
+    def test_without_a_database_everyone_known_is_included(self, store):
+        store.remember_player(7, "Аня")
+        assert announcement_audience(None, store) == [7]
+
+    def test_a_player_is_recorded_once(self, store):
+        store.remember_player(1, "Аня")
+        store.remember_player(1, "Аня Б.")
+        assert store.get_known_players() == [1]
+
+
 class TestDailyAnnouncement:
-    @pytest.mark.asyncio
-    async def test_sends_only_to_subscribed_users(self, store):
+    @staticmethod
+    def _client():
         client = MagicMock()
         client.send_message = AsyncMock()
+        return client
+
+    @staticmethod
+    def _db(user_ids):
         db = MagicMock()
-        db.get_broadcast_subscribed_user_ids.return_value = [1, 2, 3]
-
-        await _announce(client, db, store, day_key())
-        assert client.send_message.await_count == 3
-
-    @pytest.mark.asyncio
-    async def test_names_yesterdays_winner(self, store):
-        client = MagicMock()
-        client.send_message = AsyncMock()
-        db = MagicMock()
-        db.get_broadcast_subscribed_user_ids.return_value = [1]
-        store.save_run(9, "Вера", {
-            "day_key": shift_day_key(day_key(), -1), "apples": 12, "score": 240,
-            "duration_ms": 1000, "events": [], "cleared": True,
-        })
-
-        await _announce(client, db, store, day_key())
-        assert "Вера" in client.send_message.await_args.args[1]
-
-    @pytest.mark.asyncio
-    async def test_one_delivery_failure_does_not_stop_the_rest(self, store):
-        client = MagicMock()
-        client.send_message = AsyncMock(side_effect=[Exception("blocked"), None, None])
-        db = MagicMock()
-        db.get_broadcast_subscribed_user_ids.return_value = [1, 2, 3]
-
-        await _announce(client, db, store, day_key())
-        assert client.send_message.await_count == 3
+        db.get_broadcast_subscribed_user_ids.return_value = list(user_ids)
+        return db
 
     @staticmethod
     async def _poll(client, db, store, seconds=0.08):
@@ -223,33 +244,57 @@ class TestDailyAnnouncement:
             await task
 
     @pytest.mark.asyncio
-    async def test_first_ever_start_stays_quiet(self, store, monkeypatch):
-        """Deploying the bot at 3pm must not fire the daily post right then;
-        it should wait for a real rollover."""
-        monkeypatch.setattr(chaos, "ANNOUNCE_POLL_SECONDS", 0.01)
-        client = MagicMock()
-        client.send_message = AsyncMock()
-        db = MagicMock()
-        db.get_broadcast_subscribed_user_ids.return_value = [1]
+    async def test_sends_to_players_only(self, store):
+        for uid in (1, 2):
+            store.remember_player(uid, "Игрок")
+        client = self._client()
 
-        await self._poll(client, db, store)
+        await _announce(client, self._db([1, 2, 3]), store, day_key())
+        assert client.send_message.await_count == 2
+
+    @pytest.mark.asyncio
+    async def test_names_yesterdays_winner(self, store):
+        store.remember_player(1, "Аня")
+        store.save_run(9, "Вера", {
+            "day_key": shift_day_key(day_key(), -1), "apples": 12, "score": 240,
+            "duration_ms": 1000, "events": [], "cleared": True,
+        })
+        client = self._client()
+
+        await _announce(client, self._db([1]), store, day_key())
+        assert "Вера" in client.send_message.await_args.args[1]
+
+    @pytest.mark.asyncio
+    async def test_one_failure_does_not_stop_the_rest(self, store):
+        for uid in (1, 2, 3):
+            store.remember_player(uid, "Игрок")
+        client = self._client()
+        client.send_message = AsyncMock(side_effect=[Exception("blocked"), None, None])
+
+        await _announce(client, self._db([1, 2, 3]), store, day_key())
+        assert client.send_message.await_count == 3
+
+    @pytest.mark.asyncio
+    async def test_first_ever_start_stays_quiet(self, store, monkeypatch):
+        """Deploying at 3pm must not fire the daily post right then."""
+        monkeypatch.setattr(chaos, "ANNOUNCE_POLL_SECONDS", 0.01)
+        store.remember_player(1, "Аня")
+        client = self._client()
+
+        await self._poll(client, self._db([1]), store)
 
         client.send_message.assert_not_awaited()
-        # The day is recorded, so the next rollover is detected normally.
         assert store.get_meta("last_announced_day") == day_key()
 
     @pytest.mark.asyncio
     async def test_announces_once_and_not_again(self, store, monkeypatch):
         monkeypatch.setattr(chaos, "ANNOUNCE_POLL_SECONDS", 0.01)
+        store.remember_player(1, "Аня")
         store.set_meta("last_announced_day", shift_day_key(day_key(), -1))
-        client = MagicMock()
-        client.send_message = AsyncMock()
-        db = MagicMock()
-        db.get_broadcast_subscribed_user_ids.return_value = [1]
+        client = self._client()
 
-        await self._poll(client, db, store)
+        await self._poll(client, self._db([1]), store)
 
-        # Many polls elapsed, but the day turned over only once.
         assert client.send_message.await_count == 1
         assert store.get_meta("last_announced_day") == day_key()
 
@@ -257,17 +302,26 @@ class TestDailyAnnouncement:
     async def test_a_restart_after_the_rollover_still_posts(self, store, monkeypatch):
         """The bot being down at noon must not silently skip the day."""
         monkeypatch.setattr(chaos, "ANNOUNCE_POLL_SECONDS", 0.01)
+        store.remember_player(1, "Аня")
         store.set_meta("last_announced_day", shift_day_key(day_key(), -1))
+        client = self._client()
 
-        client = MagicMock()
-        client.send_message = AsyncMock()
-        db = MagicMock()
-        db.get_broadcast_subscribed_user_ids.return_value = [1]
-
-        task = asyncio.create_task(run_daily_announcer(client, db, store))
-        await asyncio.sleep(0.05)
-        task.cancel()
-        with pytest.raises(asyncio.CancelledError):
-            await task
+        await self._poll(client, self._db([1]), store, seconds=0.05)
 
         assert client.send_message.await_count == 1
+
+
+class TestStaleClientReply:
+    @pytest.mark.asyncio
+    async def test_tells_the_player_to_reopen_instead_of_blaming_them(self, handlers, store):
+        message = _run_message()
+        payload = json.loads(message.web_app_data.data)
+        payload["cat"] = 0
+        message.web_app_data.data = json.dumps(payload)
+
+        await handlers["result"](MagicMock(), message)
+
+        text = message.reply.await_args.args[0]
+        assert "обновилась" in text
+        assert "не принят" not in text          # no hint of foul play
+        assert store.count_submissions(111, day_key()) == 0

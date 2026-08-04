@@ -54,6 +54,13 @@ class ChaosStorage:
                     last_day_key TEXT
                 );
 
+                CREATE TABLE IF NOT EXISTS chaos_players (
+                    user_id      INTEGER PRIMARY KEY,
+                    display_name TEXT,
+                    first_seen   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    last_seen    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+
                 CREATE TABLE IF NOT EXISTS chaos_meta (
                     key   TEXT PRIMARY KEY,
                     value TEXT
@@ -133,6 +140,32 @@ class ChaosStorage:
             (day_key_value, limit),
         ).fetchall()
         return [dict(r) for r in rows]
+
+    # ------------------------------------------------------------------
+    # Players
+    # ------------------------------------------------------------------
+
+    def remember_player(self, user_id: int, display_name: str) -> None:
+        """Records that this person opened the game.
+
+        Every command that leads here is private-chat only, so being in this
+        table is the same thing as the bot being able to message them —
+        which is not true of the downloader's users table.
+        """
+        with self._lock:
+            self._conn.execute(
+                "INSERT INTO chaos_players (user_id, display_name) VALUES (?, ?) "
+                "ON CONFLICT(user_id) DO UPDATE SET "
+                "display_name = excluded.display_name, "
+                "last_seen = CURRENT_TIMESTAMP",
+                (user_id, display_name),
+            )
+            self._conn.commit()
+
+    def get_known_players(self) -> list:
+        return [row["user_id"] for row in self._conn.execute(
+            "SELECT user_id FROM chaos_players ORDER BY user_id"
+        )]
 
     # ------------------------------------------------------------------
     # Streaks

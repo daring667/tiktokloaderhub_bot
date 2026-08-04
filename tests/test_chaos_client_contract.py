@@ -12,7 +12,8 @@ running the real client code (webapp/chaos.js) under node:
     node --input-type=module -e 'import {...} from "./chaos.js"; ...'
 
 If a change here is deliberate, regenerate them from the client and update
-both sides in the same commit.
+both sides in the same commit, bumping CATALOGUE_VERSION as well — the
+chain changes whenever the event pools do.
 """
 import pytest
 
@@ -23,27 +24,27 @@ from services.chaos.seed import seed_for_day
 CLIENT_OUTPUT = {
     "2026-08-03": (
         3632149304,
-        "c:walls,c:speed,c:growth,r:mirror,c:speed,e:twins,e:twins,c:speed,"
-        "r:mirror,r:mirror,e:dark,c:speed,e:dark,r:portal,l:reverse,r:mirror,"
-        "r:double,r:mirror,c:ghost,c:walls,c:ghost,c:growth,e:twins,r:portal,r:mirror"
+        "c:invert,c:speed,c:wander,r:shed,c:walls,e:slow,e:slow,c:speed,r:shed,"
+        "r:shed,e:dark,c:walls,e:dark,r:portal,l:reverse,r:shed,r:mirror,r:shed,"
+        "c:ghost,c:walls,c:growth,c:wander,e:slow,r:portal,r:shed"
     ),
     "2026-08-04": (
         4197617581,
-        "c:growth,c:speed,c:growth,c:walls,c:invert,r:double,e:dark,r:double,"
-        "r:portal,e:golden,r:double,r:mirror,c:ghost,r:portal,c:walls,e:twins,"
-        "c:walls,r:mirror,r:double,e:dark,r:mirror,c:ghost,r:portal,r:double,c:ghost"
+        "c:wander,c:speed,c:wander,c:invert,c:ghost,r:double,e:dark,r:double,"
+        "r:portal,e:twins,r:double,r:shed,c:growth,r:double,c:walls,e:slow,c:walls,"
+        "r:mirror,r:mirror,e:dark,r:shed,c:ghost,r:portal,r:double,c:ghost"
     ),
     "2026-12-31": (
         4131590803,
-        "c:invert,c:ghost,r:double,c:ghost,c:growth,r:double,r:portal,l:reverse,"
-        "r:portal,r:double,r:mirror,c:ghost,e:twins,c:speed,e:twins,c:speed,"
-        "r:mirror,r:portal,e:dark,r:double,e:dark,e:dark,r:double,r:double,l:reverse"
+        "c:invert,c:growth,r:mirror,c:ghost,c:wander,r:double,r:double,l:swarm,"
+        "r:portal,r:double,r:shed,c:growth,e:twins,c:speed,e:slow,c:speed,r:mirror,"
+        "r:portal,e:dark,r:double,e:dark,e:dark,r:double,r:mirror,l:swarm"
     ),
     "2027-01-01": (
         3773745198,
-        "c:walls,r:mirror,r:double,e:twins,e:golden,r:double,e:dark,e:golden,"
-        "c:speed,c:speed,r:mirror,c:walls,l:reverse,r:portal,e:dark,c:ghost,"
-        "e:dark,r:double,c:walls,c:walls,e:golden,e:golden,e:twins,c:invert,c:ghost"
+        "c:walls,r:shed,r:double,e:slow,e:twins,r:double,e:dark,e:golden,c:speed,"
+        "c:speed,r:shed,c:walls,l:swarm,r:portal,e:dark,c:growth,e:dark,r:double,"
+        "c:invert,c:walls,e:golden,e:golden,e:twins,c:invert,c:growth"
     ),
 }
 

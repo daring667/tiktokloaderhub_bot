@@ -11,8 +11,9 @@ from datetime import datetime, timezone
 
 from services.chaos import seed as seed_mod
 from services.chaos.events import MERGE_TARGET, merge_mod_for_day, replay_chain
+from services.chaos.events import CATALOGUE_VERSION
 from services.chaos.validate import (
-    MAX_SUBMISSIONS_PER_DAY, RunRejected, validate_run,
+    MAX_SUBMISSIONS_PER_DAY, RunRejected, StaleClient, validate_run,
 )
 
 # 12:00 UTC is 17:00 in Almaty, comfortably inside the game day that began
@@ -31,6 +32,7 @@ def _payload(**overrides):
     apples = overrides.pop("apples", 8)
     payload = {
         "v": 1,
+        "cat": CATALOGUE_VERSION,
         "day": TODAY,
         "apples": apples,
         "score": 120,
@@ -82,18 +84,32 @@ class TestTimingFloor:
 class TestRealClientPayloads:
     """Captured from the actual Mini App running in a browser, to catch a
     client/server format drift that unit tests written on one side would
-    both agree about and both get wrong."""
+    both agree about and both get wrong.
+
+    Re-capture these whenever the event catalogue changes — an old recording
+    stops being evidence of anything once the chains move.
+    """
+
+    RECORDED_DAY = "2026-08-04"
+    RECORDED_NOW = datetime(2026, 8, 4, 12, 0, tzinfo=timezone.utc)
 
     def test_accepts_a_recorded_run(self):
-        raw = ('{"v":1,"day":"2026-08-03","apples":2,"score":22,"ms":2432,'
-               '"events":["c:walls","c:speed"]}')
-        result = validate_run(raw, now=NOW)
-        assert result["score"] == 22
-        assert result["events"] == ["c:walls", "c:speed"]
+        raw = (
+            '{"v":2,"cat":2,"day":"2026-08-04","score":126,"ms":18000,"stages":['
+            '{"g":"snake","apples":9,"score":126,"ms":18000,"events":['
+            '"c:wander","c:speed","c:wander","c:invert","c:ghost",'
+            '"r:double","e:dark","r:double","r:portal"]}]}'
+        )
+        result = validate_run(raw, now=self.RECORDED_NOW)
+        assert result["score"] == 126
+        assert result["apples"] == 9
+        assert result["cleared"] is True
 
-    def test_accepts_a_recorded_empty_run(self):
-        raw = '{"v":1,"day":"2026-08-03","apples":0,"score":0,"ms":1506,"events":[]}'
-        assert validate_run(raw, now=NOW)["apples"] == 0
+    def test_the_recorded_chain_is_what_the_bot_derives(self):
+        assert replay_chain(self.RECORDED_DAY, 9) == [
+            "c:wander", "c:speed", "c:wander", "c:invert", "c:ghost",
+            "r:double", "e:dark", "r:double", "r:portal",
+        ]
 
 
 class TestRejects:
@@ -177,7 +193,7 @@ def _merge_stage(score=400, moves=60, ms=30000, best=128, cleared=None, mod=None
 
 def _chain(*stages):
     stages = list(stages)
-    return {"v": 2, "day": TODAY,
+    return {"v": 2, "cat": CATALOGUE_VERSION, "day": TODAY,
             "score": sum(s["score"] for s in stages),
             "ms": sum(s["ms"] for s in stages),
             "stages": stages}
@@ -249,8 +265,8 @@ class TestChain:
 
     def test_rejects_empty_stages(self):
         with pytest.raises(RunRejected, match="непустой список"):
-            validate_run({"v": 2, "day": TODAY, "score": 0, "ms": 0, "stages": []},
-                         now=NOW)
+            validate_run({"v": 2, "cat": CATALOGUE_VERSION, "day": TODAY,
+                          "score": 0, "ms": 0, "stages": []}, now=NOW)
 
     def test_v1_still_accepted_after_the_upgrade(self):
         """A Mini App left open across a deploy keeps sending v1."""
@@ -261,7 +277,7 @@ class TestChain:
 
 class TestRealChainPayload:
     def test_accepts_a_payload_captured_from_the_browser(self):
-        raw = ('{"v":2,"day":"2026-08-03","score":878,"ms":18007,"stages":['
+        raw = ('{"v":2,"cat":2,"day":"2026-08-03","score":878,"ms":18007,"stages":['
                '{"g":"snake","apples":9,"score":126,"ms":18000,"events":%s},'
                '{"g":"merge","score":752,"best":64,"moves":100,"ms":7000,'
                '"mod":"rotate","cleared":false}]}')
@@ -270,3 +286,35 @@ class TestRealChainPayload:
         result = validate_run(raw, now=NOW)
         assert result["score"] == 878
         assert result["chain_completed"] is False
+
+
+class TestStaleClient:
+    """A cached older build is a routine event, not an attack.
+
+    GitHub Pages keeps serving the previous JavaScript for a while after a
+    deploy, and once the event catalogue changes that client's chain can no
+    longer match. Telling an honest player their result looks forged would be
+    the worst possible answer.
+    """
+
+    def test_older_catalogue_is_flagged_as_stale(self):
+        payload = _payload()
+        payload["cat"] = CATALOGUE_VERSION - 1
+        with pytest.raises(StaleClient, match="игра обновилась"):
+            validate_run(payload, now=NOW)
+
+    def test_missing_catalogue_field_means_the_very_first_build(self):
+        payload = _payload()
+        del payload["cat"]
+        with pytest.raises(StaleClient):
+            validate_run(payload, now=NOW)
+
+    def test_stale_is_a_kind_of_rejection(self):
+        """Callers that only know about RunRejected must still be safe."""
+        payload = _payload()
+        payload["cat"] = 0
+        with pytest.raises(RunRejected):
+            validate_run(payload, now=NOW)
+
+    def test_current_catalogue_passes(self):
+        assert validate_run(_payload(), now=NOW)["apples"] == 8
