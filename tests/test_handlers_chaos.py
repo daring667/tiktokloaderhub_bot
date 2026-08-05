@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock, MagicMock
 import handlers.chaos as chaos
 from handlers.chaos import (
     register, run_daily_announcer, _announce, announcement_audience,
+    notify_dethroned, current_leader,
 )
 from services.chaos.events import CATALOGUE_VERSION, replay_chain
 from services.chaos.seed import day_key, shift_day_key
@@ -325,3 +326,140 @@ class TestStaleClientReply:
         assert "обновилась" in text
         assert "не принят" not in text          # no hint of foul play
         assert store.count_submissions(111, day_key()) == 0
+
+
+class TestDethroneNotice:
+    """Telling the former leader they have been passed.
+
+    The whole mechanic hangs on firing only when the top spot changes hands.
+    Most of these tests are about the cases where nothing should be sent —
+    a notification that arrives when it shouldn't is worse than none at all,
+    because people mute the bot rather than complain.
+    """
+
+    @staticmethod
+    def _client():
+        client = MagicMock()
+        client.send_message = AsyncMock()
+        return client
+
+    @staticmethod
+    def _db(subscribed=(1, 2, 3, 111)):
+        db = MagicMock()
+        db.get_broadcast_subscribed_user_ids.return_value = list(subscribed)
+        return db
+
+    @staticmethod
+    def _save(store, user_id, name, score, day=None):
+        store.save_run(user_id, name, {
+            "day_key": day or day_key(), "apples": 8, "score": score,
+            "duration_ms": 60000, "events": [], "cleared": True,
+        })
+
+    @pytest.mark.asyncio
+    async def test_the_passed_player_is_told(self, store):
+        today = day_key()
+        self._save(store, 1, "Аня", 100)
+        before = current_leader(store, today)
+        self._save(store, 2, "Боря", 300)
+
+        client = self._client()
+        assert await notify_dethroned(client, self._db(), store, before, today) is True
+
+        target, text = client.send_message.await_args.args
+        assert target == 1
+        assert "Боря" in text and "300" in text and "100" in text
+
+    @pytest.mark.asyncio
+    async def test_improving_your_own_lead_tells_nobody(self, store):
+        """The commonest case by far: one person grinding attempts. If this
+        pinged anyone the feature would be unusable."""
+        today = day_key()
+        self._save(store, 1, "Аня", 100)
+        before = current_leader(store, today)
+        self._save(store, 1, "Аня", 400)
+
+        client = self._client()
+        assert await notify_dethroned(client, self._db(), store, before, today) is False
+        client.send_message.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_first_run_of_the_day_tells_nobody(self, store):
+        today = day_key()
+        before = current_leader(store, today)      # nobody yet
+        self._save(store, 1, "Аня", 100)
+
+        client = self._client()
+        assert await notify_dethroned(client, self._db(), store, before, today) is False
+
+    @pytest.mark.asyncio
+    async def test_a_run_that_does_not_take_the_lead_tells_nobody(self, store):
+        today = day_key()
+        self._save(store, 1, "Аня", 500)
+        before = current_leader(store, today)
+        self._save(store, 2, "Боря", 100)
+
+        client = self._client()
+        assert await notify_dethroned(client, self._db(), store, before, today) is False
+
+    @pytest.mark.asyncio
+    async def test_someone_who_opted_out_is_left_alone(self, store):
+        today = day_key()
+        self._save(store, 1, "Аня", 100)
+        before = current_leader(store, today)
+        self._save(store, 2, "Боря", 300)
+
+        client = self._client()
+        result = await notify_dethroned(client, self._db(subscribed=[2]), store, before, today)
+        assert result is False
+        client.send_message.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_a_failed_send_is_swallowed(self, store):
+        """A blocked player must not break the submission of the person who
+        just overtook them."""
+        today = day_key()
+        self._save(store, 1, "Аня", 100)
+        before = current_leader(store, today)
+        self._save(store, 2, "Боря", 300)
+
+        client = self._client()
+        client.send_message = AsyncMock(side_effect=Exception("blocked"))
+        assert await notify_dethroned(client, self._db(), store, before, today) is False
+
+    @pytest.mark.asyncio
+    async def test_the_name_is_escaped(self, store):
+        today = day_key()
+        self._save(store, 1, "Аня", 100)
+        before = current_leader(store, today)
+        self._save(store, 2, "<b>hax</b>", 300)
+
+        client = self._client()
+        await notify_dethroned(client, self._db(), store, before, today)
+        assert "&lt;b&gt;hax&lt;/b&gt;" in client.send_message.await_args.args[1]
+
+    @pytest.mark.asyncio
+    async def test_submitting_a_leading_run_notifies_and_says_so(self, handlers, store):
+        """End to end through the result handler."""
+        self._save(store, 1, "Аня", 10)
+        # The fixture subscribes 111 and 222; the former leader has to be in
+        # that list or the opt-out check correctly filters them out.
+        handlers["db"].get_broadcast_subscribed_user_ids.return_value = [1, 111]
+        client = MagicMock()
+        client.send_message = AsyncMock()
+
+        message = _run_message(apples=9, score=140)
+        await handlers["result"](client, message)
+
+        assert client.send_message.await_count == 1
+        assert client.send_message.await_args.args[0] == 1
+        assert "первое место" in message.reply.await_args.args[0]
+
+    @pytest.mark.asyncio
+    async def test_a_losing_run_notifies_nobody(self, handlers, store):
+        self._save(store, 1, "Аня", 9999)
+        client = MagicMock()
+        client.send_message = AsyncMock()
+
+        await handlers["result"](client, _run_message(apples=8, score=100))
+        client.send_message.assert_not_awaited()

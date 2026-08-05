@@ -66,6 +66,49 @@ def _format_top(rows: list, day: str) -> str:
     return "\n".join(lines)
 
 
+def current_leader(store: ChaosStorage, day: str):
+    """Today's top row, or None if nobody has played yet."""
+    top = store.get_daily_top(day, limit=1)
+    return top[0] if top else None
+
+
+async def notify_dethroned(client, db, store: ChaosStorage, previous, day: str) -> bool:
+    """Tells the former leader that someone has passed them.
+
+    Fires only when the top spot changes hands, which is what keeps this from
+    becoming spam: improving your own leading score does not change who is
+    first, so nobody hears about it.
+
+    Returns whether a message was actually sent — the caller logs it, and the
+    tests assert on it.
+    """
+    if not previous:
+        return False
+
+    leader = current_leader(store, day)
+    if not leader or leader["user_id"] == previous["user_id"]:
+        return False
+
+    # Someone who asked not to receive broadcasts should not be pinged by the
+    # game either. One opt-out, not two settings to keep track of.
+    if db and previous["user_id"] not in set(db.get_broadcast_subscribed_user_ids()):
+        return False
+
+    winner = html.escape(leader["display_name"] or "Кто-то")
+    text = (
+        f"👑 Тебя обошли.\n\n"
+        f"{winner} набрал <b>{leader['score']}</b> — у тебя "
+        f"<b>{previous['score']}</b>.\n"
+        f"День ещё не кончился: /chaos"
+    )
+    try:
+        await client.send_message(previous["user_id"], text)
+        return True
+    except Exception as exc:
+        logging.info("Dethrone notice to %s failed: %s", previous["user_id"], exc)
+        return False
+
+
 def register(app, db=None, storage: ChaosStorage | None = None):
     """Wires up the challenge. `db` is the downloader's database and is used
     read-only, purely to find out who has opted out of broadcasts."""
@@ -153,6 +196,7 @@ def register(app, db=None, storage: ChaosStorage | None = None):
             return
 
         previous_best = store.get_personal_best(user.id, today)
+        leader_before = current_leader(store, today)
         store.remember_player(user.id, _display_name(user))
         store.save_run(user.id, _display_name(user), run)
 
@@ -175,6 +219,9 @@ def register(app, db=None, storage: ChaosStorage | None = None):
         place = next((i + 1 for i, row in enumerate(top) if row["user_id"] == user.id), None)
         if place:
             lines.append(f"Место в рейтинге: <b>{place}</b> из {len(top)}")
+
+        if await notify_dethroned(client, db, store, leader_before, today):
+            lines.append("👑 Ты забрал первое место.")
 
         await message.reply("\n".join(lines), reply_markup=_play_keyboard())
 
