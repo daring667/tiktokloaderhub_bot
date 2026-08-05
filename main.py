@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 asyncio.set_event_loop(asyncio.new_event_loop())
 
 from pyrogram import Client, filters
+from pyrogram.enums import ChatType
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from handlers import youtube
 from handlers.youtube import register as register_youtube
@@ -15,7 +16,7 @@ from handlers.tiktok import TikTokHandler
 from handlers.chaos import register as register_chaos, run_daily_announcer
 from services.database import BotDatabase
 from services.utils.env import resolve_admin_id
-from services.utils.broadcast import broadcast_message
+from services.utils.broadcast import broadcast_message, is_permanent_failure
 from services.utils.version import get_version
 
 load_dotenv()
@@ -61,11 +62,27 @@ async def start_handler(client, message):
             message.from_user.username,
             message.from_user.first_name,
         )
-    await message.reply(
+        # Starting the bot in private is the event that makes someone
+        # reachable, so it clears any earlier "cannot deliver" mark.
+        if message.chat and message.chat.type == ChatType.PRIVATE:
+            db.mark_broadcast_reachable(message.from_user.id)
+    text = (
         "Привет! Отправь ссылку на TikTok, YouTube, Instagram Reels или Twitter/X — и я помогу скачать видео.\n\n"
         "Можно кинуть сразу несколько ссылок в одном сообщении (до 5 штук), "
         "а ссылку на YouTube-плейлист — и я предложу скачать видео по очереди."
     )
+
+    # The game only runs in a private chat — a Mini App cannot send its
+    # result back from a group — so it is only worth mentioning there.
+    if message.chat and message.chat.type == ChatType.PRIVATE:
+        text += (
+            "\n\n🌀 А ещё здесь есть <b>Chaos Chain</b> — игра дня. "
+            "Змейка, в которой каждое съеденное яблоко меняет правила, "
+            "а дальше открывается второе звено. Каждый день новая цепочка, "
+            "одна на всех. Жми /chaos."
+        )
+
+    await message.reply(text)
 
 @app.on_message(filters.command("version") & (filters.group | filters.private))
 async def version_handler(client, message):
@@ -140,11 +157,24 @@ async def broadcast_handler(client, message):
     sent_ids = [uid for uid, ok, _ in results if ok]
     failed_ids = [uid for uid, ok, _ in results if not ok]
 
+    # Anyone who failed for a reason that will not change is taken out of
+    # the list, so the next broadcast does not spend attempts on them again.
+    permanent = [uid for uid, ok, err in results if not ok and is_permanent_failure(err)]
+    db.mark_broadcast_unreachable(permanent)
+
     lines = [
         "📣 Рассылка завершена.",
         f"✅ Отправлено: {len(sent_ids)}",
         f"❌ Не удалось: {len(failed_ids)}",
     ]
+    if permanent:
+        lines.append(
+            f"🚫 Из них {len(permanent)} больше не побеспокоим: они не открывали "
+            f"личный чат с ботом или заблокировали его."
+        )
+    skipped = db.count_unreachable()
+    if skipped:
+        lines.append(f"⏭ Пропущено как недоступные: {skipped}")
     if sent_ids:
         lines.append("\n✅ Получили: " + ", ".join(names.get(uid, str(uid)) for uid in sent_ids))
     if failed_ids:

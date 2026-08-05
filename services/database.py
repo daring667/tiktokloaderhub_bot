@@ -76,6 +76,7 @@ class BotDatabase:
             # error if they're already there.
             for migration in (
                 "ALTER TABLE users ADD COLUMN broadcast_opt_out INTEGER NOT NULL DEFAULT 0",
+                "ALTER TABLE users ADD COLUMN broadcast_unreachable INTEGER NOT NULL DEFAULT 0",
                 "ALTER TABLE callbacks ADD COLUMN playlist_token TEXT",
             ):
                 try:
@@ -127,11 +128,51 @@ class BotDatabase:
         return cur.fetchone()[0]
 
     def get_broadcast_subscribed_user_ids(self) -> list[int]:
-        """Registered user IDs that haven't opted out of broadcasts."""
+        """Registered user IDs that haven't opted out and that we have not
+        already learned are unreachable.
+
+        A user can reach this table without ever opening a private chat with
+        the bot — dropping a link in a group is enough — and Telegram will not
+        let a bot message someone who never started it. Those deliveries fail
+        identically every time, so once seen they are skipped. Sending /start
+        in a private chat clears the mark.
+        """
         rows = self._conn.execute(
-            "SELECT user_id FROM users WHERE broadcast_opt_out = 0"
+            "SELECT user_id FROM users "
+            "WHERE broadcast_opt_out = 0 AND broadcast_unreachable = 0"
         ).fetchall()
         return [row["user_id"] for row in rows]
+
+    def mark_broadcast_unreachable(self, user_ids) -> int:
+        """Flags users whose delivery failed for a reason that will repeat."""
+        user_ids = list(user_ids)
+        if not user_ids:
+            return 0
+        placeholders = ",".join("?" * len(user_ids))
+        with self._lock:
+            cur = self._conn.execute(
+                f"UPDATE users SET broadcast_unreachable = 1 "
+                f"WHERE user_id IN ({placeholders})",
+                user_ids,
+            )
+            self._conn.commit()
+        return cur.rowcount
+
+    def mark_broadcast_reachable(self, user_id: int) -> None:
+        """Undoes the flag — called when someone starts the bot in private,
+        which is exactly the event that makes them reachable again."""
+        with self._lock:
+            self._conn.execute(
+                "UPDATE users SET broadcast_unreachable = 0 WHERE user_id = ?",
+                (user_id,),
+            )
+            self._conn.commit()
+
+    def count_unreachable(self) -> int:
+        row = self._conn.execute(
+            "SELECT COUNT(*) AS n FROM users WHERE broadcast_unreachable = 1"
+        ).fetchone()
+        return row["n"] if row else 0
 
     def get_user_display_names(self, user_ids) -> dict:
         """Maps user_id -> a human-readable label (@username, first name,
