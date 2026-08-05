@@ -12,7 +12,7 @@ from handlers.chaos import (
 from services.chaos.events import CATALOGUE_VERSION, replay_chain
 from services.chaos.seed import day_key, shift_day_key
 from services.chaos.storage import ChaosStorage
-from _helpers import FakeApp, make_message
+from _helpers import FakeApp, make_message, make_callback
 
 
 @pytest.fixture()
@@ -33,6 +33,7 @@ def handlers(store):
     return {
         "chaos": chaos_h, "top": top_h, "streak": streak_h,
         "result": result_h, "db": db,
+        "mute": app.callback_handlers[0],
     }
 
 
@@ -364,7 +365,7 @@ class TestDethroneNotice:
         self._save(store, 2, "Боря", 300)
 
         client = self._client()
-        assert await notify_dethroned(client, self._db(), store, before, today) is True
+        assert await notify_dethroned(client, store, before, today) is True
 
         target, text = client.send_message.await_args.args
         assert target == 1
@@ -380,7 +381,7 @@ class TestDethroneNotice:
         self._save(store, 1, "Аня", 400)
 
         client = self._client()
-        assert await notify_dethroned(client, self._db(), store, before, today) is False
+        assert await notify_dethroned(client, store, before, today) is False
         client.send_message.assert_not_awaited()
 
     @pytest.mark.asyncio
@@ -390,7 +391,7 @@ class TestDethroneNotice:
         self._save(store, 1, "Аня", 100)
 
         client = self._client()
-        assert await notify_dethroned(client, self._db(), store, before, today) is False
+        assert await notify_dethroned(client, store, before, today) is False
 
     @pytest.mark.asyncio
     async def test_a_run_that_does_not_take_the_lead_tells_nobody(self, store):
@@ -400,19 +401,67 @@ class TestDethroneNotice:
         self._save(store, 2, "Боря", 100)
 
         client = self._client()
-        assert await notify_dethroned(client, self._db(), store, before, today) is False
+        assert await notify_dethroned(client, store, before, today) is False
 
     @pytest.mark.asyncio
-    async def test_someone_who_opted_out_is_left_alone(self, store):
+    async def test_someone_who_muted_these_is_left_alone(self, store):
+        today = day_key()
+        self._save(store, 1, "Аня", 100)
+        store.set_notifications(1, False)
+        before = current_leader(store, today)
+        self._save(store, 2, "Боря", 300)
+
+        client = self._client()
+        assert await notify_dethroned(client, store, before, today) is False
+        client.send_message.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_muting_is_separate_from_the_broadcast_opt_out(self, store):
+        """Refusing the daily mailing is not refusing to hear that you lost
+        the lead in a game you are playing right now. Conflating them meant
+        one setting silently killed the other, with no way back except
+        resubscribing to the mailing you did not want."""
+        today = day_key()
+        self._save(store, 1, "Аня", 100)
+        before = current_leader(store, today)
+        self._save(store, 2, "Боря", 300)
+
+        # Opted out of broadcasts, never muted the game.
+        db = self._db(subscribed=[])
+        client = self._client()
+        assert await notify_dethroned(client, store, before, today) is True
+        assert db.get_broadcast_subscribed_user_ids() == []
+
+    @pytest.mark.asyncio
+    async def test_a_new_player_is_not_muted_by_default(self, store):
+        assert store.wants_notifications(4242) is True
+
+    @pytest.mark.asyncio
+    async def test_muting_can_be_undone(self, store):
+        store.set_notifications(1, False)
+        assert store.wants_notifications(1) is False
+        store.set_notifications(1, True)
+        assert store.wants_notifications(1) is True
+
+    @pytest.mark.asyncio
+    async def test_the_notice_carries_the_mute_button(self, store):
         today = day_key()
         self._save(store, 1, "Аня", 100)
         before = current_leader(store, today)
         self._save(store, 2, "Боря", 300)
 
         client = self._client()
-        result = await notify_dethroned(client, self._db(subscribed=[2]), store, before, today)
-        assert result is False
-        client.send_message.assert_not_awaited()
+        await notify_dethroned(client, store, before, today)
+        markup = client.send_message.await_args.kwargs["reply_markup"]
+        assert markup.inline_keyboard[0][0].callback_data == "chaos_mute"
+
+    @pytest.mark.asyncio
+    async def test_pressing_mute_stops_further_notices(self, handlers, store):
+        callback = make_callback("chaos_mute", user_id=1)
+        await handlers["mute"](MagicMock(), callback)
+
+        assert store.wants_notifications(1) is False
+        callback.answer.assert_awaited()
 
     @pytest.mark.asyncio
     async def test_a_failed_send_is_swallowed(self, store):
@@ -425,7 +474,7 @@ class TestDethroneNotice:
 
         client = self._client()
         client.send_message = AsyncMock(side_effect=Exception("blocked"))
-        assert await notify_dethroned(client, self._db(), store, before, today) is False
+        assert await notify_dethroned(client, store, before, today) is False
 
     @pytest.mark.asyncio
     async def test_the_name_is_escaped(self, store):
@@ -435,16 +484,13 @@ class TestDethroneNotice:
         self._save(store, 2, "<b>hax</b>", 300)
 
         client = self._client()
-        await notify_dethroned(client, self._db(), store, before, today)
+        await notify_dethroned(client, store, before, today)
         assert "&lt;b&gt;hax&lt;/b&gt;" in client.send_message.await_args.args[1]
 
     @pytest.mark.asyncio
     async def test_submitting_a_leading_run_notifies_and_says_so(self, handlers, store):
         """End to end through the result handler."""
         self._save(store, 1, "Аня", 10)
-        # The fixture subscribes 111 and 222; the former leader has to be in
-        # that list or the opt-out check correctly filters them out.
-        handlers["db"].get_broadcast_subscribed_user_ids.return_value = [1, 111]
         client = MagicMock()
         client.send_message = AsyncMock()
 

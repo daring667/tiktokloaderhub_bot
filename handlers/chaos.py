@@ -16,7 +16,10 @@ import logging
 import os
 
 from pyrogram import filters
-from pyrogram.types import KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
+from pyrogram.types import (
+    InlineKeyboardButton, InlineKeyboardMarkup,
+    KeyboardButton, ReplyKeyboardMarkup, WebAppInfo,
+)
 
 from services.chaos.events import APPLES_TO_CLEAR_DAY, MERGE_TARGET
 from services.chaos.seed import day_key, shift_day_key
@@ -72,7 +75,16 @@ def current_leader(store: ChaosStorage, day: str):
     return top[0] if top else None
 
 
-async def notify_dethroned(client, db, store: ChaosStorage, previous, day: str) -> bool:
+MUTE_CALLBACK = "chaos_mute"
+
+
+def _mute_markup() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup([[
+        InlineKeyboardButton("🔕 Не уведомлять", callback_data=MUTE_CALLBACK)
+    ]])
+
+
+async def notify_dethroned(client, store: ChaosStorage, previous, day: str) -> bool:
     """Tells the former leader that someone has passed them.
 
     Fires only when the top spot changes hands, which is what keeps this from
@@ -89,9 +101,7 @@ async def notify_dethroned(client, db, store: ChaosStorage, previous, day: str) 
     if not leader or leader["user_id"] == previous["user_id"]:
         return False
 
-    # Someone who asked not to receive broadcasts should not be pinged by the
-    # game either. One opt-out, not two settings to keep track of.
-    if db and previous["user_id"] not in set(db.get_broadcast_subscribed_user_ids()):
+    if not store.wants_notifications(previous["user_id"]):
         return False
 
     winner = html.escape(leader["display_name"] or "Кто-то")
@@ -102,7 +112,10 @@ async def notify_dethroned(client, db, store: ChaosStorage, previous, day: str) 
         f"День ещё не кончился: /chaos"
     )
     try:
-        await client.send_message(previous["user_id"], text)
+        # The switch rides on the message itself, so it is at hand exactly
+        # when someone decides they have had enough of these.
+        await client.send_message(previous["user_id"], text,
+                                  reply_markup=_mute_markup())
         return True
     except Exception as exc:
         logging.info("Dethrone notice to %s failed: %s", previous["user_id"], exc)
@@ -167,6 +180,19 @@ def register(app, db=None, storage: ChaosStorage | None = None):
             lines.append("\nСегодня ещё не играл — серия оборвётся, если не успеть.")
         await message.reply("\n".join(lines))
 
+    @app.on_callback_query(filters.regex(rf"^{MUTE_CALLBACK}$"))
+    async def mute_handler(client, callback):
+        if callback.from_user:
+            store.set_notifications(callback.from_user.id, False)
+        await callback.answer(
+            "Больше не буду писать про рейтинг. Игра и рассылка не затронуты.",
+            show_alert=True,
+        )
+        try:
+            await callback.message.edit_reply_markup(reply_markup=None)
+        except Exception:
+            pass
+
     @app.on_message(web_app_data_filter & filters.private)
     async def result_handler(client, message):
         user = message.from_user
@@ -220,7 +246,7 @@ def register(app, db=None, storage: ChaosStorage | None = None):
         if place:
             lines.append(f"Место в рейтинге: <b>{place}</b> из {len(top)}")
 
-        if await notify_dethroned(client, db, store, leader_before, today):
+        if await notify_dethroned(client, store, leader_before, today):
             lines.append("👑 Ты забрал первое место.")
 
         await message.reply("\n".join(lines), reply_markup=_play_keyboard())

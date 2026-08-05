@@ -72,6 +72,7 @@ class ChaosStorage:
         # SQLite has no "ADD COLUMN IF NOT EXISTS", so just swallow the error
         # when they are already there.
         for statement in (
+            "ALTER TABLE chaos_players ADD COLUMN notify INTEGER NOT NULL DEFAULT 1",
             "ALTER TABLE chaos_runs ADD COLUMN stages TEXT",
             "ALTER TABLE chaos_runs ADD COLUMN chain_completed INTEGER NOT NULL DEFAULT 0",
         ):
@@ -159,6 +160,32 @@ class ChaosStorage:
                 "display_name = excluded.display_name, "
                 "last_seen = CURRENT_TIMESTAMP",
                 (user_id, display_name),
+            )
+            self._conn.commit()
+
+    def wants_notifications(self, user_id: int) -> bool:
+        """Whether this player still wants to hear about losing first place.
+
+        Deliberately separate from the downloader's broadcast opt-out. That
+        button says "больше не присылать рассылки", and someone who pressed it
+        refused news — not feedback about a game they are actively playing.
+        Folding the two together meant unsubscribing from announcements also
+        killed this, invisibly, with no way back except resubscribing to the
+        mailings they did not want.
+        """
+        row = self._conn.execute(
+            "SELECT notify FROM chaos_players WHERE user_id = ?", (user_id,)
+        ).fetchone()
+        # Someone with no row has never opened the game; default to yes so a
+        # new player is not silently muted.
+        return True if row is None else bool(row["notify"])
+
+    def set_notifications(self, user_id: int, enabled: bool) -> None:
+        with self._lock:
+            self._conn.execute(
+                "INSERT INTO chaos_players (user_id, notify) VALUES (?, ?) "
+                "ON CONFLICT(user_id) DO UPDATE SET notify = excluded.notify",
+                (user_id, int(enabled)),
             )
             self._conn.commit()
 
