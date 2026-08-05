@@ -3,6 +3,66 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.4.0] — 2026-08-04
+
+Two bugs players hit within a day of the chain shipping, plus the content
+that makes rarity mean something.
+
+### Fixed
+- **The event banner no longer stops the game or covers the board.** The
+  pause existed for one narrow reason — mirror and reverse move everything
+  somewhere else, and without a beat to re-read the board you die without
+  knowing why — but it fired on every apple, so the run stuttered constantly.
+  It now applies only to those two events, and the banner is a 24px line
+  above the board rather than a card over the middle of it.
+- **The pad no longer drops presses.** A single queued-direction slot meant
+  two quick taps overwrote each other, and the U-turn check compared against
+  the direction being travelled rather than the last one accepted, which
+  discarded the second half of right → down → left. There is now a queue of
+  two, consumed one per tick, with haptic feedback.
+- **The board could silently stop being square.** `resize()` computed its
+  size from `innerHeight - 398`, which goes negative on a short viewport; the
+  browser discarded the invalid width and the canvas reverted to its 300×150
+  default, no longer matching what the game thought it was drawing.
+
+### Added
+- **Five events, three of them legendary.** That tier previously held exactly
+  one entry, so the rarest possible roll was always the same thing — a
+  rarity system whose top prize is known in advance isn't one. Now: 🟢
+  Блуждание, 🔵 Линька, 🟣 Замедление (the one event that helps), 🟡
+  Нашествие, 🟡 Золотая лихорадка. Seventeen events in total.
+- **A catalogue version**, sent with every result. A cached older build now
+  gets "reopen the game" instead of being told its chain looks forged.
+- **Versioned import URLs** in the client. A browser holding an old
+  `chaos.js` beside a new `game.js` fails the module outright and shows a
+  blank screen — worse than merely being out of date.
+
+### Changed
+- The daily post goes to people who have opened the game, not to every row in
+  the users table. The first one failed for four of thirteen with
+  PEER_ID_INVALID: they reached that table by dropping a link in a group the
+  bot sits in, and Telegram does not let a bot open a private chat with
+  someone who never started it. The HTTP Bot API returns "chat not found" for
+  the same ids, so no change of transport helps — only the audience.
+
+## [1.3.2] — 2026-08-04
+
+### Fixed
+- **Every attempt in a day replayed the same board.** Apple and wall
+  placement was seeded from the day, like the event chain, so replaying the
+  day rewarded memorising a route rather than playing. Only the chain has a
+  reason to be fixed to the day; the world is now seeded per attempt.
+
+## [1.3.1] — 2026-08-04
+
+### Fixed
+- **Leaderboard rows mixed data from different runs.** The query paired
+  `MAX(score)` with bare columns and a second aggregate; SQLite only
+  guarantees bare columns come from the max() row when a query has exactly
+  one min()/max(). A player with a 500-point run of 30 apples and a
+  100-point run of 2 could be shown "500 points, 2 apples" — a run that never
+  happened. Replaced with a window function.
+
 ## [1.3.0] — 2026-08-04
 
 The chain that the name promised. Clearing snake no longer ends the day — it

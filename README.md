@@ -111,6 +111,14 @@ of the run.
 - `/top` — today's leaderboard
 - `/streak` — your run of consecutive cleared days
 
+**The chain.** Snake is the first link. Clearing it (seven apples) opens
+**«Слияние»** — slide tiles, equal ones merge, reach 128 and the chain is
+done. It reuses the same on-screen pad and asks for planning rather than
+reflexes. It carries a daily modifier of its own, shared by everyone: two
+tiles per move, a tile frozen for six moves, or a board that rotates every
+fifth move. Clearing the day — and the streak — still means seven apples in
+the snake; the second link adds score and a 🔗 in `/top`, and can be skipped.
+
 **How a day works.** Everything derives from a hash of the date, so every player gets the
 same chain of events and scores are worth comparing. The day turns over at **noon Almaty**
 (07:00 UTC) rather than midnight — people play over lunch, and a midday boundary avoids a
@@ -129,6 +137,19 @@ Pages. There is no game backend: results come back as a `web_app_data` message a
 **Private chats only.** This is a Telegram constraint, not a choice: a Mini App can only send
 data back to the bot when it was opened from a *reply keyboard* button in a DM. An inline or
 menu button leaves no way home without a server.
+
+**Events and rarity.** Seventeen events across four tiers. The apple count
+shifts the odds toward rarer ones rather than picking the event, so
+escalation and rarity are one mechanic. Permanent modifiers stack up to four
+and each one makes an apple worth more.
+
+**Changing the catalogue is a breaking change.** The chain is derived from
+the event pools, so adding or reordering one changes every day's chain —
+including days already played. Append only, bump `CATALOGUE_VERSION` on both
+sides, regenerate `tests/test_chaos_client_contract.py` from the client under
+node, and bump the `?v=` on the client's import URLs in the same commit. A
+player on a cached older build is then told to reopen the game instead of
+having an honest result rejected.
 
 **The event logic exists twice**, in `services/chaos/events.py` and `docs/chaos.js`, because
 the client generates the events and the bot re-derives them to check a submitted run. If the
@@ -166,4 +187,7 @@ VERSION / CHANGELOG.md     current version and release history
 - The TikTok/YouTube/Instagram/Twitter handlers delete the user's original message with the link after a successful download — silently no-ops if the bot lacks delete rights in a group.
 - YouTube playlist step-through processes at most 25 videos per playlist (`MAX_PLAYLIST_ITEMS` in `handlers/youtube.py`) — a deliberate cap, not a bug.
 - Chaos Chain scores are computed by the client, so a determined player can forge one. Validation rejects anything short of replaying the day's real event chain by hand, which is the right trade for a small group and no server. If the audience ever stops being people you know, this needs a real backend.
+- The daily post reaches only players who opened the game in a private chat.
+  A bot cannot message someone who never started it, so people who appear in
+  the users table purely from group activity are unreachable by any transport.
 - Chaos Chain only works in private chats — a Mini App cannot return data to the bot from a group without one.
