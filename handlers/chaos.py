@@ -32,6 +32,13 @@ WEBAPP_URL = os.getenv(
 )
 
 LAST_ANNOUNCED_KEY = "last_announced_day"
+
+
+def announcements_enabled() -> bool:
+    """Read on every rollover rather than at import, so flipping it in .env
+    takes effect on the next restart without touching code."""
+    return os.getenv("CHAOS_ANNOUNCE", "1").strip().lower() not in ("0", "false", "no")
+
 ANNOUNCE_POLL_SECONDS = 60
 
 # Pyrogram has no built-in filter for this message type.
@@ -271,7 +278,13 @@ async def run_daily_announcer(client, db, store: ChaosStorage, get_now=None):
                 # spam; wait for a real rollover instead.
                 store.set_meta(LAST_ANNOUNCED_KEY, today)
             elif seen != today:
-                await _announce(client, db, store, today)
+                if announcements_enabled():
+                    await _announce(client, db, store, today)
+                else:
+                    # Still record the day. Otherwise switching the post back
+                    # on would fire one immediately, at whatever hour that
+                    # happened to be, instead of waiting for a real rollover.
+                    logging.info("Chaos announcement for %s skipped: disabled", today)
                 store.set_meta(LAST_ANNOUNCED_KEY, today)
         except asyncio.CancelledError:
             raise

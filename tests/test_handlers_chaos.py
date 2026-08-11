@@ -313,6 +313,85 @@ class TestDailyAnnouncement:
         assert client.send_message.await_count == 1
 
 
+class TestAnnouncementSwitch:
+    """CHAOS_ANNOUNCE turns the daily post off without removing it."""
+
+    @staticmethod
+    def _client():
+        client = MagicMock()
+        client.send_message = AsyncMock()
+        return client
+
+    @staticmethod
+    def _db(user_ids=(1,)):
+        db = MagicMock()
+        db.get_broadcast_subscribed_user_ids.return_value = list(user_ids)
+        return db
+
+    @staticmethod
+    async def _poll(client, db, store, seconds=0.05):
+        task = asyncio.create_task(run_daily_announcer(client, db, store))
+        await asyncio.sleep(seconds)
+        task.cancel()
+        with pytest.raises(asyncio.CancelledError):
+            await task
+
+    @pytest.mark.asyncio
+    async def test_disabled_sends_nothing(self, store, monkeypatch):
+        monkeypatch.setenv("CHAOS_ANNOUNCE", "0")
+        monkeypatch.setattr(chaos, "ANNOUNCE_POLL_SECONDS", 0.01)
+        store.remember_player(1, "Аня")
+        store.set_meta("last_announced_day", shift_day_key(day_key(), -1))
+        client = self._client()
+
+        await self._poll(client, self._db(), store)
+        client.send_message.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_disabled_still_records_the_day(self, store, monkeypatch):
+        """Otherwise switching it back on fires a post immediately, at
+        whatever hour that happens to be."""
+        monkeypatch.setenv("CHAOS_ANNOUNCE", "0")
+        monkeypatch.setattr(chaos, "ANNOUNCE_POLL_SECONDS", 0.01)
+        store.set_meta("last_announced_day", shift_day_key(day_key(), -1))
+
+        await self._poll(self._client(), self._db(), store)
+        assert store.get_meta("last_announced_day") == day_key()
+
+    @pytest.mark.asyncio
+    async def test_switching_back_on_waits_for_the_next_rollover(self, store, monkeypatch):
+        monkeypatch.setattr(chaos, "ANNOUNCE_POLL_SECONDS", 0.01)
+        store.remember_player(1, "Аня")
+        store.set_meta("last_announced_day", shift_day_key(day_key(), -1))
+
+        monkeypatch.setenv("CHAOS_ANNOUNCE", "0")
+        await self._poll(self._client(), self._db(), store)
+
+        monkeypatch.setenv("CHAOS_ANNOUNCE", "1")
+        client = self._client()
+        await self._poll(client, self._db(), store)
+        client.send_message.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_enabled_by_default(self, store, monkeypatch):
+        monkeypatch.delenv("CHAOS_ANNOUNCE", raising=False)
+        monkeypatch.setattr(chaos, "ANNOUNCE_POLL_SECONDS", 0.01)
+        store.remember_player(1, "Аня")
+        store.set_meta("last_announced_day", shift_day_key(day_key(), -1))
+        client = self._client()
+
+        await self._poll(client, self._db(), store)
+        assert client.send_message.await_count == 1
+
+    @pytest.mark.parametrize("value,expected", [
+        ("0", False), ("false", False), ("no", False), ("FALSE", False),
+        ("1", True), ("true", True), ("", True),
+    ])
+    def test_switch_parsing(self, value, expected, monkeypatch):
+        monkeypatch.setenv("CHAOS_ANNOUNCE", value)
+        assert chaos.announcements_enabled() is expected
+
+
 class TestStaleClientReply:
     @pytest.mark.asyncio
     async def test_tells_the_player_to_reopen_instead_of_blaming_them(self, handlers, store):
