@@ -10,8 +10,6 @@ import re
 import time
 
 from pyrogram import filters
-from pyrogram.enums import ChatMemberStatus
-
 
 ALL_PATTERN = re.compile(r"(?<!\w)@all\b", re.IGNORECASE)
 COOLDOWN_SECONDS = 60
@@ -43,24 +41,10 @@ def _chunks(items: list[str]):
         yield chunk
 
 
-async def _is_chat_admin(client, chat_id: int, user_id: int) -> bool:
-    member = await client.get_chat_member(chat_id, user_id)
-    return member.status in {ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR}
-
-
 def register(app):
     @app.on_message(filters.regex(ALL_PATTERN) & filters.group)
     async def all_mention_handler(client, message):
         if not message.from_user or not message.text:
-            return
-
-        try:
-            if not await _is_chat_admin(client, message.chat.id, message.from_user.id):
-                await message.reply("⛔ Отметить всех может только администратор чата.")
-                return
-        except Exception:
-            # Do not pretend the caller is an admin if Telegram cannot verify it.
-            await message.reply("❌ Не смог проверить права администратора.")
             return
 
         now = time.monotonic()
