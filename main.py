@@ -14,6 +14,7 @@ from handlers.instagram import register as register_instagram
 from handlers.twitter import register as register_twitter
 from handlers.tiktok import TikTokHandler
 from handlers.chaos import register as register_chaos, run_daily_announcer
+from handlers.all_mention import register as register_all_mention
 from services.database import BotDatabase
 from services.utils.env import resolve_admin_id
 from services.utils.broadcast import broadcast_message, is_permanent_failure
@@ -203,6 +204,7 @@ if __name__ == "__main__":
     register_instagram(app, db)
     register_twitter(app, db)
     TikTokHandler(app, db).register()
+    register_all_mention(app)
 
     # Chaos Chain keeps to itself: its own module, its own chaos.db. It reads
     # the shared database only to honour the existing broadcast opt-out.

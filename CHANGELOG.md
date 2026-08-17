@@ -3,6 +3,14 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.6.4] — 2026-08-17
+
+### Added
+- **Group `@all` mentions.** A group administrator can write `@all` followed
+  by a message; the bot replies with real clickable mentions of all non-bot
+  participants. Large groups are split into safe-sized batches. The feature is
+  limited to administrators and one use per minute per chat.
+
 ## [1.4.0] — 2026-08-04
 
 Two bugs players hit within a day of the chain shipping, plus the content

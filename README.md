@@ -19,6 +19,7 @@ Current version: see [`VERSION`](VERSION) / [`CHANGELOG.md`](CHANGELOG.md), or a
 - **Global concurrency cap** — at most `MAX_CONCURRENT_DOWNLOADS` (default 2) downloads run at once across *all* users; the rest queue, so a busy moment can't spawn one `yt-dlp`/`ffmpeg` per user on a small box
 - **Admin alerts** — download failures are posted to `ADMIN_ID`/`OWNER_ID` in real time, throttled per (platform, error type) so a burst of identical failures doesn't flood the chat
 - **`/broadcast`** (admin-only) — message every registered user, with a per-message opt-out button and a delivery report (who got it, who didn't)
+- **`@all` in groups** — a group administrator can write `@all <message>`; the bot replies with real mentions of every non-bot participant, in safe-sized batches
 - **SQLite analytics** — tracks users, downloads, and errors; `/stats` (admin-only) shows totals, 24h activity, and 24h error rate per platform
 - **Log rotation** — 10 MB per file, 5 backups
 - **Self-healing in production** — systemd service + a timer-driven healthcheck monitor that restarts the bot and posts a Telegram alert on failure (see [`deploy/`](deploy/))
@@ -100,6 +101,15 @@ Sent by the user in `ADMIN_ID`/`OWNER_ID`:
 - `/stats` — user count, downloads and 24h error rate per platform
 - `/broadcast <text>` — message every registered user; each message carries a `🔕 Больше не присылать рассылки` opt-out button, and the bot reports back exactly who received it and who didn't
 - `/version` — also available to everyone, not just the admin
+
+## Group mentions
+
+Telegram has no built-in `@all` mention. In a group where the bot is present,
+an administrator can write `@all Встреча через 10 минут`. The bot replies with
+the message and clickable mentions for all non-bot members, split into several
+replies when the group is large. This is deliberately restricted to group
+administrators and to once per minute per chat, so a regular participant cannot
+turn the bot into a notification-spam tool.
 
 ## Chaos Chain
 
