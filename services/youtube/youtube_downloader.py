@@ -93,7 +93,7 @@ class YouTubeDownloader:
         self.thumbnail = None
         self.streams = []
 
-        opts = {
+        base_opts = {
             "quiet": True,
             "no_warnings": True,
             "skip_download": True,
@@ -107,9 +107,39 @@ class YouTubeDownloader:
             "geo_bypass": True,
         }
 
+        attempts = [base_opts]
+        if os.path.exists(COOKIES_PATH):
+            fallback_opts = dict(base_opts)
+            fallback_opts.pop("cookiefile", None)
+            attempts.append(fallback_opts)
+
+        android_opts = dict(base_opts)
+        android_opts.pop("cookiefile", None)
+        android_opts["extractor_args"] = {
+            "youtube": {
+                "player_client": ["android"],
+                "player_skip": ["configs"],
+            }
+        }
+        attempts.append(android_opts)
+
+        info = None
+        last_error = None
+
         try:
-            with yt_dlp.YoutubeDL(opts) as ydl:
-                info = ydl.extract_info(self.url, download=False)
+            for idx, opts in enumerate(attempts):
+                try:
+                    with yt_dlp.YoutubeDL(opts) as ydl:
+                        info = ydl.extract_info(self.url, download=False)
+                    break
+                except DownloadError as e:
+                    last_error = e
+                    msg = str(e).lower()
+                    if idx == len(attempts) - 1 or "page needs to be reloaded" not in msg:
+                        if "requested format is not available" in msg and idx < len(attempts) - 1:
+                            continue
+                        raise
+                    print("[DEBUG] yt-dlp reported a stale YouTube page; retrying without cookies.")
 
             if not info:
                 raise ValueError("Не удалось получить информацию о видео.")
@@ -228,22 +258,28 @@ class YouTubeDownloader:
             expected_path = None
 
         try:
-            # Try several fallbacks to reduce chance of HTTP 403
+            # Try several fallbacks to reduce chance of HTTP 403 / "page needs to be reloaded"
             attempts = []
-            # Primary: use provided opts (may include cookiefile)
             attempts.append(opts)
 
-            # Fallback: same opts but without cookiefile (some cookie files may be stale)
             fb = dict(opts)
             if 'cookiefile' in fb:
                 fb.pop('cookiefile')
             attempts.append(fb)
 
-            # Fallback: force different User-Agent
             fb2 = dict(fb)
             fb2.setdefault('http_headers', {})
             fb2['http_headers']['User-Agent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0 Safari/537.36'
             attempts.append(fb2)
+
+            android_fallback = dict(fb2)
+            android_fallback['extractor_args'] = {
+                'youtube': {
+                    'player_client': ['android'],
+                    'player_skip': ['configs'],
+                }
+            }
+            attempts.append(android_fallback)
 
             last_exc = None
             for i, attempt_opts in enumerate(attempts, start=1):
@@ -257,6 +293,10 @@ class YouTubeDownloader:
                     break
                 except Exception as e:
                     last_exc = e
+                    msg = str(e).lower()
+                    if 'page needs to be reloaded' in msg or 'http error 403' in msg or 'forbidden' in msg:
+                        print(f"[WARN] attempt {i} hit a YouTube anti-bot block; trying a safer client fallback.")
+                        continue
                     print(f"[WARN] attempt {i} failed: {e}")
 
             if last_exc:
