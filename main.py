@@ -7,7 +7,7 @@ asyncio.set_event_loop(asyncio.new_event_loop())
 
 from pyrogram import Client, filters
 from pyrogram.enums import ChatType
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from handlers import youtube
 from handlers.youtube import register as register_youtube
 from handlers.instagram import register as register_instagram
@@ -58,6 +58,12 @@ ADMIN_ID = resolve_admin_id()
 def chaos_enabled() -> bool:
     return os.getenv("CHAOS_ENABLED", "0").strip().lower() in {"1", "true", "yes"}
 
+
+MINIAPP_URL = os.getenv(
+    "MINIAPP_URL",
+    "https://daring667.github.io/tiktokloaderhub_bot/downloader.html",
+)
+
 @app.on_message(filters.command("start") & (filters.private | filters.group))
 async def start_handler(client, message):
     # Register user in database
@@ -92,6 +98,19 @@ async def start_handler(client, message):
 @app.on_message(filters.command("version") & (filters.group | filters.private))
 async def version_handler(client, message):
     await message.reply(f"🤖 Версия бота: v{get_version()}")
+
+
+@app.on_message(filters.command("app") & filters.private)
+async def miniapp_handler(client, message):
+    await message.reply(
+        "Открой Clipdrop и вставь ссылку на TikTok или YouTube:",
+        reply_markup=InlineKeyboardMarkup([[
+            InlineKeyboardButton(
+                "📥 Открыть Clipdrop",
+                web_app=WebAppInfo(url=MINIAPP_URL),
+            )
+        ]]),
+    )
 
 @app.on_message(filters.command("stats") & (filters.private | filters.group))
 async def stats_handler(client, message):
