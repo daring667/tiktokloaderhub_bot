@@ -50,7 +50,7 @@ async function pollJob() {
     if (!response.ok) throw new Error(data.error || 'Задача недоступна');
     if (data.status === 'queued') { setStatus('В очереди', 'Ждём свободный слот...', 18); }
     else if (data.status === 'running') { setStatus('Скачиваем', 'Подготавливаем видео для Telegram...', 62); }
-    else if (data.status === 'completed') { setStatus('Готово', 'Файл можно скачать или отправить в чат.', 100); resultButton.href = `${API_BASE}${data.download_url}`; resultButton.classList.remove('hidden'); cancelButton.classList.add('hidden'); return; }
+    else if (data.status === 'completed') { setStatus('Готово', 'Файл можно скачать или отправить в чат.', 100); resultButton.dataset.downloadUrl = `${API_BASE}${data.download_url}`; resultButton.classList.remove('hidden'); cancelButton.classList.add('hidden'); return; }
     else { setStatus('Загрузка не удалась', data.error || 'Попробуй другую ссылку.', 100); return; }
     pollTimer = setTimeout(pollJob, 1500);
   } catch (error) { setStatus('Ошибка соединения', error.message, 100); }
@@ -63,6 +63,30 @@ async function cancelJob() {
 $('downloadButton').addEventListener('click', createJob);
 urlInput.addEventListener('keydown', (event) => { if (event.key === 'Enter') createJob(); });
 cancelButton.addEventListener('click', cancelJob);
+$('resultButton').addEventListener('click', async (event) => {
+  event.preventDefault();
+  const downloadUrl = resultButton.dataset.downloadUrl;
+  if (!downloadUrl) return;
+  resultButton.textContent = 'Готовим файл…';
+  resultButton.setAttribute('aria-disabled', 'true');
+  try {
+    const response = await fetch(downloadUrl, { headers: authHeaders() });
+    if (!response.ok) throw new Error('Не удалось получить файл');
+    const blobUrl = URL.createObjectURL(await response.blob());
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = 'clipdrop-video.mp4';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    setStatus('Ошибка скачивания', error.message, 100);
+  } finally {
+    resultButton.textContent = 'Скачать файл';
+    resultButton.removeAttribute('aria-disabled');
+  }
+});
 $('pasteButton').addEventListener('click', async () => { try { urlInput.value = await navigator.clipboard.readText(); urlInput.focus(); } catch { showError('Вставь ссылку через меню устройства.'); } });
 $('themeButton').addEventListener('click', () => document.body.classList.toggle('dark'));
 
