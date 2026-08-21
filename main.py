@@ -54,6 +54,10 @@ youtube.app = app  # pass client to handler
 
 ADMIN_ID = resolve_admin_id()
 
+
+def chaos_enabled() -> bool:
+    return os.getenv("CHAOS_ENABLED", "0").strip().lower() in {"1", "true", "yes"}
+
 @app.on_message(filters.command("start") & (filters.private | filters.group))
 async def start_handler(client, message):
     # Register user in database
@@ -73,9 +77,9 @@ async def start_handler(client, message):
         "а ссылку на YouTube-плейлист — и я предложу скачать видео по очереди."
     )
 
-    # The game only runs in a private chat — a Mini App cannot send its
-    # result back from a group — so it is only worth mentioning there.
-    if message.chat and message.chat.type == ChatType.PRIVATE:
+    # Chaos Chain is optional and disabled by default while the downloader
+    # Mini App is being prepared.
+    if chaos_enabled() and message.chat and message.chat.type == ChatType.PRIVATE:
         text += (
             "\n\n🌀 А ещё здесь есть <b>Chaos Chain</b> — игра дня. "
             "Змейка, в которой каждое съеденное яблоко меняет правила, "
@@ -206,17 +210,19 @@ if __name__ == "__main__":
     TikTokHandler(app, db).register()
     register_all_mention(app)
 
-    # Chaos Chain keeps to itself: its own module, its own chaos.db. It reads
-    # the shared database only to honour the existing broadcast opt-out.
-    chaos_store = register_chaos(app, db)
-    # Safe before the loop runs — the task simply starts with it.
-    asyncio.get_event_loop().create_task(run_daily_announcer(app, db, chaos_store))
+    chaos_store = None
+    if chaos_enabled():
+        # Chaos Chain keeps to itself: its own module, its own chaos.db. It
+        # reads the shared database only to honour the broadcast opt-out.
+        chaos_store = register_chaos(app, db)
+        asyncio.get_event_loop().create_task(run_daily_announcer(app, db, chaos_store))
 
     print("🚀 Bot started!")
 
     try:
         app.run()
     finally:
-        chaos_store.close()
+        if chaos_store:
+            chaos_store.close()
         db.close()
         print("💾 Database connection closed cleanly.")

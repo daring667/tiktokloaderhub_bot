@@ -8,6 +8,7 @@ Type=simple
 User={{RUN_USER}}
 WorkingDirectory={{PROJECT_DIR}}
 ExecStart={{PROJECT_DIR}}/venv/bin/python main.py
+Environment=CHAOS_ENABLED=0
 Restart=on-failure
 RestartSec=10
 StandardOutput=journal
