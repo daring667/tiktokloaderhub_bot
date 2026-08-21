@@ -34,7 +34,7 @@ jobs:
     steps:
       - name: Pull latest code
         run: |
-          cd /home/droid/TiktokBot/TT
+          cd /home/droid/tiktokloaderhub_bot
           git fetch origin master
 
           # `git reset --hard` below would silently discard any local edits to
@@ -51,7 +51,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd /home/droid/TiktokBot/TT
+          cd /home/droid/tiktokloaderhub_bot
           ./venv/bin/pip install -q -r requirements.txt
 
       - name: Restart bot service
@@ -65,7 +65,7 @@ jobs:
 
       - name: Verify the bot can actually download a video
         run: |
-          cd /home/droid/TiktokBot/TT
+          cd /home/droid/tiktokloaderhub_bot
           ./venv/bin/python healthcheck.py
 
       - name: Show recent logs on failure
