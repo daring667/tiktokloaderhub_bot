@@ -1,0 +1,21 @@
+[Unit]
+Description=TikTok Bot Mini App API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=droid
+WorkingDirectory=/home/droid/tiktokloaderhub_bot
+EnvironmentFile=/home/droid/tiktokloaderhub_bot/.env
+ExecStart=/home/droid/tiktokloaderhub_bot/venv/bin/python -m api.server
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=tiktokbot-api
+MemoryHigh=300M
+MemoryMax=500M
+
+[Install]
+WantedBy=multi-user.target

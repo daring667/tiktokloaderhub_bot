@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Clipdrop</title>
+  <link rel="stylesheet" href="downloader.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">↗</span><span>Clipdrop</span></div>
+      <button class="icon-button" id="themeButton" aria-label="Переключить тему">◐</button>
+    </header>
+
+    <section class="hero">
+      <p class="eyebrow">TikTok · YouTube</p>
+      <h1>Сохрани момент.</h1>
+      <p class="subtitle">Вставь ссылку, а мы подготовим видео для чата.</p>
+    </section>
+
+    <section class="composer panel">
+      <label for="urlInput">Ссылка на видео</label>
+      <div class="input-row">
+        <input id="urlInput" type="url" inputmode="url" autocomplete="off" placeholder="https://..." maxlength="2048">
+        <button id="pasteButton" class="soft-button" type="button">Вставить</button>
+      </div>
+      <button id="downloadButton" class="primary-button" type="button">Скачать <span>↗</span></button>
+      <p class="hint" id="formHint">Поддерживаются публичные ссылки TikTok и YouTube</p>
+    </section>
+
+    <section class="status panel hidden" id="statusPanel" aria-live="polite">
+      <div class="status-head"><span class="status-dot"></span><span id="statusLabel">Готовим загрузку</span></div>
+      <div class="progress-track"><span id="progressBar"></span></div>
+      <p id="statusDetail">Запрашиваем видео...</p>
+      <div class="status-actions">
+        <button id="cancelButton" class="soft-button" type="button">Отменить</button>
+        <a id="resultButton" class="primary-button hidden" href="#">Скачать файл</a>
+      </div>
+    </section>
+
+    <section class="admin panel hidden" id="adminPanel">
+      <div class="section-title"><span>Панель управления</span><button id="refreshAdmin" class="soft-button">Обновить</button></div>
+      <div class="metrics"><div><strong id="metricJobs">—</strong><small>всего задач</small></div><div><strong id="metricActive">—</strong><small>активных</small></div><div><strong id="metricFailed">—</strong><small>ошибок</small></div></div>
+    </section>
+
+    <p class="footer-note">Файлы удаляются автоматически после истечения срока хранения.</p>
+  </main>
+  <script src="downloader.js"></script>
+</body>
+</html>
