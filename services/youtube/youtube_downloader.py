@@ -243,12 +243,9 @@ class YouTubeDownloader:
                             )
                         )
 
-        if not os.path.exists(COOKIES_PATH):
-            error_msg = f"❌ cookies.txt не найден по пути: {COOKIES_PATH}"
-            print(error_msg)
-            if status_msg:
-                await status_msg.edit_text(error_msg)
-            raise FileNotFoundError(error_msg)
+        cookies_available = os.path.exists(COOKIES_PATH)
+        if not cookies_available:
+            print("[log] cookies.txt не найден — продолжаю без cookies")
 
         # Используем абсолютный путь для надёжности
         out_path = os.path.abspath(out_path)
@@ -258,7 +255,6 @@ class YouTubeDownloader:
         if itag == "bestaudio":
             opts = {
                 "format": "bestaudio",
-                "cookiefile": COOKIES_PATH,
                 # Задаём шаблон без жёсткого расширения, чтобы postprocessor мог добавить .mp3
                 "outtmpl": base_no_ext + '.%(ext)s',
                 "quiet": True,
@@ -270,17 +266,20 @@ class YouTubeDownloader:
                     "preferredquality": "192"
                 }]
             }
+            if cookies_available:
+                opts["cookiefile"] = COOKIES_PATH
             expected_path = base_no_ext + '.mp3'
         else:
             opts = {
                 "format": itag,
-                "cookiefile": COOKIES_PATH,
                 "outtmpl": base_no_ext + '.%(ext)s',
                 "merge_output_format": "mp4",
                 "quiet": True,
                 "no_warnings": True,
                 "progress_hooks": [progress_callback]
             }
+            if cookies_available:
+                opts["cookiefile"] = COOKIES_PATH
             # возможные расширения видео
             expected_path = None
 
