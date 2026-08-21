@@ -13,6 +13,10 @@ setup_cookies()
 COOKIES_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "..", "cookies.txt")
 )
+MERGED_VIDEO_FORMAT = (
+    "bestvideo[vcodec^=avc1][ext=mp4]+bestaudio[ext=m4a]/"
+    "best[ext=mp4][vcodec^=avc1]/best[ext=mp4]"
+)
 
 
 def fix_url(url: str) -> str:
@@ -163,8 +167,30 @@ class YouTubeDownloader:
                         "type": "video"
                     })
 
+            # Shorts часто отдают только раздельные adaptive-потоки. В этом
+            # случае yt-dlp может скачать лучший video+audio и объединить их
+            # через ffmpeg, даже когда готового прогрессивного потока нет.
+            video_only = [f for f in info.get("formats", [])
+                          if f.get("vcodec") != "none" and f.get("acodec") == "none"]
+            separate_audio = [f for f in info.get("formats", [])
+                              if f.get("acodec") != "none" and f.get("vcodec") == "none"]
+            if not self.streams and video_only and separate_audio:
+                best_video = max(video_only, key=lambda x: x.get("height") or 0)
+                best_audio = max(
+                    separate_audio,
+                    key=lambda x: x.get("filesize") or x.get("filesize_approx") or 0,
+                )
+                video_size = best_video.get("filesize") or best_video.get("filesize_approx") or 0
+                audio_size = best_audio.get("filesize") or best_audio.get("filesize_approx") or 0
+                self.streams.append({
+                    "itag": MERGED_VIDEO_FORMAT,
+                    "res": best_video.get("format_note") or best_video.get("resolution") or "best",
+                    "filesize": video_size + audio_size or None,
+                    "type": "video",
+                })
+
             # Добавляем опцию аудио (MP3) на основе лучшего доступного аудио-формата
-            audio_formats = [f for f in info.get("formats", []) if f.get("acodec") != 'none' and f.get("vcodec") == 'none']
+            audio_formats = separate_audio
             if audio_formats:
                 best_audio = max(audio_formats, key=lambda x: x.get("filesize") or x.get("filesize_approx") or 0)
                 audio_size = best_audio.get("filesize") or best_audio.get("filesize_approx")
@@ -250,6 +276,7 @@ class YouTubeDownloader:
                 "format": itag,
                 "cookiefile": COOKIES_PATH,
                 "outtmpl": base_no_ext + '.%(ext)s',
+                "merge_output_format": "mp4",
                 "quiet": True,
                 "no_warnings": True,
                 "progress_hooks": [progress_callback]

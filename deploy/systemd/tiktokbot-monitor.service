@@ -11,9 +11,8 @@ StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=tiktokbot-monitor
 
-# Don't run as root; use service user if available
-User=darling
-Group=darling
+# The monitor restarts the bot through systemctl and therefore needs root
+# privileges. Keep the environment file root-owned and mode 600.
 
 # Timeouts
 TimeoutStartSec=300

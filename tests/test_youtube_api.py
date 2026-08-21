@@ -108,6 +108,29 @@ class TestYouTubeDownloaderInit:
 
     @patch("services.youtube.youtube_downloader.setup_cookies")
     @patch("services.youtube.youtube_downloader.yt_dlp.YoutubeDL")
+    def test_builds_merged_video_stream_for_adaptive_formats(self, mock_ydl_class, mock_cookies):
+        """Video-only and audio-only YouTube streams are offered as a video."""
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
+        mock_ydl.__exit__ = MagicMock(return_value=False)
+        mock_ydl.extract_info.return_value = self._mock_info(formats=[
+            {"format_id": "137", "format_note": "1080p", "acodec": "none",
+             "vcodec": "avc1", "height": 1080, "filesize": 40_000_000},
+            {"format_id": "251", "format_note": "audio only", "acodec": "opus",
+             "vcodec": "none", "filesize": 4_000_000},
+        ])
+        mock_ydl_class.return_value = mock_ydl
+
+        from services.youtube.youtube_downloader import YouTubeDownloader
+        dl = YouTubeDownloader(self.FAKE_URL)
+
+        video_streams = [s for s in dl.streams if s["type"] == "video"]
+        assert len(video_streams) == 1
+        assert "vcodec^=avc1" in video_streams[0]["itag"]
+        assert video_streams[0]["filesize"] == 44_000_000
+
+    @patch("services.youtube.youtube_downloader.setup_cookies")
+    @patch("services.youtube.youtube_downloader.yt_dlp.YoutubeDL")
     def test_retry_without_cookiefile_on_reload_error(self, mock_ydl_class, mock_cookies):
         """YouTube reload errors should retry without stale cookies."""
         first_ydl = MagicMock()
