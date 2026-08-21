@@ -77,6 +77,30 @@ async def test_job_manager_cancel_removes_result(tmp_path, monkeypatch):
         await job.task
     assert job.status == "cancelled"
 
+
+@pytest.mark.asyncio
+async def test_job_manager_sends_completed_video_to_owner(tmp_path, monkeypatch):
+    async def fake_download(_url, output_path, timeout=180):
+        with open(output_path, "wb") as output:
+            output.write(b"video")
+        return output_path
+
+    sent = {}
+
+    def fake_send(token, chat_id, file_path):
+        sent.update(token=token, chat_id=chat_id, file_path=file_path)
+
+    monkeypatch.setattr("api.jobs.download_video", fake_download)
+    monkeypatch.setattr("api.jobs.send_video_to_telegram", fake_send)
+    manager = JobManager(tmp_path, bot_token="bot-token")
+    job = manager.create(456, "https://www.tiktok.com/@user/video/1")
+
+    await job.task
+    assert job.status == "completed"
+    assert job.delivery_status == "sent"
+    assert sent["token"] == "bot-token"
+    assert sent["chat_id"] == 456
+
 @pytest.mark.asyncio
 async def test_api_requires_telegram_auth(tmp_path, monkeypatch):
     import api.app as app_module

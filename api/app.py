@@ -32,7 +32,7 @@ def is_allowed_url(url: str) -> bool:
 
 
 def build_app(job_manager: JobManager | None = None) -> web.Application:
-    manager = job_manager or JobManager(DOWNLOADS_DIR)
+    manager = job_manager or JobManager(DOWNLOADS_DIR, bot_token=BOT_TOKEN)
     app = web.Application(client_max_size=1024 * 1024)
     app[JOBS_KEY] = manager
 

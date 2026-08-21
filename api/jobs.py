@@ -8,12 +8,31 @@ import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import requests
+
 from services.downloader import download_video
 
 
 MAX_RESULT_SIZE = 50 * 1024 * 1024
 JOB_TTL_SECONDS = 30 * 60
 DOWNLOAD_TIMEOUT_SECONDS = 180
+
+
+def send_video_to_telegram(bot_token: str, chat_id: int, file_path: str) -> None:
+    """Send a completed video to its verified Telegram owner."""
+    with open(file_path, "rb") as video_file:
+        response = requests.post(
+            f"https://api.telegram.org/bot{bot_token}/sendVideo",
+            data={"chat_id": str(chat_id), "supports_streaming": "true"},
+            files={"video": (Path(file_path).name, video_file, "video/mp4")},
+            timeout=DOWNLOAD_TIMEOUT_SECONDS,
+        )
+    try:
+        payload = response.json()
+    finally:
+        response.close()
+    if response.status_code >= 400 or not payload.get("ok"):
+        raise RuntimeError(payload.get("description", "Telegram не принял видео"))
 
 
 @dataclass
@@ -23,6 +42,7 @@ class DownloadJob:
     url: str
     status: str = "queued"
     result_path: str | None = None
+    delivery_status: str = "pending"
     error: str | None = None
     created_at: float = field(default_factory=time.time)
     updated_at: float = field(default_factory=time.time)
@@ -36,6 +56,7 @@ class DownloadJob:
             "error": self.error,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
+            "delivery_status": self.delivery_status,
         }
         if self.status == "completed":
             result["download_url"] = f"/api/jobs/{self.job_id}/file"
@@ -43,11 +64,12 @@ class DownloadJob:
 
 
 class JobManager:
-    def __init__(self, downloads_dir: str | Path, max_concurrent: int = 2):
+    def __init__(self, downloads_dir: str | Path, max_concurrent: int = 2, bot_token: str = ""):
         self.downloads_dir = Path(downloads_dir)
         self.downloads_dir.mkdir(parents=True, exist_ok=True)
         self.jobs: dict[str, DownloadJob] = {}
         self.semaphore = asyncio.Semaphore(max_concurrent)
+        self.bot_token = bot_token
 
     def create(self, user_id: int, url: str) -> DownloadJob:
         active = sum(
@@ -93,6 +115,17 @@ class JobManager:
                 if os.path.getsize(result_path) > MAX_RESULT_SIZE:
                     raise ValueError("Файл больше 50 МБ")
                 job.result_path = result_path
+                if self.bot_token:
+                    await asyncio.get_running_loop().run_in_executor(
+                        None,
+                        send_video_to_telegram,
+                        self.bot_token,
+                        job.user_id,
+                        result_path,
+                    )
+                    job.delivery_status = "sent"
+                else:
+                    job.delivery_status = "unavailable"
                 job.status = "completed"
         except asyncio.CancelledError:
             if job.status != "cancelled":

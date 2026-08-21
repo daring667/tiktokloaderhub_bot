@@ -50,7 +50,18 @@ async function pollJob() {
     if (!response.ok) throw new Error(data.error || 'Задача недоступна');
     if (data.status === 'queued') { setStatus('В очереди', 'Ждём свободный слот...', 18); }
     else if (data.status === 'running') { setStatus('Скачиваем', 'Подготавливаем видео для Telegram...', 62); }
-    else if (data.status === 'completed') { setStatus('Готово', 'Файл можно скачать или отправить в чат.', 100); resultButton.dataset.downloadUrl = `${API_BASE}${data.download_url}`; resultButton.classList.remove('hidden'); cancelButton.classList.add('hidden'); return; }
+    else if (data.status === 'completed') {
+      if (data.delivery_status === 'sent') {
+        setStatus('Готово', 'Видео уже отправлено в этот чат Telegram.', 100);
+        resultButton.classList.add('hidden');
+      } else {
+        setStatus('Готово', 'Видео скачано, но автоматическая отправка недоступна.', 100);
+        resultButton.dataset.downloadUrl = `${API_BASE}${data.download_url}`;
+        resultButton.classList.remove('hidden');
+      }
+      cancelButton.classList.add('hidden');
+      return;
+    }
     else { setStatus('Загрузка не удалась', data.error || 'Попробуй другую ссылку.', 100); return; }
     pollTimer = setTimeout(pollJob, 1500);
   } catch (error) { setStatus('Ошибка соединения', error.message, 100); }
