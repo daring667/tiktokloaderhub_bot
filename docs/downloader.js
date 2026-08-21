@@ -15,6 +15,12 @@ let pollTimer = null;
 
 if (tg) { tg.ready(); tg.expand(); }
 
+const openedInsideTelegram = Boolean(tg?.initData);
+if (!openedInsideTelegram) {
+  $('downloadButton').disabled = true;
+  showError('Открой эту страницу через кнопку Mini App в Telegram.');
+}
+
 function authHeaders() {
   return { 'Content-Type': 'application/json', 'X-Telegram-Init-Data': tg?.initData || '' };
 }
@@ -23,6 +29,7 @@ function setStatus(label, detail, progress = 30) {
 }
 function showError(message) { formHint.textContent = message; formHint.style.color = '#c45e51'; }
 async function createJob() {
+  if (!openedInsideTelegram) return showError('Открой эту страницу через кнопку Mini App в Telegram.');
   const url = urlInput.value.trim();
   if (!/^https?:\/\//i.test(url)) return showError('Вставь корректную ссылку на видео.');
   $('downloadButton').disabled = true; showError(''); setStatus('Добавляем в очередь', 'Это займёт несколько секунд...', 12);
