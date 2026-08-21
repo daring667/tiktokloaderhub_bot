@@ -61,7 +61,7 @@ def chaos_enabled() -> bool:
 
 MINIAPP_URL = os.getenv(
     "MINIAPP_URL",
-    "https://daring667.github.io/tiktokloaderhub_bot/downloader.html",
+    "https://daring667.github.io/tiktokloaderhub_bot/downloader.html?api=https://debian-2.tail4f778c.ts.net",
 )
 
 @app.on_message(filters.command("start") & (filters.private | filters.group))
