@@ -1,6 +1,6 @@
 const tg = window.Telegram?.WebApp;
 const configuredApi = new URLSearchParams(window.location.search).get('api') || window.CLIPDROP_API_BASE;
-const API_BASE = (configuredApi || window.location.origin).replace(/\/$/, '');
+const API_BASE = (configuredApi || 'https://debian-2.tail4f778c.ts.net').replace(/\/$/, '');
 const $ = (id) => document.getElementById(id);
 const urlInput = $('urlInput');
 const formHint = $('formHint');
