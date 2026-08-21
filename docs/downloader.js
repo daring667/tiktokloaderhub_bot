@@ -67,6 +67,7 @@ $('pasteButton').addEventListener('click', async () => { try { urlInput.value = 
 $('themeButton').addEventListener('click', () => document.body.classList.toggle('dark'));
 
 async function loadAdmin() {
+  if (!openedInsideTelegram) return;
   try { const response = await fetch(`${API_BASE}/api/admin/summary`, { headers: authHeaders() }); if (!response.ok) return; const data = await response.json(); $('adminPanel').classList.remove('hidden'); $('metricJobs').textContent = data.jobs; $('metricActive').textContent = data.active; $('metricFailed').textContent = data.failed; } catch { /* user is not an admin or API is offline */ }
 }
 $('refreshAdmin').addEventListener('click', loadAdmin);
