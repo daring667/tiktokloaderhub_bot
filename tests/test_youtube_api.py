@@ -126,8 +126,57 @@ class TestYouTubeDownloaderInit:
 
         video_streams = [s for s in dl.streams if s["type"] == "video"]
         assert len(video_streams) == 1
-        assert "vcodec^=avc1" in video_streams[0]["itag"]
+        assert video_streams[0]["itag"] == "137+251"
         assert video_streams[0]["filesize"] == 44_000_000
+
+    @patch("services.youtube.youtube_downloader.setup_cookies")
+    @patch("services.youtube.youtube_downloader.yt_dlp.YoutubeDL")
+    def test_adaptive_video_with_unknown_size_is_not_reported_as_audio_size(self, mock_ydl_class, mock_cookies):
+        """A missing video filesize must not be mistaken for a small result."""
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
+        mock_ydl.__exit__ = MagicMock(return_value=False)
+        mock_ydl.extract_info.return_value = self._mock_info(formats=[
+            {"format_id": "137", "format_note": "1080p", "acodec": "none",
+             "vcodec": "avc1", "ext": "mp4", "height": 1080},
+            {"format_id": "140", "format_note": "audio only", "acodec": "mp4a",
+             "vcodec": "none", "ext": "m4a", "filesize": 8_000_000},
+        ])
+        mock_ydl_class.return_value = mock_ydl
+
+        from services.youtube.youtube_downloader import YouTubeDownloader
+        stream = next(
+            item for item in YouTubeDownloader(self.FAKE_URL).get_available_formats()
+            if item["type"] == "video"
+        )
+
+        assert stream["itag"] == "137+140"
+        assert stream["filesize"] is None
+
+    @patch("services.youtube.youtube_downloader.setup_cookies")
+    @patch("services.youtube.youtube_downloader.yt_dlp.YoutubeDL")
+    def test_adaptive_formats_prefer_known_size_per_quality(self, mock_ydl_class, mock_cookies):
+        """The safe 360p default must not be replaced by an unknown-size variant."""
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
+        mock_ydl.__exit__ = MagicMock(return_value=False)
+        mock_ydl.extract_info.return_value = self._mock_info(formats=[
+            {"format_id": "230", "format_note": "360p", "acodec": "none",
+             "vcodec": "avc1", "ext": "mp4", "height": 360, "tbr": 800},
+            {"format_id": "134", "format_note": "360p", "acodec": "none",
+             "vcodec": "avc1", "ext": "mp4", "height": 360, "tbr": 550,
+             "filesize": 37_000_000},
+            {"format_id": "140", "format_note": "audio only", "acodec": "mp4a",
+             "vcodec": "none", "ext": "m4a", "filesize": 8_000_000},
+        ])
+        mock_ydl_class.return_value = mock_ydl
+
+        from services.youtube.youtube_downloader import YouTubeDownloader
+        stream = YouTubeDownloader(self.FAKE_URL).get_available_formats()[0]
+
+        assert stream["itag"] == "134+140"
+        assert stream["height"] == 360
+        assert stream["filesize"] == 45_000_000
 
     @patch("services.youtube.youtube_downloader.setup_cookies")
     @patch("services.youtube.youtube_downloader.yt_dlp.YoutubeDL")

@@ -38,6 +38,16 @@ class TestProgressGuards:
         assert "50.0%" in text
         assert "ETA" in text
 
+    @pytest.mark.asyncio
+    async def test_completed_track_is_included_in_total(self):
+        import time
+        message = _message()
+
+        await progress(2048, 2048, message, start=time.time() - 10, filename="audio", completed_bytes=4096)
+
+        text = message.edit_text.await_args.kwargs["text"]
+        assert "6.0 KB of 6.0 KB" in text
+
 
 class TestHumanBytes:
     def test_zero_is_blank(self):

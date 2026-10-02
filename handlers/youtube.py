@@ -40,6 +40,26 @@ def format_duration(seconds) -> str:
         return f"{hours}:{minutes:02d}:{secs:02d}"
     return f"{minutes}:{secs:02d}"
 
+
+def safe_adaptive_stream(streams):
+    """Return the highest known-safe adaptive quality up to 360p.
+
+    Adaptive YouTube formats can omit the video filesize. Choosing their
+    "best" variant made a 1080p, 354 MB download look like an 8 MB audio
+    download. 360p is the smallest generally comfortable mobile quality and
+    keeps the default useful while the user can still pick another option for
+    normal videos.
+    """
+    candidates = [
+        stream for stream in streams
+        if stream.get("type") == "video"
+        and "+" in str(stream.get("itag", ""))
+        and 0 < (stream.get("height") or 0) <= 360
+        and stream.get("filesize") is not None
+        and stream["filesize"] <= MAX_FILE_SIZE
+    ]
+    return max(candidates, key=lambda stream: stream["height"], default=None)
+
 active_downloads = set()
 
 async def process_and_send_video(
@@ -224,21 +244,41 @@ async def _handle_one_youtube_url(client, message, db, url, playlist_token=None)
             await report_error(client, "youtube", url, message.from_user, e, db)
             return RESULT_FAILED
 
-        # Если видео короче или равно 2 минут — скачиваем сразу только в видео-формате
-        if meta.length <= 120:
-            video_stream = next((s for s in meta.streams if s.get('type') == 'video'), None)
-            if not video_stream:
-                await message.reply("❌ Нет доступного видео-формата для этого короткого видео.")
-                return RESULT_FAILED
+        # For adaptive-only videos, use a real 360p-or-lower stream by
+        # default. This avoids a long invisible 1080p transfer while keeping
+        # the manual picker behaviour for regular progressive formats.
+        adaptive_stream = safe_adaptive_stream(meta.streams)
+        if adaptive_stream:
+            ok = await process_and_send_video(
+                client, message, meta, adaptive_stream['itag'], url, db, message.from_user
+            )
+            return RESULT_SENT if ok else RESULT_FAILED
 
-            if not video_stream.get('filesize') or video_stream.get('filesize') <= 50 * 1024 * 1024:
+        # Короткие ролики скачиваем сразу только когда размер всего формата
+        # известен. Unknown у adaptive-видео означает лишь то, что YouTube не
+        # сообщил размер video track; это не делает ролик маленьким.
+        if meta.length <= 120:
+            video_stream = next(
+                (
+                    s for s in meta.streams
+                    if s.get('type') == 'video'
+                    and s.get('filesize') is not None
+                    and s['filesize'] <= MAX_FILE_SIZE
+                ),
+                None,
+            )
+            if not video_stream:
+                # Continue to the picker below: the user can choose a lower
+                # quality rather than waiting for an implicit 1080p download.
+                pass
+            else:
                 ok = await process_and_send_video(client, message, meta, video_stream['itag'], url, db, message.from_user)
                 return RESULT_SENT if ok else RESULT_FAILED
 
         # Если всего один формат и это видео — качаем сразу
         if len(meta.streams) == 1 and meta.streams[0].get('type') == 'video':
             stream = meta.streams[0]
-            if not stream.get('filesize') or stream.get('filesize') <= 50 * 1024 * 1024:
+            if stream.get('filesize') is not None and stream['filesize'] <= MAX_FILE_SIZE:
                 ok = await process_and_send_video(client, message, meta, stream['itag'], url, db, message.from_user)
                 return RESULT_SENT if ok else RESULT_FAILED
 

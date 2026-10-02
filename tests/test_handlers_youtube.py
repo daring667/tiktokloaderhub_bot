@@ -63,6 +63,50 @@ class TestYoutubeMessageHandler:
         assert not fake_video.exists()
 
     @pytest.mark.asyncio
+    async def test_short_video_with_unknown_size_uses_picker_instead_of_best_quality(self):
+        """Unknown adaptive size can hide a huge video track, so do not auto-download it."""
+        handler, _cb, _db = _register()
+        message = make_message(URL)
+        client = make_client()
+        streams = [
+            {"itag": "137+140", "res": "1080p", "filesize": None, "type": "video"},
+            {"itag": "bestaudio", "res": "audio (mp3)", "filesize": 8 * 1024 * 1024, "type": "audio"},
+        ]
+
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            MockYT.return_value = _make_meta(length=30, streams=streams)
+            await handler(client, message)
+
+        assert message.reply.await_args.kwargs["reply_markup"] is not None
+        client.send_video.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_adaptive_video_uses_known_safe_360p_by_default(self, tmp_path):
+        handler, _cb, _db = _register()
+        message = make_message(URL)
+        client = make_client()
+        fake_video = tmp_path / "v.mp4"
+        streams = [
+            {"itag": "299+140", "res": "1080p", "height": 1080, "filesize": None, "type": "video"},
+            {"itag": "134+140", "res": "360p", "height": 360, "filesize": 45 * 1024 * 1024, "type": "video"},
+            {"itag": "bestaudio", "res": "audio (mp3)", "filesize": 8 * 1024 * 1024, "type": "audio"},
+        ]
+
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            meta = _make_meta(length=520, streams=streams)
+
+            async def fake_download(itag, filename, msg, status_msg):
+                assert itag == "134+140"
+                fake_video.write_bytes(b"fake")
+                return str(fake_video)
+
+            meta.download = AsyncMock(side_effect=fake_download)
+            MockYT.return_value = meta
+            await handler(client, message)
+
+        client.send_video.assert_awaited_once()
+
+    @pytest.mark.asyncio
     async def test_long_video_multiple_streams_offers_quality_buttons(self):
         handler, _cb, db = _register()
         message = make_message(URL)

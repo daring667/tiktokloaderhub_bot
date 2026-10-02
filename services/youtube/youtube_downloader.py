@@ -13,12 +13,6 @@ setup_cookies()
 COOKIES_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "..", "cookies.txt")
 )
-MERGED_VIDEO_FORMAT = (
-    "bestvideo[vcodec^=avc1][ext=mp4]+bestaudio[ext=m4a]/"
-    "best[ext=mp4][vcodec^=avc1]/best[ext=mp4]"
-)
-
-
 def fix_url(url: str) -> str:
     """Нормализует URL YouTube и извлекает video_id, обрабатывая все форматы ссылок"""
     parsed = urlparse(url)
@@ -163,31 +157,68 @@ class YouTubeDownloader:
                     self.streams.append({
                         "itag": fmt_id,
                         "res": f.get("format_note") or f.get("resolution") or f.get("ext") or "video",
+                        "height": f.get("height"),
                         "filesize": filesize,
                         "type": "video"
                     })
 
-            # Shorts часто отдают только раздельные adaptive-потоки. В этом
-            # случае yt-dlp может скачать лучший video+audio и объединить их
-            # через ffmpeg, даже когда готового прогрессивного потока нет.
+            # Shorts часто отдают только раздельные adaptive-потоки. Создаём
+            # кнопку для каждого качества, а не один «лучший» selector.
+            # Размер у video-only форматов YouTube нередко не сообщает. В
+            # таком случае нельзя считать известный размер аудио размером
+            # всего результата и незаметно выбрать 1080p на сотни мегабайт.
             video_only = [f for f in info.get("formats", [])
                           if f.get("vcodec") != "none" and f.get("acodec") == "none"]
             separate_audio = [f for f in info.get("formats", [])
                               if f.get("acodec") != "none" and f.get("vcodec") == "none"]
             if not self.streams and video_only and separate_audio:
-                best_video = max(video_only, key=lambda x: x.get("height") or 0)
+                h264_mp4 = [
+                    f for f in video_only
+                    if f.get("ext") == "mp4" and str(f.get("vcodec", "")).startswith("avc1")
+                ]
+                compatible_video = h264_mp4 or video_only
+                m4a_audio = [f for f in separate_audio if f.get("ext") == "m4a"]
                 best_audio = max(
-                    separate_audio,
+                    m4a_audio or separate_audio,
                     key=lambda x: x.get("filesize") or x.get("filesize_approx") or 0,
                 )
-                video_size = best_video.get("filesize") or best_video.get("filesize_approx") or 0
-                audio_size = best_audio.get("filesize") or best_audio.get("filesize_approx") or 0
-                self.streams.append({
-                    "itag": MERGED_VIDEO_FORMAT,
-                    "res": best_video.get("format_note") or best_video.get("resolution") or "best",
-                    "filesize": video_size + audio_size or None,
-                    "type": "video",
-                })
+                # YouTube can expose several codecs/frame rates for the same
+                # resolution. Keep the richest one per height, so the picker
+                # contains meaningful qualities instead of duplicate 1080p
+                # choices.
+                by_height = {}
+                for video in compatible_video:
+                    height = video.get("height") or 0
+                    previous = by_height.get(height)
+                    video_size = video.get("filesize") or video.get("filesize_approx")
+                    previous_size = (
+                        previous.get("filesize") or previous.get("filesize_approx")
+                        if previous else None
+                    )
+                    # Prefer a variant with a declared filesize. It lets the
+                    # handler select a safe quality before it starts a large
+                    # download; when both have it, keep the better bitrate.
+                    if (
+                        previous is None
+                        or (video_size is not None and previous_size is None)
+                        or (
+                            (video_size is not None) == (previous_size is not None)
+                            and (video.get("tbr") or 0) > (previous.get("tbr") or 0)
+                        )
+                    ):
+                        by_height[height] = video
+
+                audio_size = best_audio.get("filesize") or best_audio.get("filesize_approx")
+                for video in sorted(by_height.values(), key=lambda f: f.get("height") or 0, reverse=True):
+                    video_size = video.get("filesize") or video.get("filesize_approx")
+                    total_size = video_size + audio_size if video_size and audio_size else None
+                    self.streams.append({
+                        "itag": f"{video['format_id']}+{best_audio['format_id']}",
+                        "res": video.get("format_note") or video.get("resolution") or "video",
+                        "height": video.get("height"),
+                        "filesize": total_size,
+                        "type": "video",
+                    })
 
             # Добавляем опцию аудио (MP3) на основе лучшего доступного аудио-формата
             audio_formats = separate_audio
@@ -226,20 +257,37 @@ class YouTubeDownloader:
         loop = asyncio.get_running_loop()
         import glob
 
-        state = {'last_update': 0.0}
+        state = {'last_update': 0.0, 'completed_files': {}}
 
         def progress_callback(d):
+            filename = d.get('filename')
+            if d['status'] == 'finished' and filename:
+                state['completed_files'][filename] = (
+                    d.get('total_bytes') or d.get('downloaded_bytes') or 0
+                )
+                return
+
             if d['status'] == 'downloading' and message:
                 current = d.get('downloaded_bytes', 0)
                 total = d.get('total_bytes', 0) or d.get('total_bytes_estimate', 0)
-                filename = d.get('filename', 'video')
                 if total:
                     now = time.time()
                     if now - state['last_update'] >= 2.5 or current == total:
                         state['last_update'] = now
+                        completed_bytes = sum(
+                            size for path, size in state['completed_files'].items()
+                            if path != filename
+                        )
                         loop.call_soon_threadsafe(
                             lambda: asyncio.create_task(
-                                progress(current, total, message, start_time, filename)
+                                progress(
+                                    current,
+                                    total,
+                                    message,
+                                    start_time,
+                                    filename or 'video',
+                                    completed_bytes=completed_bytes,
+                                )
                             )
                         )
 
@@ -280,8 +328,10 @@ class YouTubeDownloader:
             }
             if cookies_available:
                 opts["cookiefile"] = COOKIES_PATH
-            # возможные расширения видео
-            expected_path = None
+            # merge_output_format above makes this the final result. Looking
+            # up the first ``base.*`` match may instead return a temporary
+            # video/audio track, whose order is not deterministic.
+            expected_path = base_no_ext + '.mp4'
 
         try:
             # Try several fallbacks to reduce chance of HTTP 403 / "page needs to be reloaded"
