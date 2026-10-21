@@ -2,6 +2,7 @@ from pyrogram import Client, filters
 from services.instagram.instagram_downloader import InstagramDownloader
 from services.downloader import is_instagram_url
 from services.utils.sanitize import sanitize_filename
+from services.utils.video_meta import probe_video_metadata
 from handlers.base import (
     DownloadInProgress,
     RateLimited,
@@ -89,7 +90,10 @@ async def _download_and_send(client, message, db, url) -> bool:
 
         try:
             # Send without supports_streaming to avoid player trying to stream
-            await client.send_video(message.chat.id, result_path)
+            await client.send_video(
+                message.chat.id, result_path,
+                **probe_video_metadata(result_path),
+            )
         except Exception as e:
             logging.error(f"[Instagram] send_video failed: {e}")
             try:

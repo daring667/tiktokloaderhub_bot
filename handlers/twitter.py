@@ -2,6 +2,7 @@ from pyrogram import Client, filters
 from services.twitter.twitter_downloader import TwitterDownloader
 from services.downloader import is_twitter_url
 from services.utils.sanitize import sanitize_filename
+from services.utils.video_meta import probe_video_metadata
 from handlers.base import (
     DownloadInProgress,
     RateLimited,
@@ -90,7 +91,10 @@ async def _download_and_send(client, message, db, url) -> bool:
             return False
 
         try:
-            await client.send_video(message.chat.id, result_path)
+            await client.send_video(
+                message.chat.id, result_path,
+                **probe_video_metadata(result_path),
+            )
         except Exception as e:
             logging.error(f"[Twitter] send_video failed: {e}")
             try:

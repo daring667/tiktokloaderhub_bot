@@ -4,6 +4,7 @@ from pyrogram.enums import ParseMode
 from services.youtube.youtube_downloader import YouTubeDownloader, is_playlist_url, get_playlist_info
 from services.downloader import is_youtube_url
 from services.utils.sanitize import sanitize_filename
+from services.utils.video_meta import probe_video_metadata
 from handlers.base import (
     DownloadInProgress,
     RateLimited,
@@ -162,7 +163,13 @@ async def process_and_send_video(
         if is_audio:
             await client.send_audio(message.chat.id, result_path)
         else:
-            await client.send_video(message.chat.id, result_path, supports_streaming=True)
+            # Without these Telegram records the video as 0x0 and clients
+            # guess the aspect, which squashes a vertical video into a
+            # landscape box.
+            await client.send_video(
+                message.chat.id, result_path, supports_streaming=True,
+                **probe_video_metadata(result_path),
+            )
     except Exception as e:
         logging.error(f"Error sending file: {e}")
         try:

@@ -3,6 +3,24 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.7.1] — 2026-10-21
+
+### Fixed
+- **Videos no longer arrive squashed.** Reported for a vertical Shorts that
+  Telegram drew into a landscape box. The downloaded file was never at fault:
+  it measured 720x1280 with square pixels, a 9:16 display aspect and no
+  rotation tag. The loss happened on the way out — `send_video` was called
+  without `width`, `height` or `duration`, Pyrogram does not work them out on
+  its own, so Telegram recorded the video as 0x0 and clients were left to guess
+  the shape. A new `probe_video_metadata()` reads the three values with
+  `ffprobe` and passes them along. It also honours a rotation matrix, since a
+  phone recording is often stored landscape with a quarter turn attached.
+  Applied to all four platforms: the same call was missing the same arguments
+  in the TikTok, Instagram and Twitter handlers too.
+
+  The helper never raises. If `ffprobe` is missing or the file is unreadable it
+  returns nothing at all, costing the aspect hint rather than the upload.
+
 ## [1.7.0] — 2026-10-21
 
 ### Removed

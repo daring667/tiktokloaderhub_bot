@@ -2,6 +2,7 @@ from pyrogram import filters
 from pyrogram.types import InputMediaPhoto
 from services.tiktok.tiktok_downloader import TikTokDownloader
 from services.downloader import is_tiktok_url
+from services.utils.video_meta import probe_video_metadata
 from handlers.base import (
     BaseHandler,
     DownloadInProgress,
@@ -94,7 +95,10 @@ async def _download_and_send(client, message, url, db) -> bool:
             await _send_slideshow(client, message.chat.id, image_paths)
         else:
             result_path = await downloader.download(filename)
-            await client.send_video(message.chat.id, video=result_path)
+            await client.send_video(
+                message.chat.id, video=result_path,
+                **probe_video_metadata(result_path),
+            )
 
         success = True
 
