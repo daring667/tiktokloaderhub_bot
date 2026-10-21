@@ -40,6 +40,17 @@ class TestGroupOptOut:
         tmp_db.set_user_setting(42, "groups", us.GROUPS_OFF)
         assert ignores_links_in_groups(tmp_db, _message(user_id=99)) is False
 
+    def test_a_group_admin_cannot_override_the_members_choice(self, tmp_db):
+        """Settled behaviour, not an oversight (see AGENTS.md).
+
+        The guard looks only at who wrote the message, so there is nothing an
+        admin could set that would bring the bot back for someone else's links.
+        """
+        tmp_db.set_user_setting(42, "groups", us.GROUPS_OFF)
+        admin_run_chat = SimpleNamespace(
+            chat=_chat("SUPERGROUP"), from_user=SimpleNamespace(id=42))
+        assert ignores_links_in_groups(tmp_db, admin_run_chat) is True
+
     def test_a_broken_database_does_not_silence_the_bot(self):
         class Broken:
             def get_user_settings(self, user_id):

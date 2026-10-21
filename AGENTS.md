@@ -45,6 +45,16 @@ history do not show on their own.
   opens a report, delivery of that report to the admin, and an admin reply sent
   back to that specific user as the bot. Nothing of this exists yet.
 
+### Settled: the member's choice wins in groups
+
+"Ignore my links in groups" cannot be overridden by a group admin (owner
+decision, 2026-10-21). This is deliberate, not a missing feature: the setting
+governs that person's own messages, so letting someone else switch it back on
+would make the bot act on their links against an explicit request. It also
+keeps group handling free of a per-message admin-rights lookup. The cost is
+accepted — to the rest of a group the bot simply looks silent for one person,
+and the person who set it can see it in their own settings.
+
 ### Telegram command menus
 
 Telegram stores a command list per **scope and per language**, and a private

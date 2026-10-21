@@ -26,8 +26,6 @@ quality, audio-language and group-opt-out settings.
 
 - [ ] Default format per user (video vs MP3); the picker already offers both,
       the preference does not exist yet.
-- [ ] Decide whether a group admin can override a member's "ignore my links in
-      groups" for their own chat. Today the member's choice always wins.
 - [ ] Prefer a non-`-drc` audio track: YouTube also publishes a loudness
       compressed variant, and ties are currently broken by size, so it can win.
 

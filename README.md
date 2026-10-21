@@ -101,6 +101,9 @@ every link:
 | Audio language | Russian where available | Russian, or always the original track |
 | My links in groups | the bot reacts | ignore my links in groups (direct messages still work) |
 
+A group admin cannot override "my links in groups" for their chat: the
+setting covers that person's own messages, so their choice wins everywhere.
+
 `PREFERRED_AUDIO_LANG` decides for anyone who has not chosen. A value that no
 longer exists falls back to the default when read, so an option removed later
 cannot strand someone on it.
