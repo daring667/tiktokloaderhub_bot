@@ -244,7 +244,8 @@ class TestBotDatabase:
 
         removed = tmp_db.cleanup_stale_state(max_age_hours=24)
 
-        assert removed == {"callbacks": 1, "playlist_state": 1}
+        assert removed == {"callbacks": 1, "playlist_state": 1,
+                           "pending_actions": 0, "support_context": 0}
         assert tmp_db.get_callback("old") is None
         assert tmp_db.get_playlist_state("oldpl") is None
 
@@ -254,7 +255,8 @@ class TestBotDatabase:
 
         removed = tmp_db.cleanup_stale_state(max_age_hours=24)
 
-        assert removed == {"callbacks": 0, "playlist_state": 0}
+        assert removed == {"callbacks": 0, "playlist_state": 0,
+                           "pending_actions": 0, "support_context": 0}
         assert tmp_db.get_callback("fresh") is not None
         assert tmp_db.get_playlist_state("freshpl") is not None
 

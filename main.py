@@ -291,8 +291,12 @@ if __name__ == "__main__":
     # Abandoned picker tokens and playlist sessions are never cleaned up on
     # their own, so sweep the stale ones on every start.
     removed = db.cleanup_stale_state()
-    if removed["callbacks"] or removed["playlist_state"]:
+    if any(removed.values()):
         print(f"🧹 Removed stale rows: {removed}")
+    from services.support import TICKET_RETENTION_DAYS
+    old_tickets = db.cleanup_old_tickets(TICKET_RETENTION_DAYS)
+    if old_tickets:
+        print(f"🧹 Removed {old_tickets} finished support tickets")
 
     register_youtube(app, db)
     register_instagram(app, db)

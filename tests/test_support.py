@@ -241,3 +241,179 @@ class TestTicketCard:
     def test_the_report_button_starts_a_new_report(self):
         markup = handler.report_button()
         assert markup.inline_keyboard[0][0].callback_data == "sup|new"
+
+
+class TestLatestOpenTicket:
+    """A new report should continue an open conversation, not start a second."""
+
+    def test_nothing_open_means_nothing_to_extend(self, tmp_db):
+        assert tmp_db.get_latest_open_ticket(7) is None
+
+    def test_an_open_ticket_is_offered(self, tmp_db):
+        ticket_id = tmp_db.create_ticket(7, "не качает")
+        assert tmp_db.get_latest_open_ticket(7)["id"] == ticket_id
+
+    def test_the_most_recently_touched_one_wins(self, tmp_db):
+        """A reply on an older ticket makes it the live conversation again.
+
+        `updated_at` is written with CURRENT_TIMESTAMP, which SQLite keeps to
+        the second, so the timestamp is set explicitly here rather than hoping
+        two statements land in different seconds.
+        """
+        first = tmp_db.create_ticket(7, "раз")
+        second = tmp_db.create_ticket(7, "два")
+        assert tmp_db.get_latest_open_ticket(7)["id"] == second
+
+        tmp_db._conn.execute(
+            "UPDATE support_tickets SET updated_at = '2030-01-01 00:00:00' "
+            "WHERE id = ?", (first,))
+        tmp_db._conn.commit()
+        assert tmp_db.get_latest_open_ticket(7)["id"] == first
+
+    def test_a_tie_prefers_the_newer_ticket(self, tmp_db):
+        """Within one second the timestamps are equal, so the id decides."""
+        tmp_db.create_ticket(7, "раз")
+        second = tmp_db.create_ticket(7, "два")
+        assert tmp_db.get_latest_open_ticket(7)["id"] == second
+
+    def test_a_ticket_being_investigated_still_counts(self, tmp_db):
+        ticket_id = tmp_db.create_ticket(7, "не качает")
+        tmp_db.set_ticket_status(ticket_id, support.STATUS_INVESTIGATING)
+        assert tmp_db.get_latest_open_ticket(7)["id"] == ticket_id
+
+    @pytest.mark.parametrize("status", [support.STATUS_FIXED, support.STATUS_CLOSED])
+    def test_a_finished_ticket_is_not_offered(self, tmp_db, status):
+        ticket_id = tmp_db.create_ticket(7, "не качает")
+        tmp_db.set_ticket_status(ticket_id, status)
+        assert tmp_db.get_latest_open_ticket(7) is None
+
+    def test_other_peoples_tickets_are_never_offered(self, tmp_db):
+        """The id ends up on a button, so ownership has to hold here first."""
+        tmp_db.create_ticket(8, "чужое")
+        assert tmp_db.get_latest_open_ticket(7) is None
+
+    def test_an_addition_is_stored_as_the_users_own_message(self, tmp_db):
+        ticket_id = tmp_db.create_ticket(7, "не качает")
+        tmp_db.add_reply(ticket_id, "user", "забыл сказать: только на шортсах")
+        authors = [r["author"] for r in tmp_db.get_replies(ticket_id)]
+        assert authors == ["user"]
+
+    def test_an_addition_does_not_open_a_second_ticket(self, tmp_db):
+        ticket_id = tmp_db.create_ticket(7, "не качает")
+        tmp_db.add_reply(ticket_id, "user", "ещё деталь")
+        assert tmp_db.count_open_tickets(7) == 1
+
+
+class TestPendingExpiry:
+    """Tapping the button and wandering off must not arm the bot forever."""
+
+    def _backdate_pending(self, tmp_db, user_id, minutes):
+        tmp_db._conn.execute(
+            "UPDATE pending_actions SET created_at = datetime('now', ?) "
+            "WHERE user_id = ?", ("-%d minutes" % minutes, user_id))
+        tmp_db._conn.commit()
+
+    def test_a_fresh_prompt_is_honoured(self, tmp_db):
+        tmp_db.set_pending(7, "report")
+        assert tmp_db.get_pending(7, support.PENDING_TTL_MINUTES) is not None
+
+    def test_a_stale_prompt_is_ignored(self, tmp_db):
+        """Otherwise tomorrow's video link is captured as a bug report."""
+        tmp_db.set_pending(7, "report")
+        self._backdate_pending(tmp_db, 7, support.PENDING_TTL_MINUTES + 5)
+        assert tmp_db.get_pending(7, support.PENDING_TTL_MINUTES) is None
+
+    def test_a_stale_prompt_is_also_deleted(self, tmp_db):
+        tmp_db.set_pending(7, "report")
+        self._backdate_pending(tmp_db, 7, support.PENDING_TTL_MINUTES + 5)
+        tmp_db.get_pending(7, support.PENDING_TTL_MINUTES)
+        assert tmp_db.get_pending(7) is None
+
+    def test_without_a_limit_nothing_expires(self, tmp_db):
+        tmp_db.set_pending(7, "report")
+        self._backdate_pending(tmp_db, 7, 10_000)
+        assert tmp_db.get_pending(7) is not None
+
+    def test_expiring_one_user_leaves_another_alone(self, tmp_db):
+        tmp_db.set_pending(7, "report")
+        tmp_db.set_pending(8, "report")
+        self._backdate_pending(tmp_db, 7, support.PENDING_TTL_MINUTES + 5)
+        assert tmp_db.get_pending(7, support.PENDING_TTL_MINUTES) is None
+        assert tmp_db.get_pending(8, support.PENDING_TTL_MINUTES) is not None
+
+
+class TestTicketRetention:
+
+    def _backdate_ticket(self, tmp_db, ticket_id, days):
+        tmp_db._conn.execute(
+            "UPDATE support_tickets SET updated_at = datetime('now', ?) "
+            "WHERE id = ?", ("-%d days" % days, ticket_id))
+        tmp_db._conn.commit()
+
+    def test_a_recently_finished_ticket_is_kept(self, tmp_db):
+        ticket_id = tmp_db.create_ticket(7, "не качает")
+        tmp_db.set_ticket_status(ticket_id, support.STATUS_FIXED)
+        assert tmp_db.cleanup_old_tickets(30) == 0
+        assert tmp_db.get_ticket(ticket_id) is not None
+
+    def test_a_long_finished_ticket_is_swept(self, tmp_db):
+        ticket_id = tmp_db.create_ticket(7, "не качает")
+        tmp_db.set_ticket_status(ticket_id, support.STATUS_CLOSED)
+        self._backdate_ticket(tmp_db, ticket_id, 60)
+        assert tmp_db.cleanup_old_tickets(30) == 1
+        assert tmp_db.get_ticket(ticket_id) is None
+
+    @pytest.mark.parametrize("status", [
+        support.STATUS_OPEN, support.STATUS_INVESTIGATING])
+    def test_an_open_ticket_is_never_swept(self, tmp_db, status):
+        """However old it is, someone is still waiting for an answer."""
+        ticket_id = tmp_db.create_ticket(7, "не качает")
+        tmp_db.set_ticket_status(ticket_id, status)
+        self._backdate_ticket(tmp_db, ticket_id, 900)
+        assert tmp_db.cleanup_old_tickets(30) == 0
+        assert tmp_db.get_ticket(ticket_id) is not None
+
+    def test_replies_go_with_their_ticket(self, tmp_db):
+        """SQLite will not cascade them on its own."""
+        ticket_id = tmp_db.create_ticket(7, "не качает")
+        tmp_db.add_reply(ticket_id, "admin", "починил")
+        tmp_db.set_ticket_status(ticket_id, support.STATUS_FIXED)
+        self._backdate_ticket(tmp_db, ticket_id, 60)
+        tmp_db.cleanup_old_tickets(30)
+        assert tmp_db.get_replies(ticket_id) == []
+
+    def test_replies_of_a_surviving_ticket_are_kept(self, tmp_db):
+        keep = tmp_db.create_ticket(7, "живое")
+        tmp_db.add_reply(keep, "admin", "смотрю")
+        drop = tmp_db.create_ticket(7, "старое")
+        tmp_db.set_ticket_status(drop, support.STATUS_CLOSED)
+        self._backdate_ticket(tmp_db, drop, 60)
+        tmp_db.cleanup_old_tickets(30)
+        assert [r["message"] for r in tmp_db.get_replies(keep)] == ["смотрю"]
+
+    def test_sweeping_an_empty_table_is_fine(self, tmp_db):
+        assert tmp_db.cleanup_old_tickets(30) == 0
+
+
+class TestStaleStateSweep:
+
+    def test_abandoned_prompts_and_context_are_swept(self, tmp_db):
+        tmp_db.set_pending(7, "report")
+        tmp_db.remember_failure(7, "youtube", "https://y/1", "ValueError")
+        tmp_db._conn.execute(
+            "UPDATE pending_actions SET created_at = datetime('now', '-48 hours')")
+        tmp_db._conn.execute(
+            "UPDATE support_context SET created_at = datetime('now', '-48 hours')")
+        tmp_db._conn.commit()
+
+        removed = tmp_db.cleanup_stale_state(max_age_hours=24)
+        assert removed["pending_actions"] == 1
+        assert removed["support_context"] == 1
+
+    def test_fresh_prompts_and_context_survive(self, tmp_db):
+        tmp_db.set_pending(7, "report")
+        tmp_db.remember_failure(7, "youtube", "https://y/1", "ValueError")
+        removed = tmp_db.cleanup_stale_state(max_age_hours=24)
+        assert removed["pending_actions"] == 0
+        assert removed["support_context"] == 0
+        assert tmp_db.get_pending(7) is not None

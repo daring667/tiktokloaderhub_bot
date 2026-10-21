@@ -23,6 +23,7 @@ CB = "sup"
 
 ACTION_REPORT = "report"
 ACTION_REPLY = "reply"
+ACTION_APPEND = "append"
 
 ASK_REPORT = (
     "✍️ Опиши, что случилось — одним сообщением.\n\n"
@@ -100,8 +101,37 @@ def register(app, db):
             logging.warning("could not deliver support message to %s: %s", user_id, e)
             return False
 
-    async def start_report(message_or_callback, user_id: int):
+    async def start_report(reply_to, user_id: int):
+        """Ask for the text, offering to extend an open ticket if there is one.
+
+        Remembering a detail five minutes later is the common case, and it
+        should continue the conversation rather than open a second ticket the
+        admin then has to connect up by hand.
+        """
+        existing = None
+        try:
+            existing = db.get_latest_open_ticket(user_id)
+        except Exception as e:
+            logging.warning("could not look up open tickets: %s", e)
+
+        if existing:
+            await reply_to.reply(
+                f"У тебя уже открыто обращение <b>#{existing['id']}</b>.\n"
+                "Дополнить его или завести новое?",
+                reply_markup=InlineKeyboardMarkup([
+                    [InlineKeyboardButton(
+                        f"➕ Дополнить #{existing['id']}",
+                        callback_data=f"{CB}|add|{existing['id']}")],
+                    [InlineKeyboardButton(
+                        "🆕 Новое обращение", callback_data=f"{CB}|fresh")],
+                    [InlineKeyboardButton("Отмена", callback_data=f"{CB}|cancel")],
+                ]),
+                parse_mode=ParseMode.HTML,
+            )
+            return
+
         db.set_pending(user_id, ACTION_REPORT)
+        await reply_to.reply(ASK_REPORT, reply_markup=_cancel_markup())
 
     # ------------------------------------------------------------------
     # The pending-input catcher runs ahead of every other handler
@@ -112,7 +142,8 @@ def register(app, db):
         if not user or not getattr(message, "text", None):
             return False
         try:
-            return db.get_pending(user.id) is not None
+            return db.get_pending(
+                user.id, support.PENDING_TTL_MINUTES) is not None
         except Exception:
             return False
 
@@ -120,7 +151,7 @@ def register(app, db):
                     group=-1)
     async def capture_pending(client, message):
         user = message.from_user
-        pending = db.get_pending(user.id)
+        pending = db.get_pending(user.id, support.PENDING_TTL_MINUTES)
         if not pending:
             return
 
@@ -135,6 +166,8 @@ def register(app, db):
 
         if action == ACTION_REPORT:
             await _finish_report(client, message, user, text)
+        elif action == ACTION_APPEND:
+            await _finish_append(client, message, user, pending.get("ticket_id"), text)
         elif action == ACTION_REPLY and is_admin(user):
             await _finish_reply(client, message, pending.get("ticket_id"), text)
         else:
@@ -178,6 +211,39 @@ def register(app, db):
             except Exception as e:
                 logging.warning("could not deliver ticket #%s: %s", ticket_id, e)
 
+    async def _finish_append(client, message, user, ticket_id, text):
+        ticket = db.get_ticket(ticket_id) if ticket_id else None
+        # The pending row is keyed by user, but the ticket it names must still
+        # belong to them before anything they type is attached to it.
+        if not ticket or ticket["user_id"] != user.id:
+            db.clear_pending(user.id)
+            await message.reply("Обращение не найдено.")
+            return
+        try:
+            body = support.validate_report(text)
+        except support.ReportRejected as e:
+            await message.reply(str(e))
+            return  # the prompt stays open so they can try again
+
+        db.clear_pending(user.id)
+        db.add_reply(ticket_id, "user", body)
+        await message.reply(
+            f"✅ Добавил к обращению <b>#{ticket_id}</b>.",
+            parse_mode=ParseMode.HTML)
+
+        if admin_id:
+            try:
+                await client.send_message(
+                    admin_id,
+                    f"➕ <b>Дополнение к #{ticket_id}</b>\n"
+                    f"От: {html.escape(_user_label(user))}\n\n"
+                    f"{html.escape(body)}",
+                    reply_markup=ticket_markup(ticket_id),
+                    parse_mode=ParseMode.HTML,
+                )
+            except Exception as e:
+                logging.warning("could not deliver addition to #%s: %s", ticket_id, e)
+
     async def _finish_reply(client, message, ticket_id, text):
         db.clear_pending(message.from_user.id)
         ticket = db.get_ticket(ticket_id) if ticket_id else None
@@ -213,7 +279,6 @@ def register(app, db):
         if not message.from_user:
             return
         await start_report(message, message.from_user.id)
-        await message.reply(ASK_REPORT, reply_markup=_cancel_markup())
 
     @app.on_message(filters.command("tickets") & filters.private)
     async def tickets_command(client, message):
@@ -249,9 +314,40 @@ def register(app, db):
         action = parts[1] if len(parts) > 1 else ""
 
         if action == "new":
-            await start_report(callback, user.id)
             try:
-                await callback.message.reply(ASK_REPORT, reply_markup=_cancel_markup())
+                await start_report(callback.message, user.id)
+            except Exception as e:
+                logging.warning("could not start a report: %s", e)
+            await callback.answer()
+            return
+
+        if action == "fresh":
+            db.set_pending(user.id, ACTION_REPORT)
+            try:
+                await callback.message.edit_text(ASK_REPORT,
+                                                 reply_markup=_cancel_markup())
+            except Exception:
+                pass
+            await callback.answer()
+            return
+
+        if action == "add" and len(parts) > 2:
+            try:
+                ticket_id = int(parts[2])
+            except ValueError:
+                await callback.answer("Неверное обращение.", show_alert=True)
+                return
+            ticket = db.get_ticket(ticket_id)
+            # The button carries an id, so confirm the ticket is theirs before
+            # letting what they type be attached to it.
+            if not ticket or ticket["user_id"] != user.id:
+                await callback.answer("Обращение не найдено.", show_alert=True)
+                return
+            db.set_pending(user.id, ACTION_APPEND, ticket_id)
+            try:
+                await callback.message.edit_text(
+                    f"✍️ Напиши, что добавить к обращению #{ticket_id}.",
+                    reply_markup=_cancel_markup())
             except Exception:
                 pass
             await callback.answer()

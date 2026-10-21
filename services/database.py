@@ -443,6 +443,17 @@ class BotDatabase:
             ).fetchone()
         return row["n"] if row else 0
 
+    def get_latest_open_ticket(self, user_id: int) -> dict | None:
+        """The ticket a new report would most likely be about."""
+        with self._lock:
+            row = self._conn.execute(
+                "SELECT * FROM support_tickets WHERE user_id = ? "
+                "AND status IN ('open', 'investigating') "
+                "ORDER BY updated_at DESC, id DESC LIMIT 1",
+                (user_id,),
+            ).fetchone()
+        return dict(row) if row else None
+
     def set_ticket_status(self, ticket_id: int, status: str) -> bool:
         """True when a ticket was actually updated."""
         with self._lock:
@@ -497,13 +508,26 @@ class BotDatabase:
             )
             self._conn.commit()
 
-    def get_pending(self, user_id: int) -> dict | None:
+    def get_pending(self, user_id: int, max_age_minutes: int | None = None) -> dict | None:
+        """The pending action, if there is one and it has not gone stale.
+
+        An expired row is deleted on the way out. Without this, tapping the
+        report button and walking away would leave the prompt armed forever,
+        and the next link that person sent would be captured as a bug report
+        instead of being downloaded.
+        """
+        query = ("SELECT action, ticket_id, created_at FROM pending_actions "
+                 "WHERE user_id = ?")
+        params = [user_id]
+        if max_age_minutes is not None:
+            query += " AND created_at >= datetime('now', ?)"
+            params.append("-%d minutes" % int(max_age_minutes))
         with self._lock:
-            row = self._conn.execute(
-                "SELECT action, ticket_id, created_at FROM pending_actions "
-                "WHERE user_id = ?",
-                (user_id,),
-            ).fetchone()
+            row = self._conn.execute(query, params).fetchone()
+            if row is None and max_age_minutes is not None:
+                self._conn.execute(
+                    "DELETE FROM pending_actions WHERE user_id = ?", (user_id,))
+                self._conn.commit()
         return dict(row) if row else None
 
     def clear_pending(self, user_id: int) -> None:
@@ -600,7 +624,56 @@ class BotDatabase:
             )
             playlists_removed = cur.rowcount
             self._conn.commit()
-        return {"callbacks": callbacks_removed, "playlist_state": playlists_removed}
+            cur = self._conn.execute(
+                "DELETE FROM pending_actions WHERE created_at < datetime('now', ?)",
+                (cutoff,)
+            )
+            pending_removed = cur.rowcount
+            cur = self._conn.execute(
+                "DELETE FROM support_context WHERE created_at < datetime('now', ?)",
+                (cutoff,)
+            )
+            context_removed = cur.rowcount
+            self._conn.commit()
+        return {
+            "callbacks": callbacks_removed,
+            "playlist_state": playlists_removed,
+            "pending_actions": pending_removed,
+            "support_context": context_removed,
+        }
+
+    def cleanup_old_tickets(self, max_age_days: int = 30) -> int:
+        """Drops finished tickets, and their replies, after a grace period.
+
+        Only `fixed` and `closed` ones: an open ticket is someone still
+        waiting for an answer, however old it is. Replies go first, because
+        SQLite will not cascade them on its own.
+        """
+        cutoff = "-%d days" % int(max_age_days)
+        with self._lock:
+            self._conn.execute(
+                """
+                DELETE FROM support_replies WHERE ticket_id IN (
+                    SELECT id FROM support_tickets
+                    WHERE status IN ('fixed', 'closed')
+                      AND updated_at < datetime('now', ?)
+                )
+                """,
+                (cutoff,),
+            )
+            cur = self._conn.execute(
+                "DELETE FROM support_tickets WHERE status IN ('fixed', 'closed') "
+                "AND updated_at < datetime('now', ?)",
+                (cutoff,),
+            )
+            removed = cur.rowcount
+            # Replies whose ticket is already gone, from any earlier sweep.
+            self._conn.execute(
+                "DELETE FROM support_replies WHERE ticket_id NOT IN "
+                "(SELECT id FROM support_tickets)"
+            )
+            self._conn.commit()
+        return removed
 
     def close(self):
         self._conn.close()

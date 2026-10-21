@@ -3,6 +3,29 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.12.0] — 2026-10-21
+
+### Fixed
+- **An abandoned report prompt no longer swallows the next link.** Tapping
+  "Сообщить о проблеме" and then wandering off left "the next message is a
+  report" armed forever, so a video link sent the following day became a bug
+  report instead of a download. The prompt now expires after 30 minutes, both
+  on read and in the startup sweep. Found while adding the ticket cleanup
+  below, not from a report.
+
+### Added
+- **Adding to an existing ticket.** Remembering a detail five minutes later is
+  the common case, and it used to open a second ticket the admin had to connect
+  up by hand. Starting a report while one is open now offers to extend it; the
+  addition is stored as the reporter's own message and the admin is notified
+  with the ticket's buttons attached. The ticket id travels on a button, so
+  ownership is re-checked before anything typed is attached to it.
+- **Retention for finished tickets.** `fixed` and `closed` tickets older than
+  30 days are swept at startup along with their replies, which SQLite will not
+  cascade on its own. An open ticket is never swept however old it is — someone
+  is still waiting for an answer. Abandoned prompts and stale failure context
+  are swept with the existing stale state.
+
 ## [1.11.0] — 2026-10-21
 
 ### Added

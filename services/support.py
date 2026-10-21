@@ -32,6 +32,15 @@ STATUS_NOTICES = {
 MIN_REPORT_LENGTH = 5
 MAX_REPORT_LENGTH = 2000
 
+# How long "the next message is a report" stays true. Someone who taps the
+# button and wanders off must not have tomorrow's video link swallowed as a
+# bug report, so the prompt expires rather than waiting forever.
+PENDING_TTL_MINUTES = 30
+
+# Finished tickets are kept this long so a reporter can still be answered
+# about them, then swept with the rest of the stale state.
+TICKET_RETENTION_DAYS = 30
+
 # How many tickets one person may open before they have to wait. The limit is
 # on *open* tickets rather than on a time window: someone with a real problem
 # should not be timed out, but nobody needs ten unanswered tickets either.
