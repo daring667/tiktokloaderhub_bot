@@ -3,6 +3,35 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.6.5] — 2026-10-21
+
+### Fixed
+- **YouTube downloads no longer pick the audio track at random.** YouTube now
+  ships one video with an original track plus auto-dubs in other languages, and
+  the adaptive picker selected audio with `max(..., key=filesize)` — language
+  was never part of the decision, so whichever track happened to encode largest
+  won. On a Russian original whose English auto-dub came out 1.5 KB bigger
+  (`140-0` en-US 890305 vs `140-1` ru 888803) the bot delivered English audio
+  for a video that plays Russian on YouTube, which is exactly how it was
+  reported. Selection is now language-first: tracks matching
+  `PREFERRED_AUDIO_LANG`, then the original ahead of a dub of the same language,
+  then m4a/AAC ahead of webm/opus because Telegram clients handle it better,
+  and only then size.
+- **A dub can now actually reach the file.** A progressive format (video and
+  audio in one file) exists only with the original track, so when the wanted
+  language is available only as a separate dubbed track the adaptive path is
+  forced. When the original already is the wanted language the progressive
+  single-file download is kept, since there is nothing to gain by splitting it.
+- **`.env.bak*` was not gitignored.** Nothing had committed one yet, but the
+  pattern was one careless `cp` away from putting tokens in history.
+
+### Added
+- **`PREFERRED_AUDIO_LANG`** (default `ru`) — which audio language to prefer on
+  YouTube. Empty restores yt-dlp's own choice. The MP3 option honours it too,
+  through a selector that falls back from the resolved format id to a language
+  filter to the default, because format ids differ between `player_client`
+  fallbacks.
+
 ## [1.6.4] — 2026-08-17
 
 ### Added
