@@ -444,6 +444,52 @@ class TestPreferredAudioLanguage:
         from services.youtube.youtube_downloader import pick_audio_format
         assert pick_audio_format([], "ru") is None
 
+    def test_a_plain_track_beats_its_drc_twin(self):
+        """DRC is a loudness-compressed copy; it used to win on size alone.
+
+        These variants carry no language at all, so the language filter never
+        excluded them: on a video where nothing is language-tagged the pool
+        falls back to everything and the fattest m4a won.
+        """
+        from services.youtube.youtube_downloader import pick_audio_format
+        formats = [
+            self._audio("140-drc", None, 9_000_000),
+            self._audio("140", None, 8_000_000),
+        ]
+        assert pick_audio_format(formats, "ru")["format_id"] == "140"
+
+    def test_drc_is_recognised_by_its_note_too(self):
+        from services.youtube.youtube_downloader import pick_audio_format
+        plain = self._audio("251", None, 8_000_000)
+        drc = self._audio("252", None, 9_000_000)
+        drc["format_note"] = "medium, DRC"
+        assert pick_audio_format([drc, plain], "ru")["format_id"] == "251"
+
+    def test_container_still_outranks_drc(self):
+        """Compressed dynamics beat audio half the clients play badly."""
+        from services.youtube.youtube_downloader import pick_audio_format
+        formats = [
+            self._audio("251", None, 9_000_000, ext="webm"),
+            self._audio("140-drc", None, 8_000_000, ext="m4a"),
+        ]
+        assert pick_audio_format(formats, "ru")["format_id"] == "140-drc"
+
+    def test_language_still_outranks_everything(self):
+        """A DRC track in the wanted language beats a plain one that is not."""
+        from services.youtube.youtube_downloader import pick_audio_format
+        formats = [
+            self._audio("140", "en", 9_000_000, langpref=10),
+            self._audio("140-drc", "ru", 1_000_000),
+        ]
+        assert pick_audio_format(formats, "ru")["format_id"] == "140-drc"
+
+    def test_is_drc_detection(self):
+        from services.youtube.youtube_downloader import _is_drc
+        assert _is_drc({"format_id": "140-drc"}) is True
+        assert _is_drc({"format_id": "251", "format_note": "medium, DRC"}) is True
+        assert _is_drc({"format_id": "140"}) is False
+        assert _is_drc({}) is False
+
     def test_disabled_preference_keeps_original(self):
         """An empty PREFERRED_AUDIO_LANG leaves the choice to the original."""
         from services.youtube.youtube_downloader import pick_audio_format

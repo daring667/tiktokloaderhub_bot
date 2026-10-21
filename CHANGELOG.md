@@ -3,6 +3,17 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.10.1] — 2026-10-21
+
+### Fixed
+- **A loudness-compressed audio track could win on size alone.** YouTube
+  publishes DRC copies next to the normal tracks, and they carry no language at
+  all — so the language filter never excluded them. On a video where nothing is
+  language-tagged the pool falls back to everything, and the fattest m4a won,
+  which was sometimes `140-drc`. Audio ranking now prefers a plain track over
+  its DRC twin. Container still outranks it: compressed dynamics are a smaller
+  problem than audio half the clients play badly.
+
 ## [1.10.0] — 2026-10-21
 
 ### Removed

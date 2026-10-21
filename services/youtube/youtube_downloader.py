@@ -28,18 +28,34 @@ def _lang_matches(fmt, lang: str) -> bool:
     return code == lang or code.startswith(lang + "-")
 
 
+def _is_drc(fmt) -> bool:
+    """True для варианта со сжатой динамикой (dynamic range compression).
+
+    YouTube выкладывает такие дорожки рядом с обычными. Они приходят без
+    указания языка (`language=None`), поэтому языковой фильтр их не отсекает,
+    и на ролике, где язык не проставлен ни у чего, DRC-вариант выигрывал
+    просто потому, что оказался чуть крупнее.
+    """
+    if "drc" in str(fmt.get("format_id") or "").lower():
+        return True
+    return "drc" in str(fmt.get("format_note") or "").lower()
+
+
 def _audio_sort_key(fmt):
     """Приоритет внутри пула дорожек одного языка.
 
     `language_preference` у YouTube равен 10 для оригинальной дорожки и -1 для
     автодубляжа, так что оригинал выигрывает у дубляжа того же языка. Дальше
-    предпочитаем m4a (AAC) — webm/opus Telegram проигрывает хуже, — и только
-    в последнюю очередь смотрим на размер.
+    предпочитаем m4a (AAC) — webm/opus Telegram проигрывает хуже. Затем
+    обычную дорожку вместо DRC: сжатая динамика хуже оригинала, но звук,
+    который не проиграется у половины клиентов, хуже сжатой динамики, поэтому
+    контейнер важнее. Размер решает в последнюю очередь.
     """
     langpref = fmt.get("language_preference")
     return (
         langpref if langpref is not None else -1,
         1 if fmt.get("ext") == "m4a" else 0,
+        0 if _is_drc(fmt) else 1,
         fmt.get("filesize") or fmt.get("filesize_approx") or 0,
     )
 
