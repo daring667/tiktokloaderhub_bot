@@ -3,6 +3,20 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.11.0] — 2026-10-21
+
+### Added
+- **A default format per user.** The quality picker has always offered an MP3
+  option; it is now also a preference, so someone who only ever wants the audio
+  stops tapping through a quality question that does not apply to sound. When a
+  video exposes no separate audio track the request falls back to video rather
+  than failing.
+
+### Changed
+- The settings screens render from `user_settings.ORDER` instead of a tuple
+  repeated in the handler, so adding a setting is one edit rather than one edit
+  plus two places to forget.
+
 ## [1.10.1] — 2026-10-21
 
 ### Fixed

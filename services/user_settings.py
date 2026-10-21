@@ -19,18 +19,33 @@ QUALITY_ASK = "ask"
 AUDIO_RU = "ru"
 AUDIO_ORIGINAL = "original"
 
+# --- what to send ------------------------------------------------------------
+# The quality picker has always offered an MP3 option; this makes it the
+# default for people who only ever want the audio.
+FORMAT_VIDEO = "video"
+FORMAT_MP3 = "mp3"
+
 # --- groups ------------------------------------------------------------------
 GROUPS_ON = "on"
 GROUPS_OFF = "off"
 
 DEFAULTS = {
+    "format": FORMAT_VIDEO,
     "quality": QUALITY_AUTO,
     "audio": AUDIO_RU,
     "groups": GROUPS_ON,
 }
 
+# The order the settings screens render in. Kept here so adding a setting is
+# one edit rather than one edit plus two forgotten tuples in the handler.
+ORDER = ("format", "quality", "audio", "groups")
+
 # Ordered so the settings screens can render buttons straight from here.
 OPTIONS = {
+    "format": [
+        (FORMAT_VIDEO, "Видео"),
+        (FORMAT_MP3, "Аудио (MP3)"),
+    ],
     "quality": [
         (QUALITY_AUTO, "Максимальное (до 50 МБ)"),
         ("1080", "Не выше 1080p"),
@@ -49,12 +64,17 @@ OPTIONS = {
 }
 
 TITLES = {
+    "format": "Что присылать",
     "quality": "Качество видео",
     "audio": "Язык звука",
     "groups": "Мои ссылки в группах",
 }
 
 HINTS = {
+    "format": (
+        "Видео или только звук дорожкой MP3. Выбор качества при MP3 не "
+        "спрашивается — он к звуку не относится."
+    ),
     "quality": (
         "Что присылать, когда качество можно выбрать автоматически. "
         "Больше качество — больше вес файла и дольше ожидание."
@@ -119,6 +139,11 @@ def audio_lang_for(audio: str) -> str:
     `language_preference` alone -- and that puts the original track first.
     """
     return "" if audio == AUDIO_ORIGINAL else audio
+
+
+def wants_audio(settings: dict | None) -> bool:
+    """True when this person asked for MP3 instead of video."""
+    return normalize(settings)["format"] == FORMAT_MP3
 
 
 def reacts_in_groups(settings: dict | None) -> bool:

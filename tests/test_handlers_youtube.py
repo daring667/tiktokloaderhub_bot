@@ -795,3 +795,108 @@ class TestAutoSendWithRealDimensions:
             await handler(client, message)
 
         client.send_video.assert_awaited_once()
+
+
+class TestFormatPreference:
+    """A person who only ever wants audio should not be asked about video."""
+
+    MB = 1024 * 1024
+
+    def _db_with(self, **settings):
+        db = MagicMock()
+        db.get_user_settings.return_value = dict(settings)
+        return db
+
+    def _streams(self):
+        return [
+            {"itag": "137+140", "res": "1080p", "width": 1920, "height": 1080,
+             "filesize": 20 * self.MB, "type": "video"},
+            {"itag": "bestaudio", "res": "audio (mp3)",
+             "filesize": 3 * self.MB, "type": "audio"},
+        ]
+
+    @pytest.mark.asyncio
+    async def test_mp3_preference_sends_audio_without_asking(self, tmp_path):
+        handler, _cb, _db = _register(db=self._db_with(format="mp3"))
+        message = make_message(URL)
+        client = make_client()
+        fake_file = tmp_path / "a.mp3"
+
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            meta = _make_meta(length=300, streams=self._streams())
+
+            async def fake_download(itag, filename, msg, status_msg):
+                assert itag == "bestaudio"
+                fake_file.write_bytes(b"fake")
+                return str(fake_file)
+
+            meta.download = AsyncMock(side_effect=fake_download)
+            MockYT.return_value = meta
+            await handler(client, message)
+
+        client.send_audio.assert_awaited_once()
+        client.send_video.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_the_default_still_sends_video(self, tmp_path):
+        handler, _cb, _db = _register(db=self._db_with())
+        message = make_message(URL)
+        client = make_client()
+        fake_file = tmp_path / "v.mp4"
+
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            meta = _make_meta(length=300, streams=self._streams())
+
+            async def fake_download(itag, filename, msg, status_msg):
+                assert itag == "137+140"
+                fake_file.write_bytes(b"fake")
+                return str(fake_file)
+
+            meta.download = AsyncMock(side_effect=fake_download)
+            MockYT.return_value = meta
+            await handler(client, message)
+
+        client.send_video.assert_awaited_once()
+        client.send_audio.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_mp3_falls_back_to_video_when_there_is_no_audio_track(self, tmp_path):
+        """Not every video exposes a separate audio stream."""
+        handler, _cb, _db = _register(db=self._db_with(format="mp3"))
+        message = make_message(URL)
+        client = make_client()
+        fake_file = tmp_path / "v.mp4"
+        video_only = [s for s in self._streams() if s["type"] == "video"]
+
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            meta = _make_meta(length=300, streams=video_only)
+
+            async def fake_download(itag, filename, msg, status_msg):
+                assert itag == "137+140"
+                fake_file.write_bytes(b"fake")
+                return str(fake_file)
+
+            meta.download = AsyncMock(side_effect=fake_download)
+            MockYT.return_value = meta
+            await handler(client, message)
+
+        client.send_video.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_a_broken_settings_read_still_sends_video(self, tmp_path):
+        """Preferences are not worth refusing a download over."""
+        db = MagicMock()
+        db.get_user_settings.side_effect = RuntimeError("db is down")
+        handler, _cb, _db = _register(db=db)
+        message = make_message(URL)
+        client = make_client()
+        fake_file = tmp_path / "v.mp4"
+
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            meta = _make_meta(length=300, streams=self._streams())
+            meta.download = AsyncMock(
+                side_effect=lambda *a: (fake_file.write_bytes(b"x"), str(fake_file))[1])
+            MockYT.return_value = meta
+            await handler(client, message)
+
+        client.send_video.assert_awaited_once()

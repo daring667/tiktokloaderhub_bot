@@ -56,7 +56,7 @@ def main_keyboard() -> ReplyKeyboardMarkup:
 def overview_text(settings: dict) -> str:
     current = us.normalize(settings)
     lines = ["<b>⚙️ Настройки</b>", ""]
-    for key in ("quality", "audio", "groups"):
+    for key in us.ORDER:
         lines.append(f"<b>{us.TITLES[key]}</b>\n{us.label_for(key, current[key])}")
         lines.append("")
     lines.append("Выбери, что изменить.")
@@ -66,7 +66,7 @@ def overview_text(settings: dict) -> str:
 def overview_markup() -> InlineKeyboardMarkup:
     rows = [
         [InlineKeyboardButton(us.TITLES[key], callback_data=f"{CB}|open|{key}")]
-        for key in ("quality", "audio", "groups")
+        for key in us.ORDER
     ]
     rows.append([InlineKeyboardButton("↩️ Сбросить", callback_data=f"{CB}|reset")])
     return InlineKeyboardMarkup(rows)

@@ -306,6 +306,16 @@ async def _handle_one_youtube_url(client, message, db, url, playlist_token=None)
         # frame height, which reads a vertical video as far larger than it is
         # — every Shorts quality but 144p failed it. Anything whose size
         # YouTube did not declare still goes to the picker below.
+        # Someone who only ever wants the audio should not be asked about
+        # video quality: the MP3 track is the whole answer.
+        if us.wants_audio(settings) and any(
+                s.get("type") == "audio" for s in meta.streams):
+            ok = await process_and_send_video(
+                client, message, meta, "bestaudio", url, db,
+                message.from_user, True,
+            )
+            return RESULT_SENT if ok else RESULT_FAILED
+
         # A quality preset narrows the budget; "always ask" skips the
         # automatic choice entirely and falls through to the picker.
         auto_stream = (
