@@ -19,6 +19,13 @@ history do not show on their own.
   `pick_audio_format()`. Do not reintroduce a size-only `max()` there — that was
   the 1.6.5 bug. `language_preference` is 10 for an original track and -1 for an
   auto-dub; `language` may be regional (`ru-RU`), so match on a prefix.
+- **Video quality.** `best_stream_within_limit()` in `handlers/youtube.py` sends
+  the best quality whose known size fits `AUTO_SEND_MAX_BYTES` (the full 50 MB).
+  Measure quality with `quality_side()` — `min(width, height)` — never with
+  `height` alone: YouTube labels a format by its short side, so a height-based
+  cap reads vertical video as oversized and was what pinned Shorts to 144p in
+  1.6.6. Never auto-send a format with an undeclared filesize. `max_side` and
+  `max_bytes` are the hooks for the planned per-user preset.
 - **Chaos Chain is slated for full removal** (owner decision, 2026-10-21): every
   game, leaderboard, and streak surface comes out rather than staying behind
   `CHAOS_ENABLED=0`. Affected: `handlers/chaos.py`, `services/chaos/`,

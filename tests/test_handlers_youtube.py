@@ -81,7 +81,7 @@ class TestYoutubeMessageHandler:
         client.send_video.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_adaptive_video_uses_known_safe_360p_by_default(self, tmp_path):
+    async def test_unknown_size_quality_is_skipped_for_a_known_one(self, tmp_path):
         handler, _cb, _db = _register()
         message = make_message(URL)
         client = make_client()
@@ -107,7 +107,13 @@ class TestYoutubeMessageHandler:
         client.send_video.assert_awaited_once()
 
     @pytest.mark.asyncio
-    async def test_long_video_multiple_streams_offers_quality_buttons(self):
+    async def test_streams_without_dimensions_offer_quality_buttons(self):
+        """Auto-send ranks candidates by quality, so an unrankable stream asks.
+
+        This used to be the behaviour for every multi-format video. It now
+        applies only when the formats carry no usable dimensions, which is why
+        the fixtures below deliberately omit them.
+        """
         handler, _cb, db = _register()
         message = make_message(URL)
         client = make_client()
@@ -657,3 +663,135 @@ class TestPlaylistInteractionFixes:
 
         replies = [c.args[0] for c in callback.message.reply.await_args_list if c.args]
         assert any("Скачать следующее" in r for r in replies)
+
+
+class TestVerticalQualitySelection:
+    """A vertical video must not be mistaken for a huge one.
+
+    YouTube names a format after its short side, so a vertical 360p frame is
+    360x640. The previous rule compared a 360 cap against the frame *height*,
+    which only 144p (144x256) could satisfy, so every Shorts went out at 144p
+    even though 1080p fitted in about a fifth of Telegram's limit.
+    """
+
+    MB = 1024 * 1024
+
+    def _vertical_streams(self):
+        """Mirrors a real 55-second Shorts, sizes included."""
+        return [
+            {"itag": "299+140-1", "res": "1080p50", "width": 1080, "height": 1920,
+             "filesize": int(21.7 * self.MB), "type": "video"},
+            {"itag": "298+140-1", "res": "720p50", "width": 720, "height": 1280,
+             "filesize": int(12.7 * self.MB), "type": "video"},
+            {"itag": "135+140-1", "res": "480p", "width": 480, "height": 854,
+             "filesize": int(2.9 * self.MB), "type": "video"},
+            {"itag": "134+140-1", "res": "360p", "width": 360, "height": 640,
+             "filesize": int(2.2 * self.MB), "type": "video"},
+            {"itag": "160+140-1", "res": "144p", "width": 144, "height": 256,
+             "filesize": int(1.0 * self.MB), "type": "video"},
+        ]
+
+    def test_quality_side_uses_the_short_side(self):
+        from handlers.youtube import quality_side
+        assert quality_side({"width": 1080, "height": 1920}) == 1080
+        assert quality_side({"width": 1920, "height": 1080}) == 1080
+        assert quality_side({"width": 144, "height": 256}) == 144
+
+    def test_quality_side_tolerates_a_missing_dimension(self):
+        from handlers.youtube import quality_side
+        assert quality_side({"height": 360}) == 360
+        assert quality_side({"width": 640}) == 640
+        assert quality_side({}) == 0
+
+    def test_vertical_short_is_not_capped_to_144p(self):
+        """The reported complaint, as a test."""
+        from handlers.youtube import best_stream_within_limit
+        chosen = best_stream_within_limit(self._vertical_streams())
+        assert chosen["itag"] == "299+140-1"
+        assert chosen["res"] == "1080p50"
+
+    def test_horizontal_video_still_picks_its_best_fit(self):
+        from handlers.youtube import best_stream_within_limit
+        streams = [
+            {"itag": "270+140", "res": "1080p", "width": 1920, "height": 1080,
+             "filesize": 60 * self.MB, "type": "video"},
+            {"itag": "232+140", "res": "720p", "width": 1280, "height": 720,
+             "filesize": 44 * self.MB, "type": "video"},
+            {"itag": "230+140", "res": "360p", "width": 640, "height": 360,
+             "filesize": 20 * self.MB, "type": "video"},
+        ]
+        assert best_stream_within_limit(streams)["itag"] == "232+140"
+
+    def test_oversized_formats_are_excluded(self):
+        from handlers.youtube import best_stream_within_limit
+        streams = [
+            {"itag": "big", "res": "1080p", "width": 1080, "height": 1920,
+             "filesize": 80 * self.MB, "type": "video"},
+        ]
+        assert best_stream_within_limit(streams) is None
+
+    def test_unknown_size_is_never_auto_sent(self):
+        from handlers.youtube import best_stream_within_limit
+        streams = [
+            {"itag": "299+140", "res": "1080p", "width": 1080, "height": 1920,
+             "filesize": None, "type": "video"},
+        ]
+        assert best_stream_within_limit(streams) is None
+
+    def test_audio_streams_are_not_candidates(self):
+        from handlers.youtube import best_stream_within_limit
+        streams = [
+            {"itag": "bestaudio", "res": "audio (mp3)",
+             "filesize": 1 * self.MB, "type": "audio"},
+        ]
+        assert best_stream_within_limit(streams) is None
+
+    def test_preset_caps_the_chosen_quality(self):
+        """`max_side` is the hook for a per-user quality preset."""
+        from handlers.youtube import best_stream_within_limit
+        streams = self._vertical_streams()
+        assert best_stream_within_limit(streams, max_side=720)["itag"] == "298+140-1"
+        assert best_stream_within_limit(streams, max_side=360)["itag"] == "134+140-1"
+        assert best_stream_within_limit(streams, max_side=1080)["itag"] == "299+140-1"
+
+    def test_a_tighter_byte_budget_steps_the_quality_down(self):
+        from handlers.youtube import best_stream_within_limit
+        chosen = best_stream_within_limit(self._vertical_streams(),
+                                          max_bytes=5 * self.MB)
+        assert chosen["itag"] == "135+140-1"
+
+
+class TestAutoSendWithRealDimensions:
+    """With real dimensions and known sizes the picker is not shown at all."""
+
+    MB = 1024 * 1024
+
+    @pytest.mark.asyncio
+    async def test_known_sizes_auto_send_the_best_quality_that_fits(self, tmp_path):
+        handler, _cb, _db = _register()
+        message = make_message(URL)
+        client = make_client()
+        fake_video = tmp_path / "v.mp4"
+
+        streams = [
+            {"itag": "137+140", "res": "1080p", "width": 1920, "height": 1080,
+             "filesize": 48 * self.MB, "type": "video"},
+            {"itag": "22", "res": "720p", "width": 1280, "height": 720,
+             "filesize": 40 * self.MB, "type": "video"},
+            {"itag": "18", "res": "360p", "width": 640, "height": 360,
+             "filesize": 10 * self.MB, "type": "video"},
+        ]
+
+        with patch("handlers.youtube.YouTubeDownloader") as MockYT:
+            meta = _make_meta(length=300, streams=streams)
+
+            async def fake_download(itag, filename, msg, status_msg):
+                assert itag == "137+140"
+                fake_video.write_bytes(b"fake")
+                return str(fake_video)
+
+            meta.download = AsyncMock(side_effect=fake_download)
+            MockYT.return_value = meta
+            await handler(client, message)
+
+        client.send_video.assert_awaited_once()

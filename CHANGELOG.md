@@ -3,6 +3,36 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.6.6] — 2026-10-21
+
+### Fixed
+- **Shorts are no longer sent at 144p.** Reported as "Shorts arrive in bad
+  quality", and it was worse than it sounded: a 55-second Shorts went out at
+  144p while its 1080p50 version weighed 21.7 MB, well under half of Telegram's
+  50 MB limit. Two things combined. The automatic choice ran before the quality
+  picker, so the user never saw an alternative; and it capped quality by
+  comparing a 360 limit against the frame *height*. YouTube names a format
+  after its **short** side, so a vertical 360p frame is 360x640 — every Shorts
+  quality failed that test except 144p, whose 144x256 slipped under it.
+  Horizontal video was unaffected, since there the height *is* the short side,
+  which is why this went unnoticed. Quality is now measured as
+  `min(width, height)`, and `width` is carried through to the stream list,
+  where it was previously dropped.
+- **The quality cap no longer throws away headroom.** Instead of a fixed 360p
+  ceiling the bot now sends the best quality whose **known** size fits the 50 MB
+  budget. A format whose size YouTube did not declare is still never chosen
+  automatically — that is what the picker is for, and an undeclared adaptive
+  track is exactly how a 354 MB download once disguised itself as an 8 MB one.
+  A stream of unknown dimensions is skipped too, since it cannot be ranked.
+
+### Changed
+- **The quality picker is now a fallback rather than the default.** When sizes
+  and dimensions are known the best fitting quality is sent straight away. The
+  picker still appears when nothing can be ranked or nothing fits, and a
+  per-user preset will be able to narrow the cap or switch automatic sending
+  off entirely (`max_side` and `max_bytes` on `best_stream_within_limit` are
+  the hooks; `AUTO_SEND_MAX_BYTES` is the default budget).
+
 ## [1.6.5] — 2026-10-21
 
 ### Fixed

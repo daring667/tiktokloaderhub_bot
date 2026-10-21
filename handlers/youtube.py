@@ -24,6 +24,12 @@ os.makedirs(DOWNLOADS_DIR, exist_ok=True)
 MAX_FILE_SIZE = 50 * 1024 * 1024
 MAX_PLAYLIST_ITEMS = 25
 
+# How much an automatic send may weigh. The owner chose the full Telegram
+# allowance: pick the best quality that fits rather than a fixed resolution
+# cap. A per-user preset will narrow this (and may switch auto-send off, which
+# falls back to the quality picker).
+AUTO_SEND_MAX_BYTES = MAX_FILE_SIZE
+
 # Outcomes of handling a single URL. A playlist must tell them apart: after
 # SENT it can offer the next video right away, but after PICKER it has to
 # wait for the user to choose a quality first.
@@ -41,24 +47,48 @@ def format_duration(seconds) -> str:
     return f"{minutes}:{secs:02d}"
 
 
-def safe_adaptive_stream(streams):
-    """Return the highest known-safe adaptive quality up to 360p.
+def quality_side(stream) -> int:
+    """The number a quality label like "360p" actually refers to.
 
-    Adaptive YouTube formats can omit the video filesize. Choosing their
-    "best" variant made a 1080p, 354 MB download look like an 8 MB audio
-    download. 360p is the smallest generally comfortable mobile quality and
-    keeps the default useful while the user can still pick another option for
-    normal videos.
+    YouTube names a format after its *short* side, so a vertical 360p frame is
+    360x640. Comparing against `height` alone therefore reads a vertical video
+    as far larger than it is: every Shorts quality except 144p (144x256) failed
+    a `height <= 360` test, so Shorts were sent at 144p while 1080p would have
+    fitted in about a fifth of Telegram's limit. `format_note` is no substitute
+    either — YouTube labels 608x1080 as "480p".
     """
+    width = stream.get("width") or 0
+    height = stream.get("height") or 0
+    if width and height:
+        return min(width, height)
+    return height or width
+
+
+def best_stream_within_limit(streams, max_bytes=None, max_side=None):
+    """Highest-quality video stream whose *known* size fits the budget.
+
+    The default budget is Telegram's whole 50 MB allowance, so a 55-second
+    Shorts goes out at 1080p (about 21 MB) instead of the 144p the previous
+    360p cap produced. `max_side` is the hook for a per-user quality preset
+    (360, 720, 1080, ...); None means no cap, which is the default.
+
+    A format whose filesize YouTube did not declare is never a candidate.
+    Unknown size on an adaptive video track once turned a 354 MB 1080p
+    download into something that looked like an 8 MB audio download, and the
+    quality picker exists precisely for that case. A stream of unknown
+    dimensions is skipped too: there is no way to rank it by quality.
+    """
+    if max_bytes is None:
+        max_bytes = AUTO_SEND_MAX_BYTES
     candidates = [
         stream for stream in streams
         if stream.get("type") == "video"
-        and "+" in str(stream.get("itag", ""))
-        and 0 < (stream.get("height") or 0) <= 360
         and stream.get("filesize") is not None
-        and stream["filesize"] <= MAX_FILE_SIZE
+        and stream["filesize"] <= max_bytes
+        and quality_side(stream) > 0
+        and (max_side is None or quality_side(stream) <= max_side)
     ]
-    return max(candidates, key=lambda stream: stream["height"], default=None)
+    return max(candidates, key=quality_side, default=None)
 
 active_downloads = set()
 
@@ -244,36 +274,17 @@ async def _handle_one_youtube_url(client, message, db, url, playlist_token=None)
             await report_error(client, "youtube", url, message.from_user, e, db)
             return RESULT_FAILED
 
-        # For adaptive-only videos, use a real 360p-or-lower stream by
-        # default. This avoids a long invisible 1080p transfer while keeping
-        # the manual picker behaviour for regular progressive formats.
-        adaptive_stream = safe_adaptive_stream(meta.streams)
-        if adaptive_stream:
+        # Send the best quality that is known to fit Telegram's limit. The
+        # earlier rule capped this at 360p and compared the cap against the
+        # frame height, which reads a vertical video as far larger than it is
+        # — every Shorts quality but 144p failed it. Anything whose size
+        # YouTube did not declare still goes to the picker below.
+        auto_stream = best_stream_within_limit(meta.streams)
+        if auto_stream:
             ok = await process_and_send_video(
-                client, message, meta, adaptive_stream['itag'], url, db, message.from_user
+                client, message, meta, auto_stream['itag'], url, db, message.from_user
             )
             return RESULT_SENT if ok else RESULT_FAILED
-
-        # Короткие ролики скачиваем сразу только когда размер всего формата
-        # известен. Unknown у adaptive-видео означает лишь то, что YouTube не
-        # сообщил размер video track; это не делает ролик маленьким.
-        if meta.length <= 120:
-            video_stream = next(
-                (
-                    s for s in meta.streams
-                    if s.get('type') == 'video'
-                    and s.get('filesize') is not None
-                    and s['filesize'] <= MAX_FILE_SIZE
-                ),
-                None,
-            )
-            if not video_stream:
-                # Continue to the picker below: the user can choose a lower
-                # quality rather than waiting for an implicit 1080p download.
-                pass
-            else:
-                ok = await process_and_send_video(client, message, meta, video_stream['itag'], url, db, message.from_user)
-                return RESULT_SENT if ok else RESULT_FAILED
 
         # Если всего один формат и это видео — качаем сразу
         if len(meta.streams) == 1 and meta.streams[0].get('type') == 'video':

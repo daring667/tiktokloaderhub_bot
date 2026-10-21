@@ -206,6 +206,7 @@ class YouTubeDownloader:
                         "itag": fmt_id,
                         "res": f.get("format_note") or f.get("resolution") or f.get("ext") or "video",
                         "height": f.get("height"),
+                        "width": f.get("width"),
                         "filesize": filesize,
                         "type": "video"
                     })
@@ -270,6 +271,7 @@ class YouTubeDownloader:
                         "itag": f"{video['format_id']}+{best_audio['format_id']}",
                         "res": video.get("format_note") or video.get("resolution") or "video",
                         "height": video.get("height"),
+                        "width": video.get("width"),
                         "filesize": total_size,
                         "type": "video",
                     })
