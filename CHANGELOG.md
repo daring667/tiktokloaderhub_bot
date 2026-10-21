@@ -3,6 +3,30 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.8.1] — 2026-10-21
+
+### Fixed
+- **The command menu still listed the games.** `/chaos`, `/top` and `/streak`
+  kept appearing after the code behind them was deleted, and the new `/settings`
+  and `/help` never showed up. Publishing had only written the default scope.
+  Telegram keeps a separate command list per scope *and* per language, and a
+  private chat resolves them chat → chat_member → all_chat_administrators →
+  all_private_chats → default, so lists written long ago into narrower scopes
+  outranked the one being set. A per-chat list for the owner held all seven old
+  commands, which is exactly what their menu showed; three other scopes held an
+  older three-command list that everyone else saw. The menu is now published
+  across every scope that can shadow it, with the localized copies cleared
+  first, since a language-specific list outranks the neutral one within the
+  same scope.
+- **Group menus no longer advertise private-only commands.** Group chats get
+  `/start`, `/help` and `/version`; `/settings` and `/app` only answer in
+  private.
+
+### Changed
+- **The admin keeps their own menu.** `/stats` and `/broadcast` are published
+  to the owner's own chat rather than being dropped, so they stay off the
+  public list without disappearing for the person who uses them.
+
 ## [1.8.0] — 2026-10-21
 
 ### Added

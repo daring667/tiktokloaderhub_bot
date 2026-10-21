@@ -45,6 +45,19 @@ history do not show on their own.
   opens a report, delivery of that report to the admin, and an admin reply sent
   back to that specific user as the bot. Nothing of this exists yet.
 
+### Telegram command menus
+
+Telegram stores a command list per **scope and per language**, and a private
+chat resolves them chat → chat_member → all_chat_administrators →
+all_private_chats → default. Setting the default scope alone changes nothing
+for anyone a narrower scope covers, and within one scope a language-specific
+list outranks the neutral one. Deleting a command from the code does not
+unregister it anywhere. `_publish_command_menu()` in `main.py` clears the
+localized copies of every scope it writes, empties the scopes meant to fall
+through, and only then sets the lists; verify a change with `getMyCommands`
+across *all* scopes and languages, never just the default. Clients also cache
+the list, so a correct server-side menu can still look stale for a while.
+
 ### Deployment reality
 
 - **This box cannot push to GitHub.** There is no `gh`, no credential helper, no

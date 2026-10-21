@@ -8,7 +8,13 @@ asyncio.set_event_loop(asyncio.new_event_loop())
 from pyrogram import Client, filters, idle
 from pyrogram.enums import ChatType
 from pyrogram.types import (
-    BotCommand, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo,
+    BotCommand,
+    BotCommandScopeAllChatAdministrators,
+    BotCommandScopeAllGroupChats,
+    BotCommandScopeAllPrivateChats,
+    BotCommandScopeChat,
+    BotCommandScopeDefault,
+    InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo,
 )
 from handlers import youtube
 from handlers.youtube import register as register_youtube
@@ -206,8 +212,8 @@ async def broadcast_unsub_handler(client, callback):
     except Exception:
         pass
 
-# Only the commands everyone can use. /stats and /broadcast stay off the menu:
-# listing them invites people to try them and be told they have no access.
+# Only the commands everyone can use. /stats and /broadcast stay off the public
+# menu: listing them invites people to try them and be told they have no access.
 PUBLIC_COMMANDS = [
     BotCommand("start", "Запустить бота и показать меню"),
     BotCommand("settings", "Качество, язык звука, поведение в группах"),
@@ -215,6 +221,66 @@ PUBLIC_COMMANDS = [
     BotCommand("app", "Открыть Mini App"),
     BotCommand("version", "Версия бота"),
 ]
+
+# /settings and /app only answer in private, so a group menu that lists them
+# would advertise commands that do nothing there.
+GROUP_COMMANDS = [
+    BotCommand("start", "Запустить бота"),
+    BotCommand("help", "Как пользоваться"),
+    BotCommand("version", "Версия бота"),
+]
+
+ADMIN_COMMANDS = PUBLIC_COMMANDS + [
+    BotCommand("stats", "Статистика (админ)"),
+    BotCommand("broadcast", "Рассылка (админ)"),
+]
+
+# Telegram stores a separate command list per scope *and* per language, and a
+# private chat resolves them chat -> chat_member -> all_chat_administrators ->
+# all_private_chats -> default. Two things follow, and missing either one
+# leaves a stale menu on screen while the code looks correct:
+#   * a list written long ago into a narrower scope outranks the default one;
+#   * within a scope, a language-specific list outranks the neutral one.
+# So every scope we manage has its localized copies cleared before the neutral
+# list is written, and the scopes we want to fall through are emptied outright.
+_LOCALIZED = ("ru", "en")
+
+# Left empty on purpose: a private chat then falls through to the default list,
+# and there is only one list to keep correct.
+_FALLTHROUGH_SCOPES = (
+    BotCommandScopeAllPrivateChats(),
+    BotCommandScopeAllChatAdministrators(),
+)
+
+
+async def _delete_commands(scope, language: str) -> None:
+    try:
+        await app.delete_bot_commands(scope=scope, language_code=language)
+    except Exception as e:
+        logging.warning("Could not clear %s/%r: %s", type(scope).__name__, language, e)
+
+
+async def _publish_command_menu() -> None:
+    """Make the menu match the code, in every scope that could shadow it."""
+    targets = [
+        (PUBLIC_COMMANDS, BotCommandScopeDefault()),
+        (GROUP_COMMANDS, BotCommandScopeAllGroupChats()),
+    ]
+    # The admin keeps their own commands, but only in their own chat.
+    if ADMIN_ID:
+        targets.append((ADMIN_COMMANDS, BotCommandScopeChat(chat_id=ADMIN_ID)))
+
+    for scope in _FALLTHROUGH_SCOPES:
+        for language in ("",) + _LOCALIZED:
+            await _delete_commands(scope, language)
+
+    for commands, scope in targets:
+        for language in _LOCALIZED:
+            await _delete_commands(scope, language)
+        try:
+            await app.set_bot_commands(commands, scope=scope)
+        except Exception as e:
+            logging.warning("Could not publish %s: %s", type(scope).__name__, e)
 
 
 async def _run_bot():
@@ -224,11 +290,8 @@ async def _run_bot():
     command menu can only be published once the client is connected.
     """
     await app.start()
-    try:
-        await app.set_bot_commands(PUBLIC_COMMANDS)
-    except Exception as e:
-        # A failed menu update is not worth refusing to serve downloads over.
-        logging.warning("Could not publish the command menu: %s", e)
+    # A failed menu update is not worth refusing to serve downloads over.
+    await _publish_command_menu()
     print("🚀 Bot started!")
     await idle()
     await app.stop()
