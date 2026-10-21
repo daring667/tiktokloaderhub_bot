@@ -23,6 +23,7 @@ from handlers.twitter import register as register_twitter
 from handlers.tiktok import TikTokHandler
 from handlers.all_mention import register as register_all_mention
 from handlers.menu import register as register_menu, main_keyboard
+from handlers.support import register as register_support
 from services.database import BotDatabase
 from services.utils.env import resolve_admin_id, get_miniapp_url
 from services.utils.broadcast import broadcast_message, is_permanent_failure
@@ -218,6 +219,7 @@ PUBLIC_COMMANDS = [
     BotCommand("start", "Запустить бота и показать меню"),
     BotCommand("settings", "Качество, язык звука, поведение в группах"),
     BotCommand("help", "Как пользоваться"),
+    BotCommand("report", "Сообщить о проблеме"),
     BotCommand("app", "Открыть Mini App"),
     BotCommand("version", "Версия бота"),
 ]
@@ -231,6 +233,7 @@ GROUP_COMMANDS = [
 ]
 
 ADMIN_COMMANDS = PUBLIC_COMMANDS + [
+    BotCommand("tickets", "Открытые обращения (админ)"),
     BotCommand("stats", "Статистика (админ)"),
     BotCommand("broadcast", "Рассылка (админ)"),
 ]
@@ -309,6 +312,9 @@ if __name__ == "__main__":
     register_twitter(app, db)
     TikTokHandler(app, db).register()
     register_all_mention(app)
+    # Registered before the platform handlers: it claims a message only
+    # while someone is mid-report, and does so from an earlier group.
+    register_support(app, db)
     register_menu(app, db)
 
     try:

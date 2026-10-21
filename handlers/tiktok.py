@@ -113,22 +113,22 @@ async def _download_and_send(client, message, url, db) -> bool:
     except ValueError as e:
         try: await msg.edit(f"❌ {e}")
         except Exception: pass
-        await report_error(client, "tiktok", url, message.from_user, e, db)
+        await report_error(client, "tiktok", url, message.from_user, e, db, message=message)
     except asyncio.TimeoutError as e:
         print("[TikTok] Error: read timeout")
         try: await msg.edit("❌ Таймаут: сервер долго отвечает. Попробуй позже.")
         except Exception: pass
-        await report_error(client, "tiktok", url, message.from_user, e, db)
+        await report_error(client, "tiktok", url, message.from_user, e, db, message=message)
     except aiohttp.ClientResponseError as e:
         print(f"[TikTok] HTTP error: {e}")
         try: await msg.edit(f"❌ HTTP ошибка: {e.status}")
         except Exception: pass
-        await report_error(client, "tiktok", url, message.from_user, e, db)
+        await report_error(client, "tiktok", url, message.from_user, e, db, message=message)
     except Exception as e:
         print(f"[TikTok] Unexpected error: {e}")
         try: await msg.edit("❌ Ошибка при скачивании видео.")
         except Exception: pass
-        await report_error(client, "tiktok", url, message.from_user, e, db)
+        await report_error(client, "tiktok", url, message.from_user, e, db, message=message)
     finally:
         # Only clear the status message on success — on failure it now holds
         # the error text, and deleting it would leave the user with no

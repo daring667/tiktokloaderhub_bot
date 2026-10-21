@@ -1,6 +1,7 @@
 import asyncio
 import contextlib
 import html
+import logging
 import math
 import os
 import time
@@ -152,7 +153,40 @@ def cleanup_files(*paths):
                 os.remove(path)
 
 
-async def report_error(client, platform: str, url: str, user, exc: Exception, db=None):
+# Offering support once per failure would mean five identical offers for a
+# message carrying five bad links.
+SUPPORT_OFFER_COOLDOWN = 120
+_support_offer_state: dict = {}
+
+
+async def offer_support(client, message, user, db) -> None:
+    """Attach a way to reach a human to a failure the user just saw.
+
+    Private chats only: in a group this would be noise for everyone else,
+    and the reporter can still use /report in the bot's own chat.
+    """
+    from handlers.support import report_button
+    try:
+        chat = getattr(message, 'chat', None)
+        if message is None or user is None or chat is None:
+            return
+        if getattr(chat.type, 'name', '') != 'PRIVATE':
+            return
+        now = time.monotonic()
+        last = _support_offer_state.get(user.id)
+        if last is not None and (now - last) < SUPPORT_OFFER_COOLDOWN:
+            return
+        _support_offer_state[user.id] = now
+        await message.reply(
+            'Если это повторяется — расскажи, что случилось, и я разберусь.',
+            reply_markup=report_button(),
+        )
+    except Exception as e:
+        logging.warning('could not offer support: %s', e)
+
+
+async def report_error(client, platform: str, url: str, user, exc: Exception,
+                       db=None, message=None):
     """Records a failed download and, best-effort, alerts ADMIN_ID/OWNER_ID.
 
     Always logged to `db` (if given) for /stats error-rate reporting. The
@@ -165,6 +199,16 @@ async def report_error(client, platform: str, url: str, user, exc: Exception, db
     if db is not None:
         with contextlib.suppress(Exception):
             db.log_error(platform, type(exc).__name__, str(exc))
+        # Remembered for every failure, not just the ones that alert the
+        # admin: a report filed later should still quote the right link.
+        if user is not None:
+            with contextlib.suppress(Exception):
+                db.remember_failure(user.id, platform, url, type(exc).__name__)
+
+    # Before the admin-alert throttle below: the person in front of the error
+    # needs the button every time, however many alerts were suppressed.
+    if message is not None:
+        await offer_support(client, message, user, db)
 
     admin_id = resolve_admin_id()
     if not admin_id:

@@ -41,9 +41,14 @@ history do not show on their own.
   code that wrote them. New settings belong in `OPTIONS`/`TITLES`/`HINTS`
   together, since the screens render from them. The command menu is published
   in `_run_bot()`; keep admin-only commands off it.
-- **A support channel is planned**: an inline button on a user-facing error that
-  opens a report, delivery of that report to the admin, and an admin reply sent
-  back to that specific user as the bot. Nothing of this exists yet.
+- **The support channel shipped in 1.9.0.** `services/support.py` holds the
+  statuses, limits and report validation; `handlers/support.py` owns the flows;
+  tickets, replies, the last-failure context and "the next message means
+  something" all live in `services/database.py`. Two invariants: an admin reply
+  is addressed from the ticket row and never from the callback payload, and
+  every admin action re-checks the sender against `ADMIN_ID`. The pending-input
+  catcher runs in handler group `-1` and raises `StopPropagation`, so a message
+  written as a report never also reaches the platform handlers.
 
 ### Settled: the member's choice wins in groups
 

@@ -29,15 +29,13 @@ quality, audio-language and group-opt-out settings.
 - [ ] Prefer a non-`-drc` audio track: YouTube also publishes a loudness
       compressed variant, and ties are currently broken by size, so it can win.
 
-## Support channel (owner decision, 2026-10-21)
+## Support channel
 
-- [ ] On a user-facing error, attach an inline button that opens a report.
-- [ ] Store tickets with user id, platform, URL, error code, and timestamp.
-- [ ] Deliver each new ticket to `ADMIN_ID`/`OWNER_ID` with the context attached.
-- [ ] Let the admin reply to a ticket; deliver that reply to the reporting user
-      as a message from the bot.
-- [ ] Support a status on a ticket (open, cause known, fixed) and notify the
-      reporter when it changes.
-- [ ] Rate-limit reports per user so the channel cannot be flooded.
-- [ ] Keep the admin reply path authorised; never let a user id from a payload
-      decide who receives a message.
+Shipped in 1.9.0: the report button, numbered tickets with context, admin
+replies delivered as the bot, statuses that notify the reporter, a per-user
+quota, and the reply path addressed from the ticket row rather than the payload.
+
+- [ ] Let the reporter add to an existing ticket instead of opening a new one.
+- [ ] Clean up tickets closed long ago, the way `cleanup_stale_state` does for
+      callbacks and playlists.
+

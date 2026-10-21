@@ -108,6 +108,19 @@ setting covers that person's own messages, so their choice wins everywhere.
 longer exists falls back to the default when read, so an option removed later
 cannot strand someone on it.
 
+## Support
+
+A failed download comes with a button to describe the problem. The report
+becomes a numbered ticket delivered to `ADMIN_ID` with the platform, link and
+exception type already attached; the admin answers from the ticket card and the
+reply lands in the reporter's chat as a message from the bot. Status changes
+(разбираюсь / исправлено / закрыт) notify the reporter. `/report` works any
+time; `/tickets` lists open ones for the admin.
+
+The recipient of an admin reply is read from the ticket row, never from the
+button payload — otherwise a replayed callback would turn the bot into a way to
+message any user.
+
 ## Admin commands
 
 Sent by the user in `ADMIN_ID`/`OWNER_ID`:

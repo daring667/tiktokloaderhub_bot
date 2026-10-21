@@ -104,7 +104,7 @@ async def _download_and_send(client, message, db, url) -> bool:
                 await status_msg.edit_text("❌ Ошибка при отправке видео.")
             except Exception:
                 pass
-            await report_error(client, "twitter", url, message.from_user, e, db)
+            await report_error(client, "twitter", url, message.from_user, e, db, message=message)
             return False
 
         success = True
@@ -119,14 +119,14 @@ async def _download_and_send(client, message, db, url) -> bool:
             await message.reply(f"❌ {e}")
         except Exception:
             pass
-        await report_error(client, "twitter", url, message.from_user, e, db)
+        await report_error(client, "twitter", url, message.from_user, e, db, message=message)
     except Exception as e:
         logging.exception("[Twitter] Упала загрузка")
         try:
             await message.reply("❌ Ошибка при скачивании видео из Twitter/X.")
         except Exception:
             pass
-        await report_error(client, "twitter", url, message.from_user, e, db)
+        await report_error(client, "twitter", url, message.from_user, e, db, message=message)
     finally:
         # Only clear the status message on success — on failure it now holds
         # the error text, and deleting it would leave the user with no

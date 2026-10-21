@@ -76,6 +76,46 @@ class BotDatabase:
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     PRIMARY KEY (user_id, key)
                 );
+
+                CREATE TABLE IF NOT EXISTS support_tickets (
+                    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id    INTEGER NOT NULL,
+                    platform   TEXT,
+                    url        TEXT,
+                    error_type TEXT,
+                    message    TEXT    NOT NULL,
+                    status     TEXT    NOT NULL DEFAULT 'open',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+
+                CREATE TABLE IF NOT EXISTS support_replies (
+                    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                    ticket_id  INTEGER NOT NULL,
+                    author     TEXT    NOT NULL,
+                    message    TEXT    NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+
+                -- The last failure a user hit, so a report filed afterwards
+                -- carries the link and the error without them retyping it.
+                CREATE TABLE IF NOT EXISTS support_context (
+                    user_id    INTEGER PRIMARY KEY,
+                    platform   TEXT,
+                    url        TEXT,
+                    error_type TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+
+                -- "The next message from this user is a report / a reply."
+                -- In the database rather than in memory: a restart in the
+                -- middle of typing would otherwise swallow what they send.
+                CREATE TABLE IF NOT EXISTS pending_actions (
+                    user_id    INTEGER PRIMARY KEY,
+                    action     TEXT    NOT NULL,
+                    ticket_id  INTEGER,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
             """)
             self._conn.commit()
 
@@ -325,6 +365,151 @@ class BotDatabase:
             self._conn.execute(
                 "DELETE FROM user_settings WHERE user_id = ?", (user_id,)
             )
+            self._conn.commit()
+
+    # ------------------------------------------------------------------
+    # Support tickets
+    # ------------------------------------------------------------------
+
+    def remember_failure(self, user_id: int, platform: str, url: str,
+                         error_type: str) -> None:
+        """Keep the last failure so a later report can quote it."""
+        with self._lock:
+            self._conn.execute(
+                """
+                INSERT INTO support_context (user_id, platform, url, error_type)
+                VALUES (?, ?, ?, ?)
+                ON CONFLICT(user_id) DO UPDATE SET
+                    platform   = excluded.platform,
+                    url        = excluded.url,
+                    error_type = excluded.error_type,
+                    created_at = CURRENT_TIMESTAMP
+                """,
+                (user_id, platform, url, error_type),
+            )
+            self._conn.commit()
+
+    def get_failure_context(self, user_id: int) -> dict | None:
+        with self._lock:
+            row = self._conn.execute(
+                "SELECT platform, url, error_type, created_at "
+                "FROM support_context WHERE user_id = ?",
+                (user_id,),
+            ).fetchone()
+        return dict(row) if row else None
+
+    def create_ticket(self, user_id: int, message: str, platform: str | None = None,
+                      url: str | None = None, error_type: str | None = None) -> int:
+        """Open a ticket and return its number, which the reporter is shown."""
+        with self._lock:
+            cur = self._conn.execute(
+                """
+                INSERT INTO support_tickets
+                    (user_id, platform, url, error_type, message)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (user_id, platform, url, error_type, message),
+            )
+            self._conn.commit()
+            return cur.lastrowid
+
+    def get_ticket(self, ticket_id: int) -> dict | None:
+        with self._lock:
+            row = self._conn.execute(
+                "SELECT * FROM support_tickets WHERE id = ?", (ticket_id,)
+            ).fetchone()
+        return dict(row) if row else None
+
+    def list_tickets(self, statuses=None, limit: int = 20) -> list:
+        """Most recently updated first; `statuses` narrows to those states."""
+        query = "SELECT * FROM support_tickets"
+        params = []
+        if statuses:
+            statuses = list(statuses)
+            query += " WHERE status IN (%s)" % ",".join("?" * len(statuses))
+            params.extend(statuses)
+        query += " ORDER BY updated_at DESC, id DESC LIMIT ?"
+        params.append(limit)
+        with self._lock:
+            rows = self._conn.execute(query, params).fetchall()
+        return [dict(row) for row in rows]
+
+    def count_open_tickets(self, user_id: int) -> int:
+        with self._lock:
+            row = self._conn.execute(
+                "SELECT COUNT(*) AS n FROM support_tickets "
+                "WHERE user_id = ? AND status IN ('open', 'investigating')",
+                (user_id,),
+            ).fetchone()
+        return row["n"] if row else 0
+
+    def set_ticket_status(self, ticket_id: int, status: str) -> bool:
+        """True when a ticket was actually updated."""
+        with self._lock:
+            cur = self._conn.execute(
+                "UPDATE support_tickets SET status = ?, "
+                "updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                (status, ticket_id),
+            )
+            self._conn.commit()
+            return cur.rowcount > 0
+
+    def add_reply(self, ticket_id: int, author: str, message: str) -> None:
+        with self._lock:
+            self._conn.execute(
+                "INSERT INTO support_replies (ticket_id, author, message) "
+                "VALUES (?, ?, ?)",
+                (ticket_id, author, message),
+            )
+            self._conn.execute(
+                "UPDATE support_tickets SET updated_at = CURRENT_TIMESTAMP "
+                "WHERE id = ?",
+                (ticket_id,),
+            )
+            self._conn.commit()
+
+    def get_replies(self, ticket_id: int) -> list:
+        with self._lock:
+            rows = self._conn.execute(
+                "SELECT author, message, created_at FROM support_replies "
+                "WHERE ticket_id = ? ORDER BY id",
+                (ticket_id,),
+            ).fetchall()
+        return [dict(row) for row in rows]
+
+    # ------------------------------------------------------------------
+    # "The next message from this user means something"
+    # ------------------------------------------------------------------
+
+    def set_pending(self, user_id: int, action: str,
+                    ticket_id: int | None = None) -> None:
+        with self._lock:
+            self._conn.execute(
+                """
+                INSERT INTO pending_actions (user_id, action, ticket_id)
+                VALUES (?, ?, ?)
+                ON CONFLICT(user_id) DO UPDATE SET
+                    action     = excluded.action,
+                    ticket_id  = excluded.ticket_id,
+                    created_at = CURRENT_TIMESTAMP
+                """,
+                (user_id, action, ticket_id),
+            )
+            self._conn.commit()
+
+    def get_pending(self, user_id: int) -> dict | None:
+        with self._lock:
+            row = self._conn.execute(
+                "SELECT action, ticket_id, created_at FROM pending_actions "
+                "WHERE user_id = ?",
+                (user_id,),
+            ).fetchone()
+        return dict(row) if row else None
+
+    def clear_pending(self, user_id: int) -> None:
+        with self._lock:
+            self._conn.execute(
+                "DELETE FROM pending_actions WHERE user_id = ?", (user_id,))
             self._conn.commit()
 
     def save_callback(self, token: str, url: str, itag: str, stream_type: str | None = None,

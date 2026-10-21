@@ -3,6 +3,39 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.9.0] — 2026-10-21
+
+### Added
+- **A support channel.** When a download fails, the bot offers a button to
+  describe what happened. The report becomes a numbered ticket delivered to the
+  admin with the context already attached — platform, link and exception type
+  — so nobody has to ask "which link was it?". The admin can answer from the
+  ticket card, and the reply arrives in the reporter's own chat as a message
+  from the bot. Statuses (разбираюсь / исправлено / закрыт) notify the reporter on
+  their own. `/report` opens a report at any time; `/tickets` lists the open
+  ones for the admin.
+
+  Details that matter more than they look:
+  - **Who receives an admin reply is read from the ticket row, never from the
+    callback payload.** A payload can be replayed with an edited id, and the
+    bot must not become a way to message an arbitrary user.
+  - Every admin action re-checks the sender against `ADMIN_ID`: a button can be
+    pressed by anyone who can see the message carrying it.
+  - The failure context is remembered on **every** error, while the admin
+    alert stays throttled — a burst of identical failures should not flood the
+    admin, but the person in front of the error still needs the button.
+  - The offer itself is throttled per user, or a message with five bad links
+    would produce five identical offers.
+  - "The next message is a report" lives in the database, not in memory, so a
+    restart mid-typing does not swallow what someone is about to send.
+  - A person may hold a few open tickets at once; the limit counts open
+    tickets rather than a time window, so a real problem is never timed out.
+
+### Changed
+- `report_error` takes the user's message, which is what lets the offer appear
+  next to the failure. In group chats it stays silent: a support offer aimed at
+  one person is noise for everyone else, and `/report` still works in private.
+
 ## [1.8.1] — 2026-10-21
 
 ### Fixed

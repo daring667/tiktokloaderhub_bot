@@ -137,7 +137,7 @@ async def process_and_send_video(
         except Exception:
             pass
         cleanup_files(filename)
-        await report_error(client, "youtube", url, user, e, db)
+        await report_error(client, "youtube", url, user, e, db, message=message)
         return False
 
     # Переименуем файл в название видео (если доступно) перед отправкой
@@ -193,7 +193,7 @@ async def process_and_send_video(
         except Exception:
             pass
         cleanup_files(result_path, filename)
-        await report_error(client, "youtube", url, user, e, db)
+        await report_error(client, "youtube", url, user, e, db, message=message)
         return False
 
     # --- analytics ---
@@ -298,7 +298,7 @@ async def _handle_one_youtube_url(client, message, db, url, playlist_token=None)
         except ValueError as e:
             await message.reply(f"❌ yt-dlp не смог распарсить ссылку: {e}")
             logging.error(f"YT download error: {e}")
-            await report_error(client, "youtube", url, message.from_user, e, db)
+            await report_error(client, "youtube", url, message.from_user, e, db, message=message)
             return RESULT_FAILED
 
         # Send the best quality that is known to fit Telegram's limit. The
@@ -372,7 +372,7 @@ async def _handle_one_youtube_url(client, message, db, url, playlist_token=None)
     except Exception as e:
         logging.exception("YouTube handler error")
         await message.reply("❌ Произошла ошибка при обработке видео.")
-        await report_error(client, "youtube", url, message.from_user, e, db)
+        await report_error(client, "youtube", url, message.from_user, e, db, message=message)
         return RESULT_FAILED
 
 
@@ -383,7 +383,7 @@ async def _start_playlist(client, message, db, playlist_url) -> str:
         title, video_urls, total_count = get_playlist_info(playlist_url, limit=MAX_PLAYLIST_ITEMS)
     except ValueError as e:
         await message.reply(f"❌ {e}")
-        await report_error(client, "youtube", playlist_url, message.from_user, e, db)
+        await report_error(client, "youtube", playlist_url, message.from_user, e, db, message=message)
         return RESULT_FAILED
 
     if not video_urls:
@@ -513,4 +513,4 @@ async def _handle_youtube_callback(client, callback, db):
             await callback.message.reply("❌ Ошибка при скачивании видео.")
         except Exception:
             pass
-        await report_error(client, "youtube", callback.data, callback.from_user, e, db)
+        await report_error(client, "youtube", callback.data, callback.from_user, e, db, message=callback.message)
