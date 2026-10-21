@@ -104,23 +104,19 @@ class TestAudioPresetMapping:
 
 class TestMenuRendering:
 
-    def test_keyboard_is_persistent_and_offers_the_mini_app(self):
+    def test_keyboard_is_persistent_and_shows_both_entries(self):
         kb = menu.main_keyboard()
         assert kb.is_persistent is True
         assert kb.resize_keyboard is True
-        flat = [b for row in kb.keyboard for b in row]
-        texts = [getattr(b, "text", b) for b in flat]
-        assert menu.BTN_APP in texts
-        assert menu.BTN_SETTINGS in texts
-        assert menu.BTN_HELP in texts
+        texts = [getattr(b, "text", b) for row in kb.keyboard for b in row]
+        assert texts == [menu.BTN_SETTINGS, menu.BTN_HELP]
 
-    def test_mini_app_opens_from_the_keyboard_itself(self):
-        """A web_app button saves a round trip through the bot."""
+    def test_no_button_opens_a_web_app(self):
+        """The Mini App was removed in 1.10.0; nothing should reopen it."""
         kb = menu.main_keyboard()
-        app_button = next(b for row in kb.keyboard for b in row
-                          if getattr(b, "text", None) == menu.BTN_APP)
-        assert app_button.web_app is not None
-        assert app_button.web_app.url.startswith("http")
+        for row in kb.keyboard:
+            for button in row:
+                assert getattr(button, "web_app", None) is None
 
     def test_overview_shows_every_setting_with_its_current_value(self):
         text = menu.overview_text({"quality": "720"})

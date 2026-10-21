@@ -3,6 +3,25 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.10.0] — 2026-10-21
+
+### Removed
+- **The downloader Mini App, outright.** Not rebuilt — removed (owner
+  decision). Gone: the HTTP API (`api/`), the static frontend (`docs/`), the
+  `tiktokbot-api` systemd unit, the GitHub Pages workflow, the `/app` command,
+  the Mini App keyboard button and the `MINIAPP_*` settings. The bot already
+  does its whole job inside the chat; a second delivery path meant a second
+  thing to authenticate, host, expose over HTTPS and keep in sync, and it was
+  earning maintenance without earning use.
+
+  The planned cabinet rewrite (Download / History / Profile) went with it,
+  including the unused `api/history.py` groundwork.
+
+  **Tailscale Funnel was deliberately left alone.** Its `/` route proxied the
+  removed API on port 8081, but `/olx` proxies an unrelated project on 5051, so
+  turning Funnel off would have broken a different bot. The dead `/` route is
+  harmless, and removing it is a separate, manual decision.
+
 ## [1.9.0] — 2026-10-21
 
 ### Added

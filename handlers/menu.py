@@ -2,8 +2,8 @@
 
 Everything used to go through typed slash commands with no buttons at all,
 which is what made the bot feel unusable. The reply keyboard below stays on
-screen, so the two things people actually reach for -- the Mini App and their
-own preferences -- are one tap away, and the chat stays free for links.
+screen, so settings and help are one tap away and the chat stays free for
+links.
 
 Settings live on an inline keyboard that edits itself in place rather than
 posting a new message per tap, so changing three options leaves one message
@@ -18,13 +18,10 @@ from pyrogram.types import (
     InlineKeyboardMarkup,
     KeyboardButton,
     ReplyKeyboardMarkup,
-    WebAppInfo,
 )
 
 from services import user_settings as us
-from services.utils.env import get_miniapp_url
 
-BTN_APP = "📥 Mini App"
 BTN_SETTINGS = "⚙️ Настройки"
 BTN_HELP = "❓ Помощь"
 
@@ -47,19 +44,9 @@ HELP_TEXT = (
 
 
 def main_keyboard() -> ReplyKeyboardMarkup:
-    """The menu that stays on screen.
-
-    The Mini App sits on a `web_app` button so it opens on the first tap
-    instead of costing a round trip through the bot.
-    """
+    """The menu that stays on screen."""
     return ReplyKeyboardMarkup(
-        [
-            [
-                KeyboardButton(BTN_APP, web_app=WebAppInfo(url=get_miniapp_url())),
-                KeyboardButton(BTN_SETTINGS),
-            ],
-            [KeyboardButton(BTN_HELP)],
-        ],
+        [[KeyboardButton(BTN_SETTINGS), KeyboardButton(BTN_HELP)]],
         resize_keyboard=True,
         is_persistent=True,
         placeholder="Пришли ссылку на видео",

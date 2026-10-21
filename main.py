@@ -14,7 +14,7 @@ from pyrogram.types import (
     BotCommandScopeAllPrivateChats,
     BotCommandScopeChat,
     BotCommandScopeDefault,
-    InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo,
+    InlineKeyboardMarkup, InlineKeyboardButton,
 )
 from handlers import youtube
 from handlers.youtube import register as register_youtube
@@ -25,7 +25,7 @@ from handlers.all_mention import register as register_all_mention
 from handlers.menu import register as register_menu, main_keyboard
 from handlers.support import register as register_support
 from services.database import BotDatabase
-from services.utils.env import resolve_admin_id, get_miniapp_url
+from services.utils.env import resolve_admin_id
 from services.utils.broadcast import broadcast_message, is_permanent_failure
 from services.utils.version import get_version
 
@@ -96,18 +96,6 @@ async def start_handler(client, message):
 async def version_handler(client, message):
     await message.reply(f"🤖 Версия бота: v{get_version()}")
 
-
-@app.on_message(filters.command("app") & filters.private)
-async def miniapp_handler(client, message):
-    await message.reply(
-        "Открой Clipdrop и вставь ссылку на TikTok или YouTube:",
-        reply_markup=InlineKeyboardMarkup([[
-            InlineKeyboardButton(
-                "📥 Открыть Clipdrop",
-                web_app=WebAppInfo(url=get_miniapp_url()),
-            )
-        ]]),
-    )
 
 @app.on_message(filters.command("stats") & (filters.private | filters.group))
 async def stats_handler(client, message):
@@ -220,7 +208,6 @@ PUBLIC_COMMANDS = [
     BotCommand("settings", "Качество, язык звука, поведение в группах"),
     BotCommand("help", "Как пользоваться"),
     BotCommand("report", "Сообщить о проблеме"),
-    BotCommand("app", "Открыть Mini App"),
     BotCommand("version", "Версия бота"),
 ]
 

@@ -2,18 +2,18 @@
 
 ## Scope
 
-This repository is the production TikTok/YouTube/Instagram/Twitter downloader bot plus a separate downloader Mini App API and static frontend. Keep changes focused on the requested surface. Do not modify other workspaces.
+This repository is the production TikTok/YouTube/Instagram/Twitter downloader bot. Keep changes focused on the requested surface. Do not modify other workspaces.
 
-Read the deployment details in [deploy/README.md](deploy/README.md), [deploy/README_MONITORING.md](deploy/README_MONITORING.md), and [deploy/MINIAPP_SETUP.md](deploy/MINIAPP_SETUP.md) before changing systemd, monitoring, or Mini App hosting.
+Read the deployment details in [deploy/README.md](deploy/README.md) and [deploy/README_MONITORING.md](deploy/README_MONITORING.md) before changing systemd or monitoring.
 
 ## Current State (updated 2026-10-21)
 
 Read this before planning: it records decisions and facts that the code and git
 history do not show on their own.
 
-- **Version 1.6.5.** The downloader, the Mini App API, and the static frontend
-  are in production on this box (`/home/droid/tiktokloaderhub_bot`), which is
-  also the self-hosted Actions runner.
+- **Version 1.10.0.** The downloader runs in production on this box
+  (`/home/droid/tiktokloaderhub_bot`), which is also the self-hosted Actions
+  runner. There is no HTTP service any more.
 - **Audio language.** `PREFERRED_AUDIO_LANG` (default `ru`) drives YouTube audio
   track choice in `services/youtube/youtube_downloader.py` via
   `pick_audio_format()`. Do not reintroduce a size-only `max()` there — that was
@@ -26,12 +26,14 @@ history do not show on their own.
   cap reads vertical video as oversized and was what pinned Shorts to 144p in
   1.6.6. Never auto-send a format with an undeclared filesize. `max_side` and
   `max_bytes` are the hooks for the planned per-user preset.
-- **The Mini App is being rebuilt from scratch** (owner decision, 2026-10-21).
-  `TODO.md` is the live roadmap for the cabinet (Download / History / Profile).
-  `api/history.py` is already written but **untracked and not wired up** — it is
-  groundwork for that roadmap, not dead code; do not delete it, and do not
-  assume it runs. The current frontend advertises only TikTok and YouTube even
-  though the bot supports Instagram and Twitter as well.
+- **The Mini App was removed outright in 1.10.0** (owner decision), not
+  rebuilt: the HTTP API, the static frontend, the `tiktokbot-api` unit, the
+  Pages workflow and the `/app` command are all gone. The bot does its job in
+  the chat, and a second delivery path earned maintenance without earning use.
+  Do not reintroduce an HTTP surface without asking.
+  **Tailscale Funnel is shared with another project**: `/` used to proxy the
+  removed API on 8081, but `/olx` proxies a different bot on 5051. Never turn
+  Funnel off wholesale.
 - **Controls and settings shipped in 1.8.0.** `handlers/menu.py` owns the
   persistent reply keyboard, the settings screens and the `/settings` and
   `/help` commands; `services/user_settings.py` holds the options, defaults and
@@ -100,42 +102,26 @@ Use the project virtual environment:
 
 ## Architecture Boundaries
 
-- `main.py` creates the Pyrogram client, database, command handlers and the Mini App `/app` button, and publishes the command menu from `_run_bot()` once the client is connected.
+- `main.py` creates the Pyrogram client, database and command handlers, and publishes the command menu from `_run_bot()` once the client is connected.
 - `handlers/menu.py` is the only place that draws the keyboard or the settings screens; `handlers/base.ignores_links_in_groups` is the shared guard every platform handler calls first.
 - `handlers/` adapts Pyrogram messages/callbacks to the platform services. Do not call these handlers from HTTP code.
 - `services/downloader.py` is the Pyrogram-free platform dispatcher. Provider implementations live under `services/tiktok/`, `services/youtube/`, `services/instagram/`, and `services/twitter/`.
-- `api/auth.py` validates Telegram Web App `initData`; never trust a frontend-supplied user ID or bypass this check.
-- `api/jobs.py` owns bounded Mini App jobs, file limits, cleanup metadata, and Telegram Bot API delivery. Jobs are currently in memory and disappear when the API restarts.
-- `api/app.py` exposes the authenticated job API and admin summary. `api/server.py` is the API entrypoint.
-- `docs/downloader.*` is the downloader Mini App; `docs/index.html` only redirects to it.
-
-## Mini App Rules
-
-- The Mini App must be opened from Telegram so `Telegram.WebApp.initData` exists. Direct browser opening is intentionally unauthenticated.
-- Keep the API behind HTTPS; production currently uses Tailscale Funnel and the API listens locally on port 8081.
-- Keep `MINIAPP_ALLOWED_ORIGIN` set to the exact HTTPS GitHub Pages origin, never `*` in production.
-- Completed media should normally be sent by the API through Telegram Bot API. Do not regress to unauthenticated `blob:` or direct filesystem URLs.
-- When changing frontend assets, update the cache-busting query/version used by the `/app` URL and test the actual published Pages path.
-- Keep ownership checks on every job status, cancel, and file endpoint.
 
 ## Secrets and Runtime Data
 
-Never commit or print `.env`, `cookies.txt`, `COOKIES_B64`, Telegram tokens, API hashes, databases, encryption keys, downloads, or logs. Cookies are optional for public YouTube downloads but improve YouTube/Instagram reliability when present. Telegram file delivery requires the user to have opened the bot and the API process to have `BOT_TOKEN`.
+Never commit or print `.env`, `cookies.txt`, `COOKIES_B64`, Telegram tokens, API hashes, databases, encryption keys, downloads, or logs. Cookies are optional for public YouTube downloads but improve YouTube/Instagram reliability when present.
 
 ## Systemd and Deployment
 
-- `tiktokbot.service` runs the bot; `tiktokbot-api.service` runs `python -m api.server`; `tiktokbot-monitor.timer` checks the bot through the project healthcheck.
-- The API unit is installed separately from the bot monitor; verify both when changing Mini App/API code.
+- `tiktokbot.service` runs the bot; `tiktokbot-monitor.timer` checks it through the project healthcheck.
 - Production runs on a self-hosted ARM64 GitHub Actions runner with labels `self-hosted`, `Linux`, and `ARM64`.
 - `.github/workflows/deploy.yml` tests first, then deploys only pushes to `master`, updates `/home/droid/tiktokloaderhub_bot`, restarts `tiktokbot.service`, and runs `healthcheck.py`.
-- `.github/workflows/pages.yml` publishes `docs/` independently through GitHub Pages.
 - Do not put secrets in unit files or workflow YAML. Preserve the workflow's protection against unreported local tracked edits.
 
 Useful checks:
 
 ```bash
-sudo systemctl is-active tiktokbot.service tiktokbot-api.service tiktokbot-monitor.timer
+sudo systemctl is-active tiktokbot.service tiktokbot-monitor.timer
 sudo journalctl -u tiktokbot.service -n 80 --no-pager
-sudo journalctl -u tiktokbot-api.service -n 80 --no-pager
-curl http://127.0.0.1:8081/api/health
+./venv/bin/python healthcheck.py
 ```

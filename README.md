@@ -87,10 +87,9 @@ Pushing to `master` runs the test suite on a GitHub-hosted runner, then — only
 
 ## Menu and settings
 
-A persistent reply keyboard carries the Mini App, the settings and help; the
-Mini App is a `web_app` button, so it opens on the first tap. `/start`,
-`/settings`, `/help`, `/app` and `/version` are published to Telegram's command
-list — the admin-only commands are not.
+A persistent reply keyboard carries the settings and help. `/start`,
+`/settings`, `/help`, `/report` and `/version` are published to Telegram's
+command list — the admin-only commands are not.
 
 Each user gets their own preferences, stored in `user_settings` and read on
 every link:
@@ -155,7 +154,6 @@ handlers/base.py           shared lock/rate-limit/error-reporting/multi-link hel
 services/                  platform downloaders + shared utils, no Pyrogram dependency
 services/database.py       SQLite analytics, playlist step-through state, broadcast subscriptions
 services/utils/            filename sanitizing, cookies setup, progress bar, env/version/broadcast helpers
-docs/                      the Mini App client, published with GitHub Pages
 tests/                     pytest suite for both the services layer and the handlers
 deploy/                    systemd units + healthcheck monitor for production
 VERSION / CHANGELOG.md     current version and release history
