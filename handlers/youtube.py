@@ -1,7 +1,9 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from pyrogram.enums import ParseMode
-from services.youtube.youtube_downloader import YouTubeDownloader, is_playlist_url, get_playlist_info
+from services.youtube.youtube_downloader import (
+    YouTubeDownloader, VideoUnavailable, is_playlist_url, get_playlist_info,
+)
 from services.downloader import is_youtube_url
 from services.utils.sanitize import sanitize_filename
 from services import user_settings as us
@@ -295,8 +297,13 @@ async def _handle_one_youtube_url(client, message, db, url, playlist_token=None)
         try:
             meta = YouTubeDownloader(
                 url, audio_lang=us.audio_lang_for(settings["audio"]))
+        except VideoUnavailable as e:
+            # YouTube refusing to serve a video is not a malfunction: say so
+            # plainly and leave the admin's alerts for things that are.
+            await message.reply(f"❌ {e}")
+            return RESULT_FAILED
         except ValueError as e:
-            await message.reply(f"❌ yt-dlp не смог распарсить ссылку: {e}")
+            await message.reply(f"❌ {e}")
             logging.error(f"YT download error: {e}")
             await report_error(client, "youtube", url, message.from_user, e, db, message=message)
             return RESULT_FAILED

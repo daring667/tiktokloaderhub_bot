@@ -61,7 +61,14 @@ Note: `ADMIN_ID` falls back to `OWNER_ID` only when `ADMIN_ID` is completely uns
 
 ### Cookies
 
-Place a Netscape-format `cookies.txt` in the project root (same directory as `main.py`). YouTube and Instagram downloaders both fall back to cookie-less requests with alternate User-Agents if the file is missing or stale, but success rates drop noticeably.
+Place a Netscape-format `cookies.txt` in the project root (same directory as `main.py`).
+
+**Age-restricted videos need a signed-in session.** A cookie jar with only
+visitor cookies (`VISITOR_INFO1_LIVE`, `YSC`, `PREF`) is anonymous as far as
+YouTube is concerned, and no yt-dlp player client gets past the age gate
+without one. Exporting cookies from a logged-in browser hands that account's
+YouTube session to whoever holds the file, so use a throwaway account rather
+than a personal one. YouTube and Instagram downloaders both fall back to cookie-less requests with alternate User-Agents if the file is missing or stale, but success rates drop noticeably.
 
 ## Running
 

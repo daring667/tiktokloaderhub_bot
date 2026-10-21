@@ -3,6 +3,29 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.12.2] — 2026-10-21
+
+### Fixed
+- **A refused video no longer looks like a broken bot.** Reported for an
+  age-restricted link, where the person was told "yt-dlp не смог распарсить
+  ссылку" — which reads as a malfunction — and the admin was paged about
+  something no amount of fixing would change. yt-dlp's refusals are now
+  translated: age gate, private video, members-only, removed, geo-blocked,
+  an unstarted stream or premiere each get their own explanation, and none of
+  them raise an alert. An unrecognised failure still does, and so does
+  "confirm you're not a bot", which really is ours — it means the bot's
+  address or cookies have been flagged.
+
+### Known limitation
+- **Age-restricted YouTube videos cannot be downloaded.** YouTube serves them
+  only to a signed-in account. The bot's `cookies.txt` holds visitor cookies
+  only — no `SID`, `SAPISID` or `LOGIN_INFO` — so every request is anonymous.
+  There is no way around it in code: eight different yt-dlp player clients
+  (`tv_embedded`, `web_embedded`, `mweb`, `ios`, `android`, `tv` and the
+  defaults with and without cookies) were measured against the reported video
+  and all eight were refused identically. Only cookies exported from a
+  signed-in browser session would change this.
+
 ## [1.12.1] — 2026-10-21
 
 ### Fixed

@@ -75,6 +75,79 @@ def pick_audio_format(audio_formats, lang: str = None):
     return max(localized or audio_formats, key=_audio_sort_key)
 
 
+class VideoUnavailable(ValueError):
+    """YouTube will not serve this video, and that is not a fault of ours.
+
+    Separated from a plain ValueError so the handler can explain it to the
+    person instead of calling it a parsing failure, and so it does not page
+    the admin: an age-gated video is not a broken bot.
+    """
+
+
+# Matched against yt-dlp's own message, lowercased. `True` means the cause is
+# on our side and the admin should still hear about it.
+_ERROR_PATTERNS = (
+    ("sign in to confirm your age",
+     "Видео с возрастным ограничением — YouTube отдаёт его только тем, кто вошёл в аккаунт. Скачать не смогу.",
+     False),
+    ("age-restricted",
+     "Видео с возрастным ограничением — YouTube отдаёт его только тем, кто вошёл в аккаунт. Скачать не смогу.",
+     False),
+    ("private video",
+     "Это приватное видео — доступ есть только у тех, кому его открыли.",
+     False),
+    ("members-only",
+     "Видео только для спонсоров канала.",
+     False),
+    ("join this channel",
+     "Видео только для спонсоров канала.",
+     False),
+    ("removed by the uploader",
+     "Автор удалил это видео.",
+     False),
+    ("video unavailable",
+     "Видео недоступно — возможно, его удалили или скрыли.",
+     False),
+    # yt-dlp words this at least two ways: "is not available in your country"
+    # and "has not made this video available in your country".
+    ("available in your country",
+     "Видео заблокировано в стране, где работает бот.",
+     False),
+    ("blocked it in your country",
+     "Видео заблокировано в стране, где работает бот.",
+     False),
+    ("this live event will begin",
+     "Трансляция ещё не началась.",
+     False),
+    ("premieres in",
+     "Премьера ещё не состоялась.",
+     False),
+    ("copyright",
+     "Видео недоступно по жалобе правообладателя.",
+     False),
+    # This one *is* ours: the bot's address or cookies got flagged.
+    ("confirm you\u2019re not a bot",
+     "YouTube требует подтверждения, что запросы шлёт человек. Это проблема на моей стороне, уже знаю о ней.",
+     True),
+    ("confirm you're not a bot",
+     "YouTube требует подтверждения, что запросы шлёт человек. Это проблема на моей стороне, уже знаю о ней.",
+     True),
+)
+
+
+def explain_youtube_error(error) -> tuple:
+    """Turn a yt-dlp failure into (message, is_our_problem), or (None, True).
+
+    (None, True) means "no idea what this is" -- which is exactly when the
+    admin should be told.
+    """
+    text = str(error).lower()
+    for needle, message, ours in _ERROR_PATTERNS:
+        if needle in text:
+            return message, ours
+    return None, True
+
+
 def fix_url(url: str) -> str:
     """Нормализует URL YouTube и извлекает video_id, обрабатывая все форматы ссылок"""
     parsed = urlparse(url)
@@ -121,7 +194,10 @@ def get_playlist_info(playlist_url: str, limit: int = 25):
         with yt_dlp.YoutubeDL(opts) as ydl:
             info = ydl.extract_info(playlist_url, download=False)
     except DownloadError as e:
-        raise ValueError("yt-dlp не смог распарсить плейлист.") from e
+        message, ours = explain_youtube_error(e)
+        if message and not ours:
+            raise VideoUnavailable(message) from e
+        raise ValueError(message or "yt-dlp не смог распарсить плейлист.") from e
     except Exception as e:
         raise ValueError("Произошла ошибка при обработке плейлиста.") from e
 
@@ -316,7 +392,10 @@ class YouTubeDownloader:
 
         except DownloadError as e:
             print(f"[DEBUG] yt-dlp DownloadError: {e}")
-            raise ValueError("yt-dlp не смог распарсить ссылку.") from e
+            message, ours = explain_youtube_error(e)
+            if message and not ours:
+                raise VideoUnavailable(message) from e
+            raise ValueError(message or "yt-dlp не смог распарсить ссылку.") from e
         except Exception as e:
             print(f"[DEBUG] Неизвестная ошибка: {e.__class__.__name__}: {e}")
             raise ValueError("Произошла непредвиденная ошибка при парсинге URL.") from e

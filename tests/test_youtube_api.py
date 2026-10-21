@@ -207,7 +207,7 @@ class TestYouTubeDownloaderInit:
         mock_ydl = MagicMock()
         mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
         mock_ydl.__exit__ = MagicMock(return_value=False)
-        mock_ydl.extract_info.side_effect = DownloadError("Video unavailable")
+        mock_ydl.extract_info.side_effect = DownloadError("something unheard of")
         mock_ydl_class.return_value = mock_ydl
 
         from services.youtube.youtube_downloader import YouTubeDownloader
@@ -599,3 +599,115 @@ class TestPreferredAudioLanguage:
         spec = YouTubeDownloader(self.FAKE_URL)._audio_format_spec()
 
         assert spec == "140-1/bestaudio[language^=ru]/bestaudio/best"
+
+
+class TestExplainYoutubeError:
+    """Turning yt-dlp's English refusals into something a user can act on.
+
+    Came from a real report: an age-restricted video surfaced to the person as
+    "yt-dlp не смог распарсить ссылку", which reads as a broken bot, and paged
+    the admin about something no amount of fixing would change. YouTube serves
+    age-gated videos only to a signed-in account, and the bot's cookie jar
+    holds no login cookies at all -- verified against eight player clients,
+    none of which get past the gate.
+    """
+
+    @pytest.mark.parametrize("message", [
+        "ERROR: [youtube] X: Sign in to confirm your age. Use --cookies",
+        "This video is age-restricted and can only be played on YouTube",
+    ])
+    def test_an_age_gate_is_recognised_and_is_not_our_fault(self, message):
+        from services.youtube.youtube_downloader import explain_youtube_error
+        text, ours = explain_youtube_error(message)
+        assert "возрастным ограничением" in text
+        assert ours is False
+
+    @pytest.mark.parametrize("message,fragment", [
+        ("ERROR: Private video. Sign in if you've been granted access", "приватное"),
+        ("ERROR: Join this channel to get access to members-only content", "спонсоров"),
+        ("ERROR: Video unavailable", "недоступно"),
+        ("ERROR: This video has been removed by the uploader", "удалил"),
+        ("ERROR: The uploader has not made this video available in your country", "заблокировано"),
+        ("ERROR: This live event will begin in 2 hours", "Трансляция"),
+    ])
+    def test_other_refusals_are_explained(self, message, fragment):
+        from services.youtube.youtube_downloader import explain_youtube_error
+        text, ours = explain_youtube_error(message)
+        assert fragment in text
+        assert ours is False
+
+    def test_a_bot_check_is_ours_to_fix(self):
+        """Our address or cookies got flagged -- the admin should hear it."""
+        from services.youtube.youtube_downloader import explain_youtube_error
+        text, ours = explain_youtube_error(
+            "ERROR: Sign in to confirm you're not a bot")
+        assert text
+        assert ours is True
+
+    def test_an_unknown_failure_stays_the_admin_s_problem(self):
+        from services.youtube.youtube_downloader import explain_youtube_error
+        text, ours = explain_youtube_error("ERROR: something entirely new")
+        assert text is None
+        assert ours is True
+
+    def test_matching_ignores_case(self):
+        from services.youtube.youtube_downloader import explain_youtube_error
+        text, _ = explain_youtube_error("SIGN IN TO CONFIRM YOUR AGE")
+        assert text is not None
+
+    def test_it_accepts_an_exception_as_well_as_a_string(self):
+        from services.youtube.youtube_downloader import explain_youtube_error
+        text, _ = explain_youtube_error(
+            DownloadError("Sign in to confirm your age"))
+        assert text is not None
+
+
+class TestUnavailableIsNotAParseFailure:
+
+    FAKE_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+
+    @patch("services.youtube.youtube_downloader.setup_cookies")
+    @patch("services.youtube.youtube_downloader.yt_dlp.YoutubeDL")
+    def test_an_age_gate_raises_the_quiet_exception(self, mock_ydl_class, mock_cookies):
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
+        mock_ydl.__exit__ = MagicMock(return_value=False)
+        mock_ydl.extract_info.side_effect = DownloadError(
+            "ERROR: Sign in to confirm your age")
+        mock_ydl_class.return_value = mock_ydl
+
+        from services.youtube.youtube_downloader import (
+            YouTubeDownloader, VideoUnavailable)
+        with pytest.raises(VideoUnavailable, match="возрастным"):
+            YouTubeDownloader(self.FAKE_URL)
+
+    @patch("services.youtube.youtube_downloader.setup_cookies")
+    @patch("services.youtube.youtube_downloader.yt_dlp.YoutubeDL")
+    def test_it_is_still_a_value_error_for_older_callers(self, mock_ydl_class, mock_cookies):
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
+        mock_ydl.__exit__ = MagicMock(return_value=False)
+        mock_ydl.extract_info.side_effect = DownloadError(
+            "ERROR: Sign in to confirm your age")
+        mock_ydl_class.return_value = mock_ydl
+
+        from services.youtube.youtube_downloader import YouTubeDownloader
+        with pytest.raises(ValueError):
+            YouTubeDownloader(self.FAKE_URL)
+
+    @patch("services.youtube.youtube_downloader.setup_cookies")
+    @patch("services.youtube.youtube_downloader.yt_dlp.YoutubeDL")
+    def test_a_bot_check_stays_a_plain_value_error(self, mock_ydl_class, mock_cookies):
+        """So it keeps reaching the admin through the usual path."""
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
+        mock_ydl.__exit__ = MagicMock(return_value=False)
+        mock_ydl.extract_info.side_effect = DownloadError(
+            "ERROR: Sign in to confirm you're not a bot")
+        mock_ydl_class.return_value = mock_ydl
+
+        from services.youtube.youtube_downloader import (
+            YouTubeDownloader, VideoUnavailable)
+        with pytest.raises(ValueError) as caught:
+            YouTubeDownloader(self.FAKE_URL)
+        assert not isinstance(caught.value, VideoUnavailable)
