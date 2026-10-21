@@ -96,6 +96,10 @@ async def _download_and_send(client, message, url, db) -> bool:
             slideshow_dir = os.path.join(DOWNLOADS_DIR, f"slideshow_{uuid.uuid4()}")
             image_paths = await downloader.download_slideshow(slideshow_dir)
             await _send_slideshow(client, message.chat.id, image_paths)
+            skipped = getattr(downloader, "skipped_images", 0)
+            if skipped:
+                await message.reply(
+                    f"⚠️ {skipped} фото TikTok не отдал — остальные отправил.")
         else:
             result_path = await downloader.download(filename)
             await client.send_video(

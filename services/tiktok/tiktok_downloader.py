@@ -15,6 +15,16 @@ HEADERS = {
 # looks to the user exactly like a broken bot.
 CONNECT_TIMEOUT = 15
 
+# Statuses that mean "this signed URL is no good" rather than "this content
+# does not exist". Worth re-signing once; a 404 is not.
+REFRESHABLE_STATUSES = (401, 403, 410)
+
+# How many times to ask for a fresh signature before giving up on one file.
+# tikwm caches most of what it signs: asking again rotates only a few of the
+# signatures in a post, so a second and third ask are each worth something,
+# and a fourth is mostly waiting.
+SIGNATURE_ATTEMPTS = 3
+
 # One extra attempt, not a retry framework. The failure this addresses has
 # happened once, and a transient blip is the likeliest cause; anything that
 # fails twice in a row is a real problem the user should hear about rather
@@ -46,6 +56,8 @@ class TikTokDownloader:
     def __init__(self, url: str):
         self.url = url
         self._data = None
+        # How many slideshow photos the CDN refused outright, for the caller.
+        self.skipped_images = 0
 
     async def _fetch_data(self):
         print(f"[TikTok] Requesting TikWM API for {self.url}")
@@ -88,6 +100,41 @@ class TikTokDownloader:
 
         await _with_retry(attempt, "загрузка файла")
 
+    async def _download_signed(self, resolve, filename: str, what: str) -> None:
+        """Download a pre-signed CDN URL, refreshing the signature once if refused.
+
+        tikwm hands back URLs the TikTok CDN has signed, and roughly one
+        response in five carries a signature the CDN then rejects with 403.
+        The refusal belongs to that signature: the same URL was measured
+        failing eight times out of eight, on every sibling CDN host, and still
+        after a twenty-second wait. Only a different signature helps.
+
+        Asking tikwm again is the only way to get one, and it is not reliable
+        either — it caches most of what it signs, rotating three to five of the
+        fifteen URLs in a post per request. Hence several attempts rather than
+        one, and a caller that can carry on without this particular file.
+
+        `_with_retry` deliberately does not retry HTTP errors, and that is
+        right for a 404: it would fail again for the same reason. This one can
+        succeed, but only once the cached metadata is dropped.
+        """
+        last_error = None
+        for attempt in range(1, SIGNATURE_ATTEMPTS + 1):
+            try:
+                await self._download_file(resolve(await self.probe()), filename)
+                return
+            except aiohttp.ClientResponseError as exc:
+                if exc.status not in REFRESHABLE_STATUSES:
+                    raise
+                last_error = exc
+                print(f"[TikTok] {what}: HTTP {exc.status}, попытка "
+                      f"{attempt}/{SIGNATURE_ATTEMPTS}")
+                if attempt < SIGNATURE_ATTEMPTS:
+                    # Dropping the cache is the only thing that can produce a
+                    # different signature; the URL itself stays refused.
+                    self._data = None
+        raise last_error
+
     async def download(self, filename: str) -> str:
         """
         Скачивает видео TikTok и сохраняет его в filename.
@@ -111,9 +158,15 @@ class TikTokDownloader:
         if not video_url:
             raise ValueError("Не удалось получить видео из ответа API.")
 
+        def resolve(data):
+            url = (data.get("data") or {}).get("play")
+            if not url:
+                raise ValueError("Не удалось получить видео из ответа API.")
+            return url
+
         print(f"[TikTok] Download URL: {video_url}")
         os.makedirs(os.path.dirname(filename), exist_ok=True)
-        await self._download_file(video_url, filename)
+        await self._download_signed(resolve, filename, "видео")
 
         return filename
 
@@ -131,9 +184,28 @@ class TikTokDownloader:
 
         os.makedirs(dirpath, exist_ok=True)
         image_paths = []
-        for i, image_url in enumerate(images):
+        self.skipped_images = 0
+        for i in range(len(images)):
+            def resolve(data, index=i):
+                fresh = (data.get("data") or {}).get("images") or []
+                if index >= len(fresh):
+                    raise ValueError("Слайдшоу изменилось во время загрузки.")
+                return fresh[index]
+
             path = os.path.join(dirpath, f"image_{i}.jpg")
-            await self._download_file(image_url, path)
+            try:
+                await self._download_signed(resolve, path, f"фото {i + 1}")
+            except aiohttp.ClientResponseError as exc:
+                if exc.status not in REFRESHABLE_STATUSES:
+                    raise
+                # Fourteen photos out of fifteen beat an error message. The
+                # caller is told how many were lost so it can say so.
+                self.skipped_images += 1
+                print(f"[TikTok] фото {i + 1}: недоступно (HTTP {exc.status}), пропускаю")
+                continue
             image_paths.append(path)
+
+        if not image_paths:
+            raise ValueError("TikTok не отдал ни одного фото из этого поста.")
 
         return image_paths

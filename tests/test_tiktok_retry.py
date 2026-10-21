@@ -154,3 +154,214 @@ class TestDownloadFile:
 
         assert len(attempts) == 2
         assert target.read_bytes() == b"good"
+
+
+def _payload(images=None, play=None):
+    data = {}
+    if images is not None:
+        data["images"] = images
+    if play is not None:
+        data["play"] = play
+    return {"data": data}
+
+
+def _http_error(status):
+    return aiohttp.ClientResponseError(None, (), status=status)
+
+
+class TestSignatureRefresh:
+    """Came from a real failure: a 403 on one photo of a fifteen-photo post.
+
+    tikwm hands back URLs the TikTok CDN has signed, and about one response in
+    five carries a signature the CDN rejects. Which item is affected varies and
+    the post itself is fine -- asking again produces working signatures. One
+    unlucky signature used to fail the whole slideshow.
+    """
+
+    def _downloader(self, payloads):
+        dl = td.TikTokDownloader("https://vt.tiktok.com/XXXX/")
+        dl._fetch_data = AsyncMock(side_effect=list(payloads))
+        return dl
+
+    @pytest.mark.asyncio
+    async def test_a_clean_download_asks_for_metadata_once(self):
+        dl = self._downloader([_payload(images=["ok"])])
+        dl._download_file = AsyncMock()
+
+        await dl._download_signed(
+            lambda d: d["data"]["images"][0], "/tmp/x.jpg", "фото 1")
+
+        assert dl._fetch_data.await_count == 1
+        dl._download_file.assert_awaited_once_with("ok", "/tmp/x.jpg")
+
+    @pytest.mark.asyncio
+    async def test_a_403_is_retried_with_a_freshly_signed_url(self):
+        dl = self._downloader([_payload(images=["stale"]),
+                               _payload(images=["fresh"])])
+        tried = []
+
+        async def download(url, filename):
+            tried.append(url)
+            if len(tried) == 1:
+                raise _http_error(403)
+
+        dl._download_file = AsyncMock(side_effect=download)
+        await dl._download_signed(
+            lambda d: d["data"]["images"][0], "/tmp/x.jpg", "фото 1")
+
+        assert tried == ["stale", "fresh"]
+        assert dl._fetch_data.await_count == 2
+
+    @pytest.mark.parametrize("status", [401, 403, 410])
+    @pytest.mark.asyncio
+    async def test_every_refreshable_status_is_retried(self, status):
+        dl = self._downloader([_payload(images=["stale"]),
+                               _payload(images=["fresh"])])
+        tried = []
+
+        async def download(url, filename):
+            tried.append(url)
+            if len(tried) == 1:
+                raise _http_error(status)
+
+        dl._download_file = AsyncMock(side_effect=download)
+        await dl._download_signed(
+            lambda d: d["data"]["images"][0], "/tmp/x.jpg", "фото")
+        assert tried == ["stale", "fresh"]
+
+    @pytest.mark.asyncio
+    async def test_a_404_is_not_retried(self):
+        """It would fail again for the same reason; re-signing changes nothing."""
+        dl = self._downloader([_payload(images=["gone"])])
+        dl._download_file = AsyncMock(side_effect=_http_error(404))
+
+        with pytest.raises(aiohttp.ClientResponseError):
+            await dl._download_signed(
+                lambda d: d["data"]["images"][0], "/tmp/x.jpg", "фото 1")
+
+        assert dl._download_file.await_count == 1
+        assert dl._fetch_data.await_count == 1
+
+    @pytest.mark.asyncio
+    async def test_it_gives_up_rather_than_looping(self):
+        dl = self._downloader([_payload(images=["a"])] * td.SIGNATURE_ATTEMPTS)
+        dl._download_file = AsyncMock(side_effect=_http_error(403))
+
+        with pytest.raises(aiohttp.ClientResponseError):
+            await dl._download_signed(
+                lambda d: d["data"]["images"][0], "/tmp/x.jpg", "фото 1")
+
+        assert dl._download_file.await_count == td.SIGNATURE_ATTEMPTS
+
+    @pytest.mark.asyncio
+    async def test_the_refreshed_url_is_taken_from_the_same_position(self):
+        """A slideshow refresh must not shuffle which photo is which."""
+        dl = self._downloader([_payload(images=["a0", "a1", "a2"]),
+                               _payload(images=["b0", "b1", "b2"])])
+        tried = []
+
+        async def download(url, filename):
+            tried.append(url)
+            if len(tried) == 1:
+                raise _http_error(403)
+
+        dl._download_file = AsyncMock(side_effect=download)
+        await dl._download_signed(
+            lambda d, i=1: d["data"]["images"][i], "/tmp/x.jpg", "фото 2")
+
+        assert tried == ["a1", "b1"]
+
+    @pytest.mark.asyncio
+    async def test_a_shorter_refreshed_post_fails_clearly(self):
+        """Better than an IndexError from somewhere deep in the loop."""
+        dl = self._downloader([_payload(images=["a0", "a1"]),
+                               _payload(images=["b0"])])
+        dl._download_file = AsyncMock(side_effect=_http_error(403))
+
+        def resolve(data, index=1):
+            fresh = (data.get("data") or {}).get("images") or []
+            if index >= len(fresh):
+                raise ValueError("Слайдшоу изменилось во время загрузки.")
+            return fresh[index]
+
+        with pytest.raises(ValueError):
+            await dl._download_signed(resolve, "/tmp/x.jpg", "фото 2")
+
+    @pytest.mark.asyncio
+    async def test_a_video_url_is_refreshed_the_same_way(self):
+        """One signed URL means one chance to be unlucky, but the same bug."""
+        dl = self._downloader([_payload(play="stale"), _payload(play="fresh")])
+        tried = []
+
+        async def download(url, filename):
+            tried.append(url)
+            if len(tried) == 1:
+                raise _http_error(403)
+
+        dl._download_file = AsyncMock(side_effect=download)
+        await dl._download_signed(
+            lambda d: d["data"]["play"], "/tmp/v.mp4", "видео")
+        assert tried == ["stale", "fresh"]
+
+
+class TestSlideshowSurvivesOneBadPhoto:
+    """Fourteen photos out of fifteen beat an error message."""
+
+    def _downloader(self, images, refuse_indexes):
+        dl = td.TikTokDownloader("https://vt.tiktok.com/XXXX/")
+        dl._fetch_data = AsyncMock(return_value=_payload(images=images))
+
+        async def download(url, filename):
+            if images.index(url) in refuse_indexes:
+                raise _http_error(403)
+            with open(filename, "wb") as f:
+                f.write(b"jpeg")
+
+        dl._download_file = AsyncMock(side_effect=download)
+        return dl
+
+    @pytest.mark.asyncio
+    async def test_a_clean_post_downloads_everything(self, tmp_path):
+        dl = self._downloader(["a", "b", "c"], set())
+        paths = await dl.download_slideshow(str(tmp_path))
+        assert len(paths) == 3
+        assert dl.skipped_images == 0
+
+    @pytest.mark.asyncio
+    async def test_a_refused_photo_is_skipped_not_fatal(self, tmp_path):
+        dl = self._downloader(["a", "b", "c"], {1})
+        paths = await dl.download_slideshow(str(tmp_path))
+        assert len(paths) == 2
+        assert dl.skipped_images == 1
+
+    @pytest.mark.asyncio
+    async def test_the_surviving_photos_keep_their_order(self, tmp_path):
+        dl = self._downloader(["a", "b", "c", "d"], {1})
+        paths = await dl.download_slideshow(str(tmp_path))
+        assert [p.rsplit("_", 1)[-1] for p in paths] == ["0.jpg", "2.jpg", "3.jpg"]
+
+    @pytest.mark.asyncio
+    async def test_a_post_that_gives_up_nothing_is_still_an_error(self, tmp_path):
+        """Delivering an empty album would be worse than saying so."""
+        dl = self._downloader(["a", "b"], {0, 1})
+        with pytest.raises(ValueError):
+            await dl.download_slideshow(str(tmp_path))
+
+    @pytest.mark.asyncio
+    async def test_a_404_is_not_quietly_skipped(self, tmp_path):
+        """Only a refused signature is survivable; a missing file is a bug."""
+        dl = td.TikTokDownloader("https://vt.tiktok.com/XXXX/")
+        dl._fetch_data = AsyncMock(return_value=_payload(images=["a", "b"]))
+        dl._download_file = AsyncMock(side_effect=_http_error(404))
+        with pytest.raises(aiohttp.ClientResponseError):
+            await dl.download_slideshow(str(tmp_path))
+
+    @pytest.mark.asyncio
+    async def test_the_counter_resets_between_posts(self, tmp_path):
+        dl = self._downloader(["a", "b"], {0})
+        await dl.download_slideshow(str(tmp_path / "one"))
+        assert dl.skipped_images == 1
+        dl._download_file = AsyncMock(
+            side_effect=lambda u, f: open(f, "wb").write(b"jpeg"))
+        await dl.download_slideshow(str(tmp_path / "two"))
+        assert dl.skipped_images == 0

@@ -3,6 +3,32 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.12.1] — 2026-10-21
+
+### Fixed
+- **A TikTok photo post no longer fails over one refused photo.** Reported as a
+  403 on a fifteen-photo slideshow. tikwm hands back URLs the TikTok CDN has
+  signed, and roughly one response in five carries a signature the CDN rejects.
+
+  What it is not, each ruled out by measurement: not the request headers (every
+  variant, including none at all, returned 200); not throttling (the same index
+  failed three times out of three, then passed with new metadata); not the CDN
+  host (the same path and signature was refused on every sibling host); and not
+  transient (the same URL was refused eight times out of eight, and still after
+  a twenty-second wait). The refusal belongs to that one signature.
+
+  Asking tikwm again is the only thing that helps, and only partly: it caches
+  most of what it signs and rotates three to five of the fifteen URLs per
+  request. So a signed download now gets up to three attempts, dropping the
+  cached metadata between them, and a slideshow photo that is still refused is
+  skipped rather than failing the post. The user is told how many were lost.
+  A post where nothing downloads is still an error, and a 404 is never skipped
+  quietly — that is a missing file, not a bad signature.
+
+  Verified across twelve consecutive downloads of the reported post: 180 photos
+  delivered, none skipped, no failures. Four of those runs hit a 403, two of
+  them needing the second attempt — a single refresh would not have been enough.
+
 ## [1.12.0] — 2026-10-21
 
 ### Fixed
