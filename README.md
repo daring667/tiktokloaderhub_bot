@@ -2,8 +2,6 @@
 
 Async Telegram bot (Pyrogram) that downloads videos from **TikTok**, **YouTube**, **Instagram Reels**, and **Twitter/X**, and sends them straight into the chat.
 
-It also hosts **Chaos Chain**, a daily game challenge that runs as a Telegram Mini App — see [below](#chaos-chain).
-
 Current version: see [`VERSION`](VERSION) / [`CHANGELOG.md`](CHANGELOG.md), or ask the bot itself with `/version`.
 
 ## Features
@@ -24,7 +22,6 @@ Current version: see [`VERSION`](VERSION) / [`CHANGELOG.md`](CHANGELOG.md), or a
 - **SQLite analytics** — tracks users, downloads, and errors; `/stats` (admin-only) shows totals, 24h activity, and 24h error rate per platform
 - **Log rotation** — 10 MB per file, 5 backups
 - **Self-healing in production** — systemd service + a timer-driven healthcheck monitor that restarts the bot and posts a Telegram alert on failure (see [`deploy/`](deploy/))
-- **Chaos Chain** — a daily snake challenge as a Mini App, with a shared per-day seed, stacking modifiers and a leaderboard ([details](#chaos-chain))
 - **CI/CD** — every push runs the test suite, then deploys and healthchecks on a self-hosted GitHub Actions runner (see [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml))
 
 ## Requirements
@@ -60,15 +57,6 @@ cp .env.example .env   # then fill in the values below
 | `COOKIES_B64` | no | Base64 `cookies.txt`, restored on startup by `start.sh`. Only relevant if you run via `start.sh`; the systemd deployment below reads `cookies.txt` directly from disk. |
 
 Note: `ADMIN_ID` falls back to `OWNER_ID` only when `ADMIN_ID` is completely unset — an empty string does not count as "set" but does skip the fallback (see `services/utils/env.py`).
-
-Chaos Chain reads four optional variables, all with working defaults:
-
-| Variable | Default | Meaning |
-|---|---|---|
-| `CHAOS_WEBAPP_URL` | the GitHub Pages URL | where the Mini App is served from |
-| `CHAOS_SALT` | `chaos-chain` | mixed into the day seed; **must match `SALT` in `docs/chaos.js`** |
-| `CHAOS_TZ_OFFSET` | `5` | hours from UTC (Almaty) |
-| `CHAOS_DAY_START_HOUR` | `12` | local hour the game day begins |
 
 ### Cookies
 
@@ -113,62 +101,6 @@ replies when the group is large. This is deliberately restricted to group
 administrators and to once per minute per chat, so a regular participant cannot
 turn the bot into a notification-spam tool.
 
-## Chaos Chain
-
-A daily challenge that gives people a reason to open the bot when they have nothing to
-download. Snake, except every apple triggers an event that changes the rules for the rest
-of the run.
-
-- `/chaos` — opens the game (private chats only, see below)
-- `/top` — today's leaderboard
-- `/streak` — your run of consecutive cleared days
-
-**The chain.** Snake is the first link. Clearing it (seven apples) opens
-**«Слияние»** — slide tiles, equal ones merge, reach 128 and the chain is
-done. It reuses the same on-screen pad and asks for planning rather than
-reflexes. It carries a daily modifier of its own, shared by everyone: two
-tiles per move, a tile frozen for six moves, or a board that rotates every
-fifth move. Clearing the day — and the streak — still means seven apples in
-the snake; the second link adds score and a 🔗 in `/top`, and can be skipped.
-
-**How a day works.** Everything derives from a hash of the date, so every player gets the
-same chain of events and scores are worth comparing. The day turns over at **noon Almaty**
-(07:00 UTC) rather than midnight — people play over lunch, and a midday boundary avoids a
-switch that happens while everyone is asleep. Seven apples clears the day and extends your
-streak.
-
-**Escalation is the rarity table.** The apple count doesn't pick the event, it shifts the
-odds toward rarer ones (🟢 common → 🟡 legendary). One mechanic instead of two, and tension
-that climbs on its own. Permanent modifiers stack up to four at a time, and each active one
-makes an apple worth more — so playing it safe is never the winning strategy.
-
-**Where it runs.** The client is static and lives in [`docs/`](docs/), published with GitHub
-Pages. There is no game backend: results come back as a `web_app_data` message and land in
-`chaos.db`, which is separate from the downloader's database.
-
-**Private chats only.** This is a Telegram constraint, not a choice: a Mini App can only send
-data back to the bot when it was opened from a *reply keyboard* button in a DM. An inline or
-menu button leaves no way home without a server.
-
-**Events and rarity.** Seventeen events across four tiers. The apple count
-shifts the odds toward rarer ones rather than picking the event, so
-escalation and rarity are one mechanic. Permanent modifiers stack up to four
-and each one makes an apple worth more.
-
-**Changing the catalogue is a breaking change.** The chain is derived from
-the event pools, so adding or reordering one changes every day's chain —
-including days already played. Append only, bump `CATALOGUE_VERSION` on both
-sides, regenerate `tests/test_chaos_client_contract.py` from the client under
-node, and bump the `?v=` on the client's import URLs in the same commit. A
-player on a cached older build is then told to reopen the game instead of
-having an honest result rejected.
-
-**The event logic exists twice**, in `services/chaos/events.py` and `docs/chaos.js`, because
-the client generates the events and the bot re-derives them to check a submitted run. If the
-two ever disagree, every honest result gets rejected — so `tests/test_chaos_client_contract.py`
-pins the Python side against chains generated by the real client under node. Change one half,
-regenerate the vectors, change both in the same commit.
-
 ## Testing
 
 ```bash
@@ -183,11 +115,9 @@ Covers both the service layer (database, filename sanitizing, URL parsing, the f
 main.py                    entry point, Pyrogram client, /start, /stats, /broadcast, /version
 handlers/                  one file per platform: Telegram-facing message/callback routing
 handlers/base.py           shared lock/rate-limit/error-reporting/multi-link helpers
-handlers/chaos.py          Chaos Chain: commands, result intake, daily announcement
 services/                  platform downloaders + shared utils, no Pyrogram dependency
 services/database.py       SQLite analytics, playlist step-through state, broadcast subscriptions
 services/utils/            filename sanitizing, cookies setup, progress bar, env/version/broadcast helpers
-services/chaos/            day seed, event catalogue, run validation, its own chaos.db
 docs/                      the Mini App client, published with GitHub Pages
 tests/                     pytest suite for both the services layer and the handlers
 deploy/                    systemd units + healthcheck monitor for production
@@ -198,8 +128,3 @@ VERSION / CHANGELOG.md     current version and release history
 
 - The TikTok/YouTube/Instagram/Twitter handlers delete the user's original message with the link after a successful download — silently no-ops if the bot lacks delete rights in a group.
 - YouTube playlist step-through processes at most 25 videos per playlist (`MAX_PLAYLIST_ITEMS` in `handlers/youtube.py`) — a deliberate cap, not a bug.
-- Chaos Chain scores are computed by the client, so a determined player can forge one. Validation rejects anything short of replaying the day's real event chain by hand, which is the right trade for a small group and no server. If the audience ever stops being people you know, this needs a real backend.
-- The daily post reaches only players who opened the game in a private chat.
-  A bot cannot message someone who never started it, so people who appear in
-  the users table purely from group activity are unreachable by any transport.
-- Chaos Chain only works in private chats — a Mini App cannot return data to the bot from a group without one.

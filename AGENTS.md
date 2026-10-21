@@ -26,12 +26,6 @@ history do not show on their own.
   cap reads vertical video as oversized and was what pinned Shorts to 144p in
   1.6.6. Never auto-send a format with an undeclared filesize. `max_side` and
   `max_bytes` are the hooks for the planned per-user preset.
-- **Chaos Chain is slated for full removal** (owner decision, 2026-10-21): every
-  game, leaderboard, and streak surface comes out rather than staying behind
-  `CHAOS_ENABLED=0`. Affected: `handlers/chaos.py`, `services/chaos/`,
-  `docs/chaos.js`, `docs/game.js`, `docs/merge.js`, `docs/style.css`,
-  `docs/index.html`, the `chaos_*` wiring in `main.py`, and five test modules.
-  Keep `chaos.db` on disk; it holds real player history and is gitignored.
 - **The Mini App is being rebuilt from scratch** (owner decision, 2026-10-21).
   `TODO.md` is the live roadmap for the cabinet (Download / History / Profile).
   `api/history.py` is already written but **untracked and not wired up** — it is
@@ -72,13 +66,13 @@ Use the project virtual environment:
 
 ## Architecture Boundaries
 
-- `main.py` creates the Pyrogram client, database, command handlers, Mini App `/app` button, and optional Chaos registration.
+- `main.py` creates the Pyrogram client, database, command handlers, and the Mini App `/app` button.
 - `handlers/` adapts Pyrogram messages/callbacks to the platform services. Do not call these handlers from HTTP code.
 - `services/downloader.py` is the Pyrogram-free platform dispatcher. Provider implementations live under `services/tiktok/`, `services/youtube/`, `services/instagram/`, and `services/twitter/`.
 - `api/auth.py` validates Telegram Web App `initData`; never trust a frontend-supplied user ID or bypass this check.
 - `api/jobs.py` owns bounded Mini App jobs, file limits, cleanup metadata, and Telegram Bot API delivery. Jobs are currently in memory and disappear when the API restarts.
 - `api/app.py` exposes the authenticated job API and admin summary. `api/server.py` is the API entrypoint.
-- `docs/downloader.*` is the downloader Mini App. The existing Chaos files in `docs/` and `services/chaos/` are a separate feature.
+- `docs/downloader.*` is the downloader Mini App; `docs/index.html` only redirects to it.
 
 ## Mini App Rules
 
@@ -92,10 +86,6 @@ Use the project virtual environment:
 ## Secrets and Runtime Data
 
 Never commit or print `.env`, `cookies.txt`, `COOKIES_B64`, Telegram tokens, API hashes, databases, encryption keys, downloads, or logs. Cookies are optional for public YouTube downloads but improve YouTube/Instagram reliability when present. Telegram file delivery requires the user to have opened the bot and the API process to have `BOT_TOKEN`.
-
-## Chaos Chain
-
-Chaos Chain is paused by default with `CHAOS_ENABLED=0` and is not registered by `main.py` unless explicitly enabled. Keep it separate from downloader and Mini App changes. If modifying it, update the Python and JavaScript contracts together and run the Chaos tests; do not reorder its event catalogue.
 
 ## Systemd and Deployment
 

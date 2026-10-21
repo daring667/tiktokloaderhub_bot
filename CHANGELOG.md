@@ -3,6 +3,26 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.7.0] — 2026-10-21
+
+### Removed
+- **Chaos Chain and every game surface.** The daily snake challenge, the merge
+  stage, the leaderboard, the streaks and the `/chaos`, `/top` and `/streak`
+  commands are gone rather than left paused behind `CHAOS_ENABLED=0`. The bot
+  is a downloader; a second product living inside it earned its own
+  maintenance burden on every change — two event catalogues that had to stay
+  byte-identical across Python and JavaScript, their contract test, and a
+  branch in `main.py` guarding code nobody ran.
+  Deleted: `handlers/chaos.py`, `services/chaos/`, `docs/chaos.js`,
+  `docs/game.js`, `docs/merge.js`, `docs/style.css` and six test modules, plus
+  the `CHAOS_*` settings from `.env.example` and the systemd unit.
+  `chaos.db` is deliberately kept on disk: it holds real player history, it is
+  gitignored, and nothing reads it any more.
+
+  The frontend half was already dead — `docs/index.html` had been reduced to a
+  redirect to the downloader, so the game had no entry point, and nothing
+  referenced `docs/style.css` at all.
+
 ## [1.6.6] — 2026-10-21
 
 ### Fixed

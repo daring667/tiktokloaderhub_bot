@@ -19,17 +19,6 @@
 - [ ] Manually verify: download, receive Telegram video, reopen Mini App, view history, retry download.
 - [ ] Commit and push only TikTok repository changes.
 
-## Remove the games (owner decision, 2026-10-21)
-
-- [ ] Drop `handlers/chaos.py`, `services/chaos/`, and the `chaos_*` wiring plus
-      daily announcer in `main.py`.
-- [ ] Drop `docs/chaos.js`, `docs/game.js`, `docs/merge.js`, and the game-only
-      parts of `docs/index.html` and `docs/style.css`.
-- [ ] Drop `tests/test_chaos_*.py` and `tests/test_handlers_chaos.py`.
-- [ ] Drop `CHAOS_*` from `.env`, `.env.example`, README, and AGENTS.md.
-- [ ] Keep `chaos.db` on disk as player history; it is gitignored.
-- [ ] Remove `/chaos`, `/top`, and `/streak` from the BotFather command list.
-
 ## Bot controls: persistent menu (owner decision, 2026-10-21)
 
 - [ ] Add a reply keyboard shown from `/start` and kept across interactions.

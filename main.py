@@ -13,7 +13,6 @@ from handlers.youtube import register as register_youtube
 from handlers.instagram import register as register_instagram
 from handlers.twitter import register as register_twitter
 from handlers.tiktok import TikTokHandler
-from handlers.chaos import register as register_chaos, run_daily_announcer
 from handlers.all_mention import register as register_all_mention
 from services.database import BotDatabase
 from services.utils.env import resolve_admin_id
@@ -55,10 +54,6 @@ youtube.app = app  # pass client to handler
 ADMIN_ID = resolve_admin_id()
 
 
-def chaos_enabled() -> bool:
-    return os.getenv("CHAOS_ENABLED", "0").strip().lower() in {"1", "true", "yes"}
-
-
 MINIAPP_URL = os.getenv(
     "MINIAPP_URL",
     "https://daring667.github.io/tiktokloaderhub_bot/downloader.html?api=https://debian-2.tail4f778c.ts.net&v=20260821-4",
@@ -82,16 +77,6 @@ async def start_handler(client, message):
         "Можно кинуть сразу несколько ссылок в одном сообщении (до 5 штук), "
         "а ссылку на YouTube-плейлист — и я предложу скачать видео по очереди."
     )
-
-    # Chaos Chain is optional and disabled by default while the downloader
-    # Mini App is being prepared.
-    if chaos_enabled() and message.chat and message.chat.type == ChatType.PRIVATE:
-        text += (
-            "\n\n🌀 А ещё здесь есть <b>Chaos Chain</b> — игра дня. "
-            "Змейка, в которой каждое съеденное яблоко меняет правила, "
-            "а дальше открывается второе звено. Каждый день новая цепочка, "
-            "одна на всех. Жми /chaos."
-        )
 
     await message.reply(text)
 
@@ -229,19 +214,10 @@ if __name__ == "__main__":
     TikTokHandler(app, db).register()
     register_all_mention(app)
 
-    chaos_store = None
-    if chaos_enabled():
-        # Chaos Chain keeps to itself: its own module, its own chaos.db. It
-        # reads the shared database only to honour the broadcast opt-out.
-        chaos_store = register_chaos(app, db)
-        asyncio.get_event_loop().create_task(run_daily_announcer(app, db, chaos_store))
-
     print("🚀 Bot started!")
 
     try:
         app.run()
     finally:
-        if chaos_store:
-            chaos_store.close()
         db.close()
         print("💾 Database connection closed cleanly.")

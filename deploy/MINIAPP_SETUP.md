@@ -63,7 +63,7 @@ is still required to protect Telegram `initData` in transit.
 - One active job per Telegram user.
 - Maximum result size: 50 MB.
 - Job results expire after 30 minutes.
-- Existing message-based bot downloads and Chaos Chain Mini App remain unchanged.
+- Existing message-based bot downloads remain unchanged.
 - The admin summary is read-only; service restart actions are deliberately not exposed yet.
 
 ## Verification
