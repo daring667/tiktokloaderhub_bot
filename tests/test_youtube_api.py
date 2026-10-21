@@ -375,3 +375,181 @@ class TestGetPlaylistInfo:
 
         assert result == str(tmp_path / "Test Video.mp4")
         assert mock_ydl_class.call_count == 3
+
+
+class TestPreferredAudioLanguage:
+    """YouTube serves the original track plus auto-dubs; we want one language.
+
+    The picker used to be ``max(..., key=filesize)``, which ignored language
+    entirely — a Russian video whose English auto-dub happened to encode a few
+    kilobytes larger was silently downloaded with English audio.
+    """
+
+    FAKE_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+
+    @staticmethod
+    def _audio(format_id, language, filesize, langpref=-1, ext="m4a"):
+        return {
+            "format_id": format_id, "ext": ext, "acodec": "mp4a",
+            "vcodec": "none", "language": language, "filesize": filesize,
+            "language_preference": langpref,
+        }
+
+    def test_picks_russian_dub_over_larger_original(self):
+        """An English original must not win just by being the fattest track."""
+        from services.youtube.youtube_downloader import pick_audio_format
+        formats = [
+            self._audio("140-20", "en", 9_000_000, langpref=10),
+            self._audio("140-11", "ru", 8_000_000),
+        ]
+        assert pick_audio_format(formats, "ru")["format_id"] == "140-11"
+
+    def test_picks_russian_original_over_larger_english_dub(self):
+        """The reported bug: ru original is smaller than its en auto-dub."""
+        from services.youtube.youtube_downloader import pick_audio_format
+        formats = [
+            self._audio("140-0", "en-US", 890_305),
+            self._audio("140-1", "ru", 888_803, langpref=10),
+        ]
+        assert pick_audio_format(formats, "ru")["format_id"] == "140-1"
+
+    def test_matches_regional_language_codes(self):
+        """"ru" must also match a "ru-RU" track."""
+        from services.youtube.youtube_downloader import pick_audio_format
+        formats = [
+            self._audio("140-0", "en-US", 900_000, langpref=10),
+            self._audio("140-1", "ru-RU", 100_000),
+        ]
+        assert pick_audio_format(formats, "ru")["format_id"] == "140-1"
+
+    def test_prefers_m4a_over_webm_within_the_language(self):
+        """Opus in mp4 plays worse in Telegram clients than AAC."""
+        from services.youtube.youtube_downloader import pick_audio_format
+        formats = [
+            self._audio("251-11", "ru", 9_000_000, ext="webm"),
+            self._audio("140-11", "ru", 8_000_000, ext="m4a"),
+        ]
+        assert pick_audio_format(formats, "ru")["format_id"] == "140-11"
+
+    def test_falls_back_to_original_when_language_absent(self):
+        """With no Russian track, the original beats any dub."""
+        from services.youtube.youtube_downloader import pick_audio_format
+        formats = [
+            self._audio("140-0", "de", 9_000_000),
+            self._audio("140-1", "en", 8_000_000, langpref=10),
+        ]
+        assert pick_audio_format(formats, "ru")["format_id"] == "140-1"
+
+    def test_empty_input_returns_none(self):
+        from services.youtube.youtube_downloader import pick_audio_format
+        assert pick_audio_format([], "ru") is None
+
+    def test_disabled_preference_keeps_original(self):
+        """An empty PREFERRED_AUDIO_LANG leaves the choice to the original."""
+        from services.youtube.youtube_downloader import pick_audio_format
+        formats = [
+            self._audio("140-0", "en", 100, langpref=10),
+            self._audio("140-1", "ru", 9_000_000),
+        ]
+        assert pick_audio_format(formats, "")["format_id"] == "140-0"
+
+    @patch("services.youtube.youtube_downloader.setup_cookies")
+    @patch("services.youtube.youtube_downloader.yt_dlp.YoutubeDL")
+    def test_adaptive_itag_carries_the_russian_track(self, mock_ydl_class, mock_cookies):
+        """The quality picker's itag must reference the Russian audio id."""
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
+        mock_ydl.__exit__ = MagicMock(return_value=False)
+        mock_ydl.extract_info.return_value = {
+            "title": "Test Video", "duration": 60, "thumbnail": None,
+            "formats": [
+                {"format_id": "137", "format_note": "1080p", "acodec": "none",
+                 "vcodec": "avc1", "ext": "mp4", "height": 1080,
+                 "filesize": 40_000_000},
+                self._audio("140-0", "en-US", 9_000_000),
+                self._audio("140-1", "ru", 8_000_000, langpref=10),
+            ],
+        }
+        mock_ydl_class.return_value = mock_ydl
+
+        from services.youtube.youtube_downloader import YouTubeDownloader
+        dl = YouTubeDownloader(self.FAKE_URL)
+
+        video = next(s for s in dl.streams if s["type"] == "video")
+        assert video["itag"] == "137+140-1"
+        assert dl.audio_itag == "140-1"
+
+    @patch("services.youtube.youtube_downloader.setup_cookies")
+    @patch("services.youtube.youtube_downloader.yt_dlp.YoutubeDL")
+    def test_progressive_is_dropped_when_a_dub_is_available(self, mock_ydl_class, mock_cookies):
+        """A progressive file only ever carries the original audio.
+
+        When the wanted language exists as a separate dubbed track, the
+        adaptive path is the only way to actually get it into the file.
+        """
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
+        mock_ydl.__exit__ = MagicMock(return_value=False)
+        mock_ydl.extract_info.return_value = {
+            "title": "Test Video", "duration": 60, "thumbnail": None,
+            "formats": [
+                {"format_id": "18", "format_note": "360p", "acodec": "mp4a",
+                 "vcodec": "avc1", "ext": "mp4", "height": 360,
+                 "filesize": 10_000_000},
+                {"format_id": "137", "format_note": "1080p", "acodec": "none",
+                 "vcodec": "avc1", "ext": "mp4", "height": 1080,
+                 "filesize": 40_000_000},
+                self._audio("140-20", "en", 9_000_000, langpref=10),
+                self._audio("140-11", "ru", 8_000_000),
+            ],
+        }
+        mock_ydl_class.return_value = mock_ydl
+
+        from services.youtube.youtube_downloader import YouTubeDownloader
+        dl = YouTubeDownloader(self.FAKE_URL)
+
+        video_itags = [s["itag"] for s in dl.streams if s["type"] == "video"]
+        assert "18" not in video_itags
+        assert all(itag.endswith("+140-11") for itag in video_itags)
+
+    @patch("services.youtube.youtube_downloader.setup_cookies")
+    @patch("services.youtube.youtube_downloader.yt_dlp.YoutubeDL")
+    def test_progressive_is_kept_when_the_original_is_already_russian(self, mock_ydl_class, mock_cookies):
+        """No reason to lose a single-file download when the original fits."""
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
+        mock_ydl.__exit__ = MagicMock(return_value=False)
+        mock_ydl.extract_info.return_value = {
+            "title": "Test Video", "duration": 60, "thumbnail": None,
+            "formats": [
+                {"format_id": "18", "format_note": "360p", "acodec": "mp4a",
+                 "vcodec": "avc1", "ext": "mp4", "height": 360,
+                 "filesize": 10_000_000},
+                self._audio("140-1", "ru", 8_000_000, langpref=10),
+                self._audio("140-0", "en-US", 9_000_000),
+            ],
+        }
+        mock_ydl_class.return_value = mock_ydl
+
+        from services.youtube.youtube_downloader import YouTubeDownloader
+        dl = YouTubeDownloader(self.FAKE_URL)
+
+        assert "18" in [s["itag"] for s in dl.streams if s["type"] == "video"]
+
+    @patch("services.youtube.youtube_downloader.setup_cookies")
+    @patch("services.youtube.youtube_downloader.yt_dlp.YoutubeDL")
+    def test_mp3_selector_falls_back_through_language_then_default(self, mock_ydl_class, mock_cookies):
+        """format_id differs per player_client, so keep language + plain fallbacks."""
+        mock_ydl = MagicMock()
+        mock_ydl.__enter__ = MagicMock(return_value=mock_ydl)
+        mock_ydl.__exit__ = MagicMock(return_value=False)
+        mock_ydl.extract_info.return_value = {
+            "title": "Test Video", "duration": 60, "thumbnail": None,
+            "formats": [self._audio("140-1", "ru", 8_000_000, langpref=10)],
+        }
+        mock_ydl_class.return_value = mock_ydl
+
+        from services.youtube.youtube_downloader import YouTubeDownloader
+        spec = YouTubeDownloader(self.FAKE_URL)._audio_format_spec()
+
+        assert spec == "140-1/bestaudio[language^=ru]/bestaudio/best"

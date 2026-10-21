@@ -13,6 +13,52 @@ setup_cookies()
 COOKIES_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "..", "cookies.txt")
 )
+
+# YouTube раздаёт несколько аудиодорожек на одно видео: оригинал плюс
+# автодубляж на другие языки. Выбираем дорожку на этом языке, если она есть.
+# Пустое значение отключает предпочтение и оставляет выбор за yt-dlp.
+PREFERRED_AUDIO_LANG = os.getenv("PREFERRED_AUDIO_LANG", "ru").strip().lower()
+
+
+def _lang_matches(fmt, lang: str) -> bool:
+    """True, если язык дорожки совпадает с `lang` ("ru" ловит и "ru-RU")."""
+    if not lang:
+        return False
+    code = (fmt.get("language") or "").lower()
+    return code == lang or code.startswith(lang + "-")
+
+
+def _audio_sort_key(fmt):
+    """Приоритет внутри пула дорожек одного языка.
+
+    `language_preference` у YouTube равен 10 для оригинальной дорожки и -1 для
+    автодубляжа, так что оригинал выигрывает у дубляжа того же языка. Дальше
+    предпочитаем m4a (AAC) — webm/opus Telegram проигрывает хуже, — и только
+    в последнюю очередь смотрим на размер.
+    """
+    langpref = fmt.get("language_preference")
+    return (
+        langpref if langpref is not None else -1,
+        1 if fmt.get("ext") == "m4a" else 0,
+        fmt.get("filesize") or fmt.get("filesize_approx") or 0,
+    )
+
+
+def pick_audio_format(audio_formats, lang: str = None):
+    """Выбирает одну аудиодорожку, предпочитая язык `lang`.
+
+    Раньше здесь стоял `max(..., key=filesize)`, который брал самую "толстую"
+    дорожку независимо от языка — у русского видео с английским автодубляжом
+    это молча отдавало английскую озвучку.
+    """
+    if not audio_formats:
+        return None
+    if lang is None:
+        lang = PREFERRED_AUDIO_LANG
+    localized = [f for f in audio_formats if _lang_matches(f, lang)]
+    return max(localized or audio_formats, key=_audio_sort_key)
+
+
 def fix_url(url: str) -> str:
     """Нормализует URL YouTube и извлекает video_id, обрабатывая все форматы ссылок"""
     parsed = urlparse(url)
@@ -90,6 +136,8 @@ class YouTubeDownloader:
         self.length = None
         self.thumbnail = None
         self.streams = []
+        # Конкретная аудиодорожка, выбранная под PREFERRED_AUDIO_LANG.
+        self.audio_itag = None
 
         base_opts = {
             "quiet": True,
@@ -171,17 +219,23 @@ class YouTubeDownloader:
                           if f.get("vcodec") != "none" and f.get("acodec") == "none"]
             separate_audio = [f for f in info.get("formats", [])
                               if f.get("acodec") != "none" and f.get("vcodec") == "none"]
-            if not self.streams and video_only and separate_audio:
+            # Прогрессивный формат (видео+аудио в одном файле) существует только
+            # с оригинальной дорожкой. Если нужный язык доступен отдельной
+            # дорожкой, идём по adaptive-пути, иначе дубляж не попадёт в файл.
+            localized_audio = [
+                f for f in separate_audio
+                if _lang_matches(f, PREFERRED_AUDIO_LANG)
+                and (f.get("language_preference") if f.get("language_preference") is not None else -1) < 10
+            ]
+            if video_only and separate_audio and (not self.streams or localized_audio):
+                if localized_audio and self.streams:
+                    self.streams = []
                 h264_mp4 = [
                     f for f in video_only
                     if f.get("ext") == "mp4" and str(f.get("vcodec", "")).startswith("avc1")
                 ]
                 compatible_video = h264_mp4 or video_only
-                m4a_audio = [f for f in separate_audio if f.get("ext") == "m4a"]
-                best_audio = max(
-                    m4a_audio or separate_audio,
-                    key=lambda x: x.get("filesize") or x.get("filesize_approx") or 0,
-                )
+                best_audio = pick_audio_format(separate_audio)
                 # YouTube can expose several codecs/frame rates for the same
                 # resolution. Keep the richest one per height, so the picker
                 # contains meaningful qualities instead of duplicate 1080p
@@ -223,7 +277,8 @@ class YouTubeDownloader:
             # Добавляем опцию аудио (MP3) на основе лучшего доступного аудио-формата
             audio_formats = separate_audio
             if audio_formats:
-                best_audio = max(audio_formats, key=lambda x: x.get("filesize") or x.get("filesize_approx") or 0)
+                best_audio = pick_audio_format(audio_formats)
+                self.audio_itag = best_audio.get("format_id")
                 audio_size = best_audio.get("filesize") or best_audio.get("filesize_approx")
                 self.streams.append({
                     "itag": "bestaudio",
@@ -251,6 +306,21 @@ class YouTubeDownloader:
 
     def get_available_formats(self):
         return self.streams
+
+    def _audio_format_spec(self) -> str:
+        """Селектор формата для MP3-опции.
+
+        Сначала ровно та дорожка, что выбрана при парсинге; затем любая на
+        нужном языке (format_id могут отличаться между player_client в
+        fallback-попытках); затем дефолт yt-dlp.
+        """
+        parts = []
+        if self.audio_itag:
+            parts.append(self.audio_itag)
+        if PREFERRED_AUDIO_LANG:
+            parts.append("bestaudio[language^=%s]" % PREFERRED_AUDIO_LANG)
+        parts += ["bestaudio", "best"]
+        return "/".join(parts)
 
     async def download(self, itag: str, out_path: str, message=None, status_msg=None):
         start_time = time.time()
@@ -302,7 +372,7 @@ class YouTubeDownloader:
         # Для аудио (mp3) используем bestaudio + ffmpeg-extract-audio postprocessor
         if itag == "bestaudio":
             opts = {
-                "format": "bestaudio",
+                "format": self._audio_format_spec(),
                 # Задаём шаблон без жёсткого расширения, чтобы postprocessor мог добавить .mp3
                 "outtmpl": base_no_ext + '.%(ext)s',
                 "quiet": True,

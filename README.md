@@ -10,6 +10,7 @@ Current version: see [`VERSION`](VERSION) / [`CHANGELOG.md`](CHANGELOG.md), or a
 
 - **TikTok** — no-watermark video downloads via the tikwm.com API, plus **photo slideshows** (sent as a photo album)
 - **YouTube** — video and Shorts via `yt-dlp`, with a quality picker (inline buttons, cancellable) for longer videos
+- **Russian audio by default** — YouTube now ships an original track plus auto-dubs on one video; downloads pick the `PREFERRED_AUDIO_LANG` (default `ru`) track instead of whichever one happened to be the largest
 - **Instagram Reels** — via `yt-dlp`, transcoded to H.264/AAC with `ffmpeg` for broad Telegram client compatibility
 - **Twitter/X** — via `yt-dlp`
 - **Multiple links in one message** — up to 5 processed per message, across all four platforms
@@ -55,6 +56,7 @@ cp .env.example .env   # then fill in the values below
 | `REQUEST_COOLDOWN_SECONDS` | no | Per-user cooldown between requests (default `5`) |
 | `MAX_CONCURRENT_DOWNLOADS` | no | Downloads running at once across all users (default `2`) |
 | `ERROR_REPORT_COOLDOWN_SECONDS` | no | Minimum gap between repeat admin error alerts (default `300`) |
+| `PREFERRED_AUDIO_LANG` | no | Preferred YouTube audio-track language (default `ru`). YouTube serves the original track plus auto-dubs; this picks the matching one, falling back to the original. Empty disables it. |
 | `COOKIES_B64` | no | Base64 `cookies.txt`, restored on startup by `start.sh`. Only relevant if you run via `start.sh`; the systemd deployment below reads `cookies.txt` directly from disk. |
 
 Note: `ADMIN_ID` falls back to `OWNER_ID` only when `ADMIN_ID` is completely unset — an empty string does not count as "set" but does skip the fallback (see `services/utils/env.py`).
