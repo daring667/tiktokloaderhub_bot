@@ -9,6 +9,26 @@ import traceback
 from pyrogram.enums import ParseMode
 
 from services.utils.env import resolve_admin_id
+from services.user_settings import reacts_in_groups
+
+
+def ignores_links_in_groups(db, message) -> bool:
+    """True when this user asked the bot to leave their group links alone.
+
+    Private chats are never affected -- the switch is about not answering for
+    someone in a shared chat, not about turning the bot off. A database hiccup
+    must not silence the bot either, so anything unexpected means "react".
+    """
+    try:
+        chat = getattr(message, "chat", None)
+        user = getattr(message, "from_user", None)
+        if not db or not user or not chat:
+            return False
+        if getattr(chat.type, "name", "") == "PRIVATE" or chat.type == "private":
+            return False
+        return not reacts_in_groups(db.get_user_settings(user.id))
+    except Exception:
+        return False
 
 # How often the same (platform, exception type) combo may alert the admin.
 # Reset on process restart — that's fine, a restart is a natural reset point.

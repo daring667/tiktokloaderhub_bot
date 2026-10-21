@@ -19,23 +19,17 @@
 - [ ] Manually verify: download, receive Telegram video, reopen Mini App, view history, retry download.
 - [ ] Commit and push only TikTok repository changes.
 
-## Bot controls: persistent menu (owner decision, 2026-10-21)
+## Bot controls: remaining
 
-- [ ] Add a reply keyboard shown from `/start` and kept across interactions.
-- [ ] Register a BotFather command menu matching the surviving commands.
-- [ ] Add a per-user settings surface: audio language, default quality,
-      video vs MP3.
-- [ ] Persist those settings and have the downloaders read them instead of the
-      process-wide `PREFERRED_AUDIO_LANG` default.
-- [ ] Quality preset per user, read on every incoming link: a resolution cap
-      fed to `best_stream_within_limit(max_side=...)`, or "off" to always show
-      the picker instead of sending automatically. Default stays the best
-      quality that fits 50 MB.
-- [ ] Per-user "ignore my links in groups" switch: when set, the bot does not
-      react to that user's links in group chats at all, while still working for
-      them in direct messages. Decide and document whether a group admin can
-      override it for their own chat.
-- [ ] Keep admin-only commands out of the public menu.
+Shipped in 1.8.0: the persistent keyboard, the published command menu, and the
+quality, audio-language and group-opt-out settings.
+
+- [ ] Default format per user (video vs MP3); the picker already offers both,
+      the preference does not exist yet.
+- [ ] Decide whether a group admin can override a member's "ignore my links in
+      groups" for their own chat. Today the member's choice always wins.
+- [ ] Prefer a non-`-drc` audio track: YouTube also publishes a loudness
+      compressed variant, and ties are currently broken by size, so it can win.
 
 ## Support channel (owner decision, 2026-10-21)
 

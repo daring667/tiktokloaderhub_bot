@@ -3,6 +3,43 @@
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [1.8.0] — 2026-10-21
+
+### Added
+- **A menu that stays on screen.** The bot had no button surface at all —
+  every action was a typed slash command, and nothing advertised that the
+  commands existed. There is now a persistent reply keyboard with the Mini App,
+  the settings and help on it. The Mini App sits on a `web_app` button, so it
+  opens on the first tap instead of costing a round trip through the bot. The
+  keyboard is only sent in private chats: Telegram shows one reply keyboard per
+  chat, and pushing ours into a group would replace whatever that group already
+  uses, for everyone in it.
+- **A published command menu.** `/start`, `/settings`, `/help`, `/app` and
+  `/version` now appear in Telegram's own command list. `/stats` and
+  `/broadcast` are deliberately left off: listing them invites people to try
+  them and be told they have no access.
+- **Per-user settings**, stored in `user_settings` and read on every link:
+  - *Quality* — the best that fits 50 MB (the default), a cap of 1080p, 720p
+    or 360p, or "always ask", which turns the automatic choice off and shows
+    the picker instead.
+  - *Audio language* — a Russian track where one exists, or always the
+    original. "Original" drops the language filter entirely, which leaves
+    `language_preference` to decide, and that favours the published track.
+  - *My links in groups* — off means the bot ignores that person's links in
+    group chats while continuing to work for them in direct messages.
+
+  Unknown or retired values fall back to the defaults when read, so a row that
+  outlives the option it names cannot strand a user on a dead setting. A
+  database failure falls back to the defaults too: preferences are not worth
+  refusing a download over.
+
+### Changed
+- `PREFERRED_AUDIO_LANG` is now the default rather than the rule. A user's own
+  choice wins; the environment variable decides for anyone who has not picked.
+- The Mini App URL is resolved in one place (`get_miniapp_url`). It carries a
+  cache-busting version in its query string, so two copies of the string would
+  drift apart the first time one was bumped.
+
 ## [1.7.1] — 2026-10-21
 
 ### Fixed

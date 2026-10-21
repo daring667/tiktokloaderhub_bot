@@ -5,17 +5,20 @@ from dotenv import load_dotenv
 
 asyncio.set_event_loop(asyncio.new_event_loop())
 
-from pyrogram import Client, filters
+from pyrogram import Client, filters, idle
 from pyrogram.enums import ChatType
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+from pyrogram.types import (
+    BotCommand, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo,
+)
 from handlers import youtube
 from handlers.youtube import register as register_youtube
 from handlers.instagram import register as register_instagram
 from handlers.twitter import register as register_twitter
 from handlers.tiktok import TikTokHandler
 from handlers.all_mention import register as register_all_mention
+from handlers.menu import register as register_menu, main_keyboard
 from services.database import BotDatabase
-from services.utils.env import resolve_admin_id
+from services.utils.env import resolve_admin_id, get_miniapp_url
 from services.utils.broadcast import broadcast_message, is_permanent_failure
 from services.utils.version import get_version
 
@@ -54,10 +57,6 @@ youtube.app = app  # pass client to handler
 ADMIN_ID = resolve_admin_id()
 
 
-MINIAPP_URL = os.getenv(
-    "MINIAPP_URL",
-    "https://daring667.github.io/tiktokloaderhub_bot/downloader.html?api=https://debian-2.tail4f778c.ts.net&v=20260821-4",
-)
 
 @app.on_message(filters.command("start") & (filters.private | filters.group))
 async def start_handler(client, message):
@@ -78,7 +77,13 @@ async def start_handler(client, message):
         "а ссылку на YouTube-плейлист — и я предложу скачать видео по очереди."
     )
 
-    await message.reply(text)
+    # The keyboard only exists in private chats: Telegram shows a reply
+    # keyboard per chat, and pushing one into a group would replace whatever
+    # the group already uses for everyone in it.
+    if message.chat and message.chat.type == ChatType.PRIVATE:
+        await message.reply(text, reply_markup=main_keyboard())
+    else:
+        await message.reply(text)
 
 @app.on_message(filters.command("version") & (filters.group | filters.private))
 async def version_handler(client, message):
@@ -92,7 +97,7 @@ async def miniapp_handler(client, message):
         reply_markup=InlineKeyboardMarkup([[
             InlineKeyboardButton(
                 "📥 Открыть Clipdrop",
-                web_app=WebAppInfo(url=MINIAPP_URL),
+                web_app=WebAppInfo(url=get_miniapp_url()),
             )
         ]]),
     )
@@ -201,6 +206,34 @@ async def broadcast_unsub_handler(client, callback):
     except Exception:
         pass
 
+# Only the commands everyone can use. /stats and /broadcast stay off the menu:
+# listing them invites people to try them and be told they have no access.
+PUBLIC_COMMANDS = [
+    BotCommand("start", "Запустить бота и показать меню"),
+    BotCommand("settings", "Качество, язык звука, поведение в группах"),
+    BotCommand("help", "Как пользоваться"),
+    BotCommand("app", "Открыть Mini App"),
+    BotCommand("version", "Версия бота"),
+]
+
+
+async def _run_bot():
+    """Start, publish the command menu, then idle until stopped.
+
+    `app.run()` with no argument would start and idle on its own, but the
+    command menu can only be published once the client is connected.
+    """
+    await app.start()
+    try:
+        await app.set_bot_commands(PUBLIC_COMMANDS)
+    except Exception as e:
+        # A failed menu update is not worth refusing to serve downloads over.
+        logging.warning("Could not publish the command menu: %s", e)
+    print("🚀 Bot started!")
+    await idle()
+    await app.stop()
+
+
 if __name__ == "__main__":
     # Abandoned picker tokens and playlist sessions are never cleaned up on
     # their own, so sweep the stale ones on every start.
@@ -213,11 +246,10 @@ if __name__ == "__main__":
     register_twitter(app, db)
     TikTokHandler(app, db).register()
     register_all_mention(app)
-
-    print("🚀 Bot started!")
+    register_menu(app, db)
 
     try:
-        app.run()
+        app.run(_run_bot())
     finally:
         db.close()
         print("💾 Database connection closed cleanly.")

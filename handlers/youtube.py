@@ -4,8 +4,10 @@ from pyrogram.enums import ParseMode
 from services.youtube.youtube_downloader import YouTubeDownloader, is_playlist_url, get_playlist_info
 from services.downloader import is_youtube_url
 from services.utils.sanitize import sanitize_filename
+from services import user_settings as us
 from services.utils.video_meta import probe_video_metadata
 from handlers.base import (
+    ignores_links_in_groups,
     DownloadInProgress,
     RateLimited,
     rate_limit_message,
@@ -37,6 +39,20 @@ AUTO_SEND_MAX_BYTES = MAX_FILE_SIZE
 RESULT_SENT = "sent"
 RESULT_PICKER = "picker"
 RESULT_FAILED = "failed"
+
+
+def _settings_for(db, message) -> dict:
+    """Preferences of whoever sent the link, falling back to the defaults.
+
+    A database hiccup must not stop a download: the defaults are a perfectly
+    good answer, so failure here is logged and otherwise ignored.
+    """
+    try:
+        if db and getattr(message, "from_user", None):
+            return us.normalize(db.get_user_settings(message.from_user.id))
+    except Exception:
+        logging.warning("could not read user settings; using defaults", exc_info=True)
+    return us.normalize({})
 
 
 def format_duration(seconds) -> str:
@@ -193,6 +209,8 @@ async def process_and_send_video(
 def register(app: Client, db=None):
     @app.on_message(filters.regex(r'https?://(www\.)?youtu(be\.com|\.be)/') & (filters.group | filters.private))
     async def yt_handler(client: Client, message: Message):
+        if ignores_links_in_groups(db, message):
+            return
         urls, total_found = extract_platform_urls(message.text, is_youtube_url)
         if not urls:
             await message.reply("❌ Не смог найти ссылку.")
@@ -272,9 +290,11 @@ async def _handle_one_youtube_url(client, message, db, url, playlist_token=None)
 
     try:
         print(f"🎯 Передаём ссылку в YouTubeDownloader: {url}")
+        settings = _settings_for(db, message)
 
         try:
-            meta = YouTubeDownloader(url)
+            meta = YouTubeDownloader(
+                url, audio_lang=us.audio_lang_for(settings["audio"]))
         except ValueError as e:
             await message.reply(f"❌ yt-dlp не смог распарсить ссылку: {e}")
             logging.error(f"YT download error: {e}")
@@ -286,7 +306,13 @@ async def _handle_one_youtube_url(client, message, db, url, playlist_token=None)
         # frame height, which reads a vertical video as far larger than it is
         # — every Shorts quality but 144p failed it. Anything whose size
         # YouTube did not declare still goes to the picker below.
-        auto_stream = best_stream_within_limit(meta.streams)
+        # A quality preset narrows the budget; "always ask" skips the
+        # automatic choice entirely and falls through to the picker.
+        auto_stream = (
+            best_stream_within_limit(
+                meta.streams, max_side=us.max_side_for(settings["quality"]))
+            if us.should_auto_send(settings["quality"]) else None
+        )
         if auto_stream:
             ok = await process_and_send_video(
                 client, message, meta, auto_stream['itag'], url, db, message.from_user

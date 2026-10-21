@@ -4,6 +4,7 @@ from services.tiktok.tiktok_downloader import TikTokDownloader
 from services.downloader import is_tiktok_url
 from services.utils.video_meta import probe_video_metadata
 from handlers.base import (
+    ignores_links_in_groups,
     BaseHandler,
     DownloadInProgress,
     RateLimited,
@@ -38,6 +39,8 @@ class TikTokHandler(BaseHandler):
             & (filters.group | filters.private)
         )
         async def handle_tiktok(client, message):
+            if ignores_links_in_groups(db, message):
+                return
             print(f"[TikTok] Received message from {message.from_user.id if message.from_user else 'unknown'}: {message.text}")
 
             urls, total_found = extract_platform_urls(message.text, is_tiktok_url)

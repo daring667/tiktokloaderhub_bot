@@ -32,9 +32,15 @@ history do not show on their own.
   groundwork for that roadmap, not dead code; do not delete it, and do not
   assume it runs. The current frontend advertises only TikTok and YouTube even
   though the bot supports Instagram and Twitter as well.
-- **Bot controls are being reworked** to a persistent reply keyboard plus a
-  BotFather command menu (owner decision, 2026-10-21). Today there is no button
-  surface at all — only slash commands.
+- **Controls and settings shipped in 1.8.0.** `handlers/menu.py` owns the
+  persistent reply keyboard, the settings screens and the `/settings` and
+  `/help` commands; `services/user_settings.py` holds the options, defaults and
+  validation, free of both SQLite and Pyrogram; `services/database.py` stores
+  them. Read preferences through `user_settings.normalize()` and never trust a
+  value straight from the table or from a callback payload — both outlive the
+  code that wrote them. New settings belong in `OPTIONS`/`TITLES`/`HINTS`
+  together, since the screens render from them. The command menu is published
+  in `_run_bot()`; keep admin-only commands off it.
 - **A support channel is planned**: an inline button on a user-facing error that
   opens a report, delivery of that report to the admin, and an admin reply sent
   back to that specific user as the bot. Nothing of this exists yet.
@@ -66,7 +72,8 @@ Use the project virtual environment:
 
 ## Architecture Boundaries
 
-- `main.py` creates the Pyrogram client, database, command handlers, and the Mini App `/app` button.
+- `main.py` creates the Pyrogram client, database, command handlers and the Mini App `/app` button, and publishes the command menu from `_run_bot()` once the client is connected.
+- `handlers/menu.py` is the only place that draws the keyboard or the settings screens; `handlers/base.ignores_links_in_groups` is the shared guard every platform handler calls first.
 - `handlers/` adapts Pyrogram messages/callbacks to the platform services. Do not call these handlers from HTTP code.
 - `services/downloader.py` is the Pyrogram-free platform dispatcher. Provider implementations live under `services/tiktok/`, `services/youtube/`, `services/instagram/`, and `services/twitter/`.
 - `api/auth.py` validates Telegram Web App `initData`; never trust a frontend-supplied user ID or bypass this check.

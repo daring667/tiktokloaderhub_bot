@@ -4,6 +4,7 @@ from services.downloader import is_instagram_url
 from services.utils.sanitize import sanitize_filename
 from services.utils.video_meta import probe_video_metadata
 from handlers.base import (
+    ignores_links_in_groups,
     DownloadInProgress,
     RateLimited,
     rate_limit_message,
@@ -27,6 +28,8 @@ MAX_FILE_SIZE = 50 * 1024 * 1024
 def register(app: Client, db=None):
     @app.on_message(filters.regex(r'https?://(www\.)?(instagram\.com/(reel|p|tv)/|instagr\.am/)') & (filters.group | filters.private))
     async def instagram_handler(client, message):
+        if ignores_links_in_groups(db, message):
+            return
         urls, total_found = extract_platform_urls(message.text, is_instagram_url)
         if not urls:
             return await message.reply("❌ Не найдена ссылка Instagram.")

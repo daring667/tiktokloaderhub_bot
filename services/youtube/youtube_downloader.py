@@ -128,8 +128,11 @@ def get_playlist_info(playlist_url: str, limit: int = 25):
 
 class YouTubeDownloader:
 
-    def __init__(self, url: str):
+    def __init__(self, url: str, audio_lang: str | None = None):
         self.url = self.normalize_youtube_url(url)
+        # None means "use the process default"; an empty string is a
+        # deliberate "no preference, give me the original track".
+        self.audio_lang = PREFERRED_AUDIO_LANG if audio_lang is None else audio_lang
         print(f"[log] Normalized URL: {self.url}")
 
         self.title = None
@@ -225,7 +228,7 @@ class YouTubeDownloader:
             # дорожкой, идём по adaptive-пути, иначе дубляж не попадёт в файл.
             localized_audio = [
                 f for f in separate_audio
-                if _lang_matches(f, PREFERRED_AUDIO_LANG)
+                if _lang_matches(f, self.audio_lang)
                 and (f.get("language_preference") if f.get("language_preference") is not None else -1) < 10
             ]
             if video_only and separate_audio and (not self.streams or localized_audio):
@@ -236,7 +239,7 @@ class YouTubeDownloader:
                     if f.get("ext") == "mp4" and str(f.get("vcodec", "")).startswith("avc1")
                 ]
                 compatible_video = h264_mp4 or video_only
-                best_audio = pick_audio_format(separate_audio)
+                best_audio = pick_audio_format(separate_audio, self.audio_lang)
                 # YouTube can expose several codecs/frame rates for the same
                 # resolution. Keep the richest one per height, so the picker
                 # contains meaningful qualities instead of duplicate 1080p
@@ -279,7 +282,7 @@ class YouTubeDownloader:
             # Добавляем опцию аудио (MP3) на основе лучшего доступного аудио-формата
             audio_formats = separate_audio
             if audio_formats:
-                best_audio = pick_audio_format(audio_formats)
+                best_audio = pick_audio_format(audio_formats, self.audio_lang)
                 self.audio_itag = best_audio.get("format_id")
                 audio_size = best_audio.get("filesize") or best_audio.get("filesize_approx")
                 self.streams.append({
@@ -319,8 +322,8 @@ class YouTubeDownloader:
         parts = []
         if self.audio_itag:
             parts.append(self.audio_itag)
-        if PREFERRED_AUDIO_LANG:
-            parts.append("bestaudio[language^=%s]" % PREFERRED_AUDIO_LANG)
+        if self.audio_lang:
+            parts.append("bestaudio[language^=%s]" % self.audio_lang)
         parts += ["bestaudio", "best"]
         return "/".join(parts)
 

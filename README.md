@@ -11,6 +11,7 @@ Current version: see [`VERSION`](VERSION) / [`CHANGELOG.md`](CHANGELOG.md), or a
 - **Russian audio by default** — YouTube now ships an original track plus auto-dubs on one video; downloads pick the `PREFERRED_AUDIO_LANG` (default `ru`) track instead of whichever one happened to be the largest
 - **Instagram Reels** — via `yt-dlp`, transcoded to H.264/AAC with `ffmpeg` for broad Telegram client compatibility
 - **Twitter/X** — via `yt-dlp`
+- **Per-user settings** — quality cap, audio language and whether the bot reacts to that person's links in groups, all behind a persistent menu
 - **Multiple links in one message** — up to 5 processed per message, across all four platforms
 - **YouTube playlists** — downloads the first video, then lets you step through the rest one at a time (`▶️ Следующее видео` / `❌ Хватит`) instead of dumping the whole thing at once
 - **50 MB guard** — checked against Telegram's own bot upload limit both from provider metadata and, as a backstop, against the actual downloaded file size
@@ -83,6 +84,26 @@ This installs `tiktokbot.service` (the bot) plus `tiktokbot-monitor.timer` (a 5-
 ### CI/CD
 
 Pushing to `master` runs the test suite on a GitHub-hosted runner, then — only if tests pass — pulls, restarts, and healthchecks the bot on a **self-hosted runner** living on the same box as the bot (needed because the server has no public IP; see `.github/workflows/deploy.yml`).
+
+## Menu and settings
+
+A persistent reply keyboard carries the Mini App, the settings and help; the
+Mini App is a `web_app` button, so it opens on the first tap. `/start`,
+`/settings`, `/help`, `/app` and `/version` are published to Telegram's command
+list — the admin-only commands are not.
+
+Each user gets their own preferences, stored in `user_settings` and read on
+every link:
+
+| Setting | Default | Options |
+|---|---|---|
+| Quality | best that fits 50 MB | 1080p / 720p / 360p cap, or "always ask" for the picker |
+| Audio language | Russian where available | Russian, or always the original track |
+| My links in groups | the bot reacts | ignore my links in groups (direct messages still work) |
+
+`PREFERRED_AUDIO_LANG` decides for anyone who has not chosen. A value that no
+longer exists falls back to the default when read, so an option removed later
+cannot strand someone on it.
 
 ## Admin commands
 

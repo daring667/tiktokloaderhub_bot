@@ -68,6 +68,14 @@ class BotDatabase:
                     total_count INTEGER,
                     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
+
+                CREATE TABLE IF NOT EXISTS user_settings (
+                    user_id    INTEGER NOT NULL,
+                    key        TEXT    NOT NULL,
+                    value      TEXT    NOT NULL,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (user_id, key)
+                );
             """)
             self._conn.commit()
 
@@ -260,6 +268,64 @@ class BotDatabase:
             "downloads_24h_by_platform": downloads_24h_by_platform,
             "errors_24h_by_platform": errors_24h_by_platform,
         }
+
+    # ------------------------------------------------------------------
+    # Per-user settings
+    # ------------------------------------------------------------------
+
+    def get_user_settings(self, user_id: int) -> dict:
+        """Raw stored preferences for one user; missing keys simply absent.
+
+        Values are returned as written. Deciding what an unknown or retired
+        value means is `services.user_settings.normalize`'s job, so a row that
+        outlived the option it names cannot strand the user.
+        """
+        with self._lock:
+            rows = self._conn.execute(
+                "SELECT key, value FROM user_settings WHERE user_id = ?",
+                (user_id,),
+            ).fetchall()
+        return {row["key"]: row["value"] for row in rows}
+
+    def get_settings_for_users(self, user_ids) -> dict:
+        """`get_user_settings` for several users at once."""
+        ids = list(user_ids)
+        if not ids:
+            return {}
+        placeholders = ",".join("?" * len(ids))
+        with self._lock:
+            rows = self._conn.execute(
+                f"SELECT user_id, key, value FROM user_settings "
+                f"WHERE user_id IN ({placeholders})",
+                ids,
+            ).fetchall()
+        result = {user_id: {} for user_id in ids}
+        for row in rows:
+            result[row["user_id"]][row["key"]] = row["value"]
+        return result
+
+    def set_user_setting(self, user_id: int, key: str, value: str) -> None:
+        """Store one preference, replacing any previous value."""
+        with self._lock:
+            self._conn.execute(
+                """
+                INSERT INTO user_settings (user_id, key, value)
+                VALUES (?, ?, ?)
+                ON CONFLICT(user_id, key) DO UPDATE SET
+                    value      = excluded.value,
+                    updated_at = CURRENT_TIMESTAMP
+                """,
+                (user_id, key, value),
+            )
+            self._conn.commit()
+
+    def reset_user_settings(self, user_id: int) -> None:
+        """Drop every stored preference, returning the user to the defaults."""
+        with self._lock:
+            self._conn.execute(
+                "DELETE FROM user_settings WHERE user_id = ?", (user_id,)
+            )
+            self._conn.commit()
 
     def save_callback(self, token: str, url: str, itag: str, stream_type: str | None = None,
                       playlist_token: str | None = None) -> None:
